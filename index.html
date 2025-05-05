@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskTree</title>
+  <script defer src="script.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-4">🌳 TaskTree</h1>
+
+    <form id="task-form" class="mb-6">
+      <input id="task-title" type="text" placeholder="New task title..." class="w-full p-2 rounded border mb-2">
+      <input id="task-deadline" type="date" class="w-full p-2 rounded border mb-2">
+      <select id="task-priority" class="w-full p-2 rounded border mb-2">
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Baja">Baja</option>
+      </select>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Task</button>
+    </form>
+
+    <ul id="task-list" class="space-y-4"></ul>
+  </div>
+</body>
+</html>
