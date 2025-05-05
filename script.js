@@ -74,10 +74,15 @@ function saveTasks() {
   }
 
 window.addEventListener('DOMContentLoaded', () => {
-    const saved = localStorage.getItem('taskas_tasks');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      taskList.push(...parsed);
-    }
-    renderTasks(); // asegúrate de que esté FUERA del if
-  });
+      const saved = localStorage.getItem('taskas_tasks');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        parsed.forEach(task => {
+          if (!Array.isArray(task.subtasks)) {
+            task.subtasks = [];
+          }
+        });
+        taskList.push(...parsed);
+      }
+      renderTasks();
+    });
