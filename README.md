@@ -1,1 +1,4 @@
 # Taskas
+
+Personal Task Manager
+
