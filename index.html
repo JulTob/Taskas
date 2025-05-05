@@ -14,9 +14,9 @@
 
     <form id="task-form" class="mb-4 space-y-2">
       <input id="title"    name="title"    class="w-full p-2 border rounded" placeholder="Taska" required />
-       <input id="duration" name="duration" type="number" min="1"
-         class="w-full p-2 border rounded"
-         placeholder="Duración (min)" required />
+      <input id="duration" name="duration" type="number"
+             class="w-full p-2 border rounded"
+             placeholder="Duración (min)" value="30" min="5" step="5" />
       <input id="deadline" name="deadline" type="date" class="w-full p-2 border rounded" />
       <input id="time"     name="time"     type="time" class="w-full p-2 border rounded" />
       <select name="priority" class="w-full p-2 border rounded">
