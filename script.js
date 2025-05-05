@@ -143,7 +143,7 @@ function toggleSubtaskPanel(path) {
   const prev = document.getElementById('subpanel');
   if (prev) prev.remove();
 
-  // Crear nuevo panel
+  // Crear panel
   const panel = document.createElement('div');
   panel.id = 'subpanel';
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
@@ -215,7 +215,8 @@ function toggleSubtaskPanel(path) {
       notes     : data.get('notes').trim(),
       completed : false,
       subtasks  : [],
-      timeSpent : 0
+      timeSpent : 0,
+      duration  : 30  // Duración de la subtarea (por defecto 30)
     };
     task.subtasks.push(subtask);
     saveTasks();
@@ -233,3 +234,12 @@ function toggleSubtaskPanel(path) {
 function saveTasks() {
   localStorage.setItem('taskas_tasks', JSON.stringify(taskList));
 }
+
+// ---------- 6. Duración: Incrementar/Decrementar en intervalos de 5 minutos ----------
+function adjustDuration(amount) {
+  let currentDuration = parseInt(durationInput.value, 10);
+  currentDuration = Math.max(5, currentDuration + amount);  // Evita duración negativa
+  durationInput.value = currentDuration;
+}
+
+// Botones de incrementar y decrementar duración
