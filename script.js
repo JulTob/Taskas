@@ -104,3 +104,17 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   renderTasks();
 });
+
+const notes = document.getElementById('notes');   // NUEVO
+
+const task = {
+  id        : Date.now(),
+  title,
+  deadline,
+  time,
+  priority,
+  notes     : notes.value.trim(),   // ← aquí
+  completed : false,
+  subtasks  : [],
+  timeSpent : 0
+  };
