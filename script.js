@@ -1,7 +1,7 @@
-// Taskas – gestor con tareas jerárquicas
-// --------------------------------------
+// Taskas – gestor con edición de notas en panel
+// ----------------------------------------------
 
-// 0. Memoria y referencias al DOM
+/* ---------- Memoria y DOM ---------- */
 const taskList      = [];
 const form          = document.getElementById('task-form');
 const taskContainer = document.getElementById('task-container');
@@ -10,7 +10,7 @@ const dateInput     = document.getElementById('deadline');
 const timeInput     = document.getElementById('time');
 const notesInput    = document.getElementById('notes');
 
-// 1. Valores por defecto en el formulario
+/* ---------- Valores por defecto ---------- */
 function setDefaultFormValues() {
   titleInput.value = 'Taskeo';
   const t = new Date(); t.setDate(t.getDate()+1);
@@ -21,22 +21,19 @@ window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   const saved = localStorage.getItem('taskas_tasks');
   if (saved) {
-    const parsed = JSON.parse(saved);
-    parsed.forEach(t => {
+    JSON.parse(saved).forEach(t => {
       if (!Array.isArray(t.subtasks)) t.subtasks = [];
       if (t.notes === undefined)      t.notes = '';
-      // Al cargar, subtareas ya están como tareas completas
-      // (no necesitamos parche adicional)
       taskList.push(t);
     });
   }
   renderTasks();
 });
 
-// 2. Crear y guardar una nueva tarea (y subtarea)  
+/* ---------- 1. Crear/guardar tarea ---------- */
 form.addEventListener('submit', e => {
   e.preventDefault();
-  const base = {
+  const task = {
     id        : Date.now(),
     title     : titleInput.value.trim(),
     deadline  : dateInput.value,
@@ -47,44 +44,37 @@ form.addEventListener('submit', e => {
     subtasks  : [],
     timeSpent : 0
   };
-  taskList.push(base);
+  taskList.push(task);
   saveTasks();
   form.reset();
   setDefaultFormValues();
   renderTasks();
 });
 
-// 3. Flatten + path → para renderizar y manipular
+/* ---------- 2. Flatten + helper path ---------- */
 function flattenTasks(tasks, level = 0, path = []) {
-  let out = [];
-  tasks.forEach((t, i) => {
-    out.push({ task: t, level, path: [...path, i] });
+  return tasks.reduce((acc, t, i) => {
+    const entry = { task: t, level, path: [...path, i] };
+    acc.push(entry);
     if (t.subtasks.length) {
-      out = out.concat(flattenTasks(t.subtasks, level + 1, [...path, i]));
+      acc.push(...flattenTasks(t.subtasks, level+1, [...path, i]));
     }
-  });
-  return out;
+    return acc;
+  }, []);
 }
-
-// 4. Obtener tarea por su path (array de índices)
 function getTaskByPath(path) {
-  let cursor = { subtasks: taskList };
-  for (const idx of path) {
-    cursor = cursor.subtasks[idx];
-  }
-  return cursor;
+  return path.reduce((cursor, idx) => cursor.subtasks[idx], { subtasks: taskList });
 }
 
-// 5. Renderizar toda la tabla con indentación
+/* ---------- 3. Pintar tabla de tareas ---------- */
 function renderTasks() {
   taskContainer.innerHTML = '';
   const flat = flattenTasks(taskList);
-  if (flat.length === 0) {
+  if (!flat.length) {
     taskContainer.innerHTML = '<p class="text-gray-500">No hay tareas aún.</p>';
     return;
   }
 
-  // Construir tabla
   const table = document.createElement('table');
   table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
   table.innerHTML = `
@@ -106,12 +96,9 @@ function renderTasks() {
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
 
-    // icono de notas
     const noteIcon = task.notes
       ? `<span title="${task.notes.replace(/"/g,'&quot;')}">✏️</span>`
       : '—';
-
-    // indentamos con padding basada en el nivel
     const indent = `${level * 1.5}rem`;
 
     row.innerHTML = `
@@ -122,74 +109,57 @@ function renderTasks() {
       <td class="p-2">${task.subtasks.length}</td>
       <td class="p-2 text-center">${noteIcon}</td>
     `;
-
-    // clic en la fila → abrir panel para añadir subtask a esta tarea
-    row.addEventListener('click', () => toggleSubtaskPanel(path));
-
+    // Al clicar fila → abrir panel de notas
+    row.addEventListener('click', () => toggleNotePanel(path));
     tbody.appendChild(row);
   });
 
   taskContainer.appendChild(table);
 }
 
-// 6. Panel de subtareas para cualquier tarea (identificada por path)
-function toggleSubtaskPanel(path) {
+/* ---------- 4. Panel para editar nota ---------- */
+function toggleNotePanel(path) {
   const task = getTaskByPath(path);
-  // cerrar panel previo
+  // Cerrar panel anterior
   const prev = document.getElementById('subpanel');
   if (prev) prev.remove();
 
-  // nuevo panel
+  // Crear panel
   const panel = document.createElement('div');
   panel.id = 'subpanel';
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
 
-  // lista actual de subtareas
-  const ul = document.createElement('ul');
-  ul.className = 'mb-2 list-disc ml-6';
-  task.subtasks.forEach(st => {
-    const li = document.createElement('li');
-    li.textContent = st.title;
-    ul.appendChild(li);
-  });
-  panel.appendChild(ul);
+  // Título del panel
+  const hdr = document.createElement('h2');
+  hdr.className = 'font-semibold mb-2';
+  hdr.textContent = `Notas de: ${task.title}`;
+  panel.appendChild(hdr);
 
-  // formulario para añadir una subtask (solo título)
-  const f = document.createElement('form');
-  f.className = 'flex gap-2';
-  f.innerHTML = `
-    <input name="sub" class="flex-1 p-1 border rounded"
-           placeholder="Título de la subtarea…" required>
-    <button class="bg-green-500 text-white px-2 rounded">+</button>
-  `;
-  f.addEventListener('submit', e => {
-    e.preventDefault();
-    const text = f.elements['sub'].value.trim();
-    if (!text) return;
-    // creamos objeto tarea mínimo
-    const subtask = {
-      id        : Date.now(),
-      title     : text,
-      deadline  : '',        // sin fecha
-      time      : '',
-      priority  : task.priority,
-      notes     : '',
-      completed : false,
-      subtasks  : [],
-      timeSpent : 0
-    };
-    task.subtasks.push(subtask);
+  // Textarea con la nota actual
+  const ta = document.createElement('textarea');
+  ta.rows = 4;
+  ta.className = 'w-full p-2 border rounded mb-2';
+  ta.value = task.notes;
+  panel.appendChild(ta);
+
+  // Botón Guardar
+  const btn = document.createElement('button');
+  btn.textContent = 'Guardar notas';
+  btn.className = 'bg-blue-500 text-white px-4 py-2 rounded';
+  btn.addEventListener('click', () => {
+    task.notes = ta.value.trim();
     saveTasks();
     renderTasks();
-    toggleSubtaskPanel(path); // reabre panel sobre el mismo task
+    // Volver a mostrar el panel para esta misma tarea
+    toggleNotePanel(path);
   });
+  panel.appendChild(btn);
 
-  panel.appendChild(f);
-  // insertar tras la tabla
+  // Añadir panel justo tras la tabla
   taskContainer.appendChild(panel);
 }
 
-// 7. Persistencia
+/* ---------- 5. Persistencia ---------- */
 function saveTasks() {
   localStorage.setItem('taskas_tasks', JSON.stringify(taskList));
 }
