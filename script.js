@@ -185,6 +185,19 @@ function toggleSubtaskPanel(path) {
     <textarea name="notes" rows="2" class="w-full p-2 border rounded" placeholder="Notas subtarea"></textarea>
     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Agregar subtarea</button>
   `;
+  
+    // ✨ AÑADIMOS LOS VALORES POR DEFECTO ✨
+  (()=>{
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateStr = tomorrow.toISOString().split('T')[0];
+
+    subForm.elements['title'].value    = 'Taskeo';
+    subForm.elements['deadline'].value = dateStr;
+    subForm.elements['time'].value     = '17:00';
+    // notes y priority quedan con sus defaults del HTML
+  })();
+  
 
   subForm.addEventListener('submit', e => {
     e.preventDefault();
