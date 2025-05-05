@@ -12,15 +12,30 @@
     <h1 class="text-3xl font-bold mb-4"> 🍻 Taskas </h1>
 
     <form id="task-form" class="mb-4 space-y-2">
-      <input id="task-title" type="text" placeholder="New task title..." class="w-full p-2 rounded border mb-2">
-      <input id="task-deadline" type="date" class="w-full p-2 rounded border mb-2">
-      <select id="task-priority" class="w-full p-2 rounded border mb-2">
-        <option value="Alta">Alta</option>
-        <option value="Media">Media</option>
-        <option value="Baja">Baja</option>
-      </select>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Task</button>
-    </form>
+          <!-- Título -->
+          <input id="title"  name="title"  class="w-full p-2 border rounded"
+                 placeholder="Título de la tarea" required />
+        
+          <!-- Fecha -->
+          <input id="deadline" type="date" name="deadline"
+                 class="w-full p-2 border rounded" />
+        
+          <!-- Hora -->
+          <input id="time" type="time" name="time"
+                 class="w-full p-2 border rounded" />
+        
+          <!-- Prioridad -->
+          <select name="priority" class="w-full p-2 border rounded">
+            <option value="Alta">Alta</option>
+            <option value="Media" selected>Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        
+          <button type="submit"
+                  class="bg-blue-500 text-white px-4 py-2 rounded">
+            Agregar tarea
+          </button>
+        </form>
 
     <ul id="task-list" class="space-y-4"></ul>
   </div>
