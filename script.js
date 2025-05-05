@@ -116,18 +116,25 @@ function renderTasks() {
       <td class="p-2 text-center">${noteIcon}</td>
     `;
     
-    // Al hacer clic en la fila → abrir el panel de subtareas
-    row.addEventListener('click', () => toggleSubtaskPanel(path));
+const titleCell = row.querySelector('td'); // primer td
+titleCell.contentEditable = true;
 
-    // Hacer el título editable
-    row.querySelector('td').addEventListener('blur', () => {
-      const newTitle = row.querySelector('td').textContent.trim();
-      if (newTitle !== task.title) {
-        task.title = newTitle;
-        saveTasks();
-        renderTasks();
-      }
-    });
+// Solo abre panel si NO hiciste clic en el campo editable
+row.addEventListener('click', (event) => {
+  if (event.target !== titleCell) {
+    toggleSubtaskPanel(path);
+  }
+});
+
+// Guardar nuevo título cuando pierda el foco
+titleCell.addEventListener('blur', () => {
+  const newTitle = titleCell.textContent.trim();
+  if (newTitle && newTitle !== task.title) {
+    task.title = newTitle;
+    saveTasks();
+    renderTasks();
+  }
+});
 
     tbody.appendChild(row);
   });
