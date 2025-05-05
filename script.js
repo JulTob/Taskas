@@ -98,23 +98,44 @@ function renderTasks() {
   `;
   const tbody = table.querySelector('tbody');
 
-  flat.forEach(({ task, level, path }) => {
-    const row = document.createElement('tr');
-    row.className = 'cursor-pointer hover:bg-gray-50';
-    const noteIcon = task.notes
-      ? `<span title="${task.notes.replace(/"/g,'&quot;')}">✏️</span>`
-      : '—';
-    const indent = `${level * 1.5}rem`;
+flat.forEach(({ task, level, path }) => {
+  const row = document.createElement('tr');
+  row.className = 'cursor-pointer hover:bg-gray-50';
 
-    row.innerHTML = `
-      <td class="p-2 font-semibold" style="padding-left:${indent}" contenteditable="true">${task.title}</td>
-      <td class="p-2">${task.priority}</td>
-      <td class="p-2">${task.deadline || '—'}</td>
-      <td class="p-2">${task.time     || '—'}</td>
-      <td class="p-2">${task.duration || '30'} mins</td>
-      <td class="p-2">${task.subtasks.length}</td>
-      <td class="p-2 text-center">${noteIcon}</td>
-    `;
+  const noteIcon = task.notes
+    ? `<span title="${task.notes.replace(/"/g,'&quot;')}">✏️</span>`
+    : '—';
+  const indent = `${level * 1.5}rem`;
+
+  row.innerHTML = `
+    <td class="p-2 font-semibold" style="padding-left:${indent}">${task.title}</td>
+    <td class="p-2">${task.priority}</td>
+    <td class="p-2">${task.deadline || '—'}</td>
+    <td class="p-2">${task.time     || '—'}</td>
+    <td class="p-2">${task.duration || 30} min</td>
+    <td class="p-2">${task.subtasks.length}</td>
+    <td class="p-2 text-center">${noteIcon}</td>
+  `;
+
+  // --- ① Título editable in-place --------------------------
+  const titleCell = row.firstElementChild;          // primer <td>
+  titleCell.contentEditable = true;
+  titleCell.addEventListener('blur', () => {
+    const newTitle = titleCell.textContent.trim();
+    if (newTitle && newTitle !== task.title) {
+      task.title = newTitle;
+      saveTasks();
+      renderTasks();
+    }
+  });
+
+  // --- ② Click en cualquier otra parte → abre panel -------
+  row.addEventListener('click', (ev) => {
+    if (ev.target !== titleCell) toggleSubtaskPanel(path);
+  });
+
+  tbody.appendChild(row);
+});
     
 const titleCell = row.querySelector('td'); // primer td
 titleCell.contentEditable = true;
