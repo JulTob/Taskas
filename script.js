@@ -43,7 +43,7 @@ form.addEventListener('submit', e => {
     title     : titleInput.value.trim(),
     deadline  : dateInput.value,
     time      : timeInput.value,
-    priority  : form.elements['priority'].value,
+    priority  : document.getElementById('priority').value,
     notes     : notesInput.value.trim(),
     completed : false,
     subtasks  : [],
