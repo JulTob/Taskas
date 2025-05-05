@@ -31,22 +31,44 @@ form.addEventListener('submit', function (event) {
 });
 
 function renderTasks() {
-      taskContainer.innerHTML = '';
-    
-      taskList.forEach(task => {
-        const taskDiv = document.createElement('div');
-        taskDiv.className = 'bg-white p-4 mb-2 rounded shadow';
-    
-        const info = document.createElement('div');
-        info.innerHTML = `
-          <strong>${task.title}</strong><br>
-          <span class="text-sm text-gray-500">📅 ${task.deadline || 'Sin fecha'} | ⏱ Prioridad: ${task.priority}</span>
-        `;
-    
-        taskDiv.appendChild(info);
-        taskContainer.appendChild(taskDiv);
-        });
-    }
+    taskContainer.innerHTML = '';
+  
+    if (taskList.length === 0) {
+      taskContainer.innerHTML = '<p class="text-gray-500">No hay tareas aún.</p>';
+      return;
+      }
+  
+    const table = document.createElement('table');
+    table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
+  
+    table.innerHTML = `
+      <thead class="bg-gray-200 text-left">
+        <tr>
+          <th class="p-2">Título</th>
+          <th class="p-2">Prioridad</th>
+          <th class="p-2">Fecha límite</th>
+          <th class="p-2">Subtareas</th>
+        </tr>
+      </thead>
+      <tbody id="task-table-body" class="divide-y">
+      </tbody>
+    `;
+  
+    const tbody = table.querySelector('tbody');
+  
+    taskList.forEach(task => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="p-2 font-semibold">${task.title}</td>
+        <td class="p-2">${task.priority}</td>
+        <td class="p-2">${task.deadline || '—'}</td>
+        <td class="p-2">${task.subtasks.length}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  
+    taskContainer.appendChild(table);
+  }
 
 function saveTasks() {
   localStorage.setItem('taskas_tasks', JSON.stringify(taskList));
