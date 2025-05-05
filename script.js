@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---------- 1. Crear/guardar tarea principal ----------
-addEventListener('submit', e => {
+form.addEventListener('submit', e => {
   e.preventDefault();
   const task = {
     id        : Date.now(),
