@@ -36,14 +36,14 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---------- 1. Crear/guardar tarea principal ----------
-form.addEventListener('submit', e => {
+addEventListener('submit', e => {
   e.preventDefault();
   const task = {
     id        : Date.now(),
     title     : titleInput.value.trim(),
     deadline  : dateInput.value,
     time      : timeInput.value,
-    priority  : document.getElementById('priority').value,
+    priority  : form.elements['priority'].value,
     notes     : notesInput.value.trim(),
     completed : false,
     subtasks  : [],
