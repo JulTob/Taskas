@@ -21,9 +21,10 @@ form.addEventListener('submit', function (event) {
     completed: false,
     subtasks: [],
     timeSpent: 0
-  };
+    };
 
   taskList.push(task);
+  saveTasks();
   form.reset();
   renderTasks();
 });
