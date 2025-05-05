@@ -78,6 +78,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (saved) {
       const parsed = JSON.parse(saved);
       taskList.push(...parsed);
-      renderTasks();
     }
+    renderTasks(); // asegúrate de que esté FUERA del if
   });
