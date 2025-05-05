@@ -9,12 +9,14 @@ const titleInput    = document.getElementById('title');
 const dateInput     = document.getElementById('deadline');
 const timeInput     = document.getElementById('time');
 const notesInput    = document.getElementById('notes');
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
 
 /* ---------- Valores por defecto en el formulario principal ---------- */
 function setDefaultFormValues() {
-  titleInput.value = 'Taskeo';
+  titleInput.value = 'Taska';
   const t = new Date();
-  t.setDate(t.getDate() + 1);
+  t.setDate(tomorrow);
   dateInput.value = t.toISOString().split('T')[0];
   timeInput.value = '17:00';
 }
@@ -154,36 +156,21 @@ function toggleSubtaskPanel(path) {
   });
   panel.appendChild(saveNoteBtn);
 
-  // —— 4.2 Lista de subtareas ——
-  const subHdr = document.createElement('h2');
-  subHdr.className = 'font-semibold mb-2';
-  subHdr.textContent = 'Subtareas';
-  panel.appendChild(subHdr);
-
-  const ul = document.createElement('ul');
-  ul.className = 'mb-4 list-disc ml-6';
-  task.subtasks.forEach(sub => {
-    const li = document.createElement('li');
-    li.textContent = sub.title;
-    ul.appendChild(li);
-  });
-  panel.appendChild(ul);
-
-  // —— 4.3 Formulario completo para nueva subtarea ——
+  // —— 4.2 Formulario completo para nueva subtarea ——
   const subForm = document.createElement('form');
   subForm.className = 'space-y-2 mb-2';
 
   subForm.innerHTML = `
-    <input name="title" placeholder="Título subtarea" class="w-full p-2 border rounded" required />
-    <input name="deadline" type="date" class="w-full p-2 border rounded" />
-    <input name="time" type="time" class="w-full p-2 border rounded" />
+    <input name="title" placeholder="Subtaska" class="w-full p-2 border rounded" required />
+    <input name="deadline" type="date" value="${tomorrow.toISOString().split('T')[0]}"  class="w-full p-2 border rounded" />
+    <input name="time" type="time" value="17:00"  class="w-full p-2 border rounded" />
     <select name="priority" class="w-full p-2 border rounded">
       <option value="Alta">Alta</option>
       <option value="Media" selected>Media</option>
       <option value="Baja">Baja</option>
     </select>
     <textarea name="notes" rows="2" class="w-full p-2 border rounded" placeholder="Notas subtarea"></textarea>
-    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Agregar subtarea</button>
+    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">➕ Subtaska</button>
   `;
 
   subForm.addEventListener('submit', e => {
