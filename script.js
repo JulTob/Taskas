@@ -24,7 +24,6 @@ form.addEventListener('submit', function (event) {
     };
 
   taskList.push(task);
-  task.subtasks.push({ title: text, completed: false });
   saveTasks();
   form.reset();
   renderTasks();
