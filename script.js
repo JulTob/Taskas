@@ -78,7 +78,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (saved) {
         const parsed = JSON.parse(saved);
     
-        // Asegurar que todas las tareas tengan subtasks como array
+        // 🚑 Asegura que todas las tareas tengan subtasks como array
         parsed.forEach(task => {
           if (!Array.isArray(task.subtasks)) {
             task.subtasks = [];
@@ -87,5 +87,5 @@ window.addEventListener('DOMContentLoaded', () => {
     
         taskList.push(...parsed);
       }
-      renderTasks(); // renderizar SIEMPRE, esté vacío o no
+      renderTasks();          // siempre dibuja, haya o no tareas
     });
