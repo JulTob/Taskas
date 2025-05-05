@@ -4,50 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Taskas</title>
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Nuestro JS: con defer basta con esta línea -->
+  <!-- carga tu JS sólo una vez, con defer -->
   <script defer src="script.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
   <div class="max-w-3xl mx-auto">
     <h1 class="text-3xl font-bold mb-4">🍻 Taskas</h1>
 
-    <!-- FORMULARIO -->
     <form id="task-form" class="mb-4 space-y-2">
-        <!-- Título -->
-      <input id="title" name="title" class="w-full p-2 border rounded"
-             placeholder="Task" required />
-        <!-- Fecha -->
-      <input id="deadline" type="date" name="deadline" 
-             class="w-full p-2 border rounded" />
-        <!-- Hora -->
-      <input id="time" type="time" name="time" 
-             class="w-full p-2 border rounded" />
-      <!-- Prioridad -->
+      <input id="title"    name="title"    class="w-full p-2 border rounded" placeholder="Título de la tarea" required />
+      <input id="deadline" name="deadline" type="date" class="w-full p-2 border rounded" />
+      <input id="time"     name="time"     type="time" class="w-full p-2 border rounded" />
       <select name="priority" class="w-full p-2 border rounded">
         <option value="Alta">Alta</option>
         <option value="Media" selected>Media</option>
         <option value="Baja">Baja</option>
-        </select>
-      <!-- ✨ NOTAS -->
-  <textarea id="notes" name="notes" rows="2"
-            class="w-full p-2 border rounded"
-            placeholder="Notas (opcional)"></textarea>
-      
-      <button type="submit"
-              class="bg-blue-500 text-white px-4 py-2 rounded">
-          🍻 Taskear 🍻
-          </button>
-      </form>
+      </select>
+      <textarea id="notes" name="notes" rows="2"
+                class="w-full p-2 border rounded"
+                placeholder="Notas (opcional)"></textarea>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+        Agregar tarea
+      </button>
+    </form>
 
-    <!-- AQUÍ se pintará la tabla -->
+    <!-- Aquí renderizamos la tabla y el panel de subtareas -->
     <div id="task-container"></div>
-    
-    <!-- Contenedor (oculto) para modales de edición -->
-  <div id="modal-root"></div>
   </div>
 </body>
 </html>
