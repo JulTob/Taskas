@@ -24,6 +24,7 @@ form.addEventListener('submit', function (event) {
     };
 
   taskList.push(task);
+  task.subtasks.push({ title: text, completed: false });
   saveTasks();
   form.reset();
   renderTasks();
@@ -50,3 +51,12 @@ function renderTasks() {
 function saveTasks() {
   localStorage.setItem('taskas_tasks', JSON.stringify(taskList));
   }
+
+window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('taskas_tasks');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      taskList.push(...parsed);
+      renderTasks();
+    }
+  });
