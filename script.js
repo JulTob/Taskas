@@ -1,7 +1,7 @@
-// Taskas – gestor con tareas y subtareas con valores por defecto
-// -------------------------------------------------------------
+// Taskas – gestor de tareas con notas y subtareas completas
+// ---------------------------------------------------------
 
-// ---------- Memoria y referencias al DOM ----------
+/* ---------- Memoria y referencias al DOM ---------- */
 const taskList      = [];
 const form          = document.getElementById('task-form');
 const taskContainer = document.getElementById('task-container');
@@ -10,14 +10,15 @@ const dateInput     = document.getElementById('deadline');
 const timeInput     = document.getElementById('time');
 const notesInput    = document.getElementById('notes');
 
-// ---------- Valores por defecto en el formulario principal ----------
+/* ---------- Valores por defecto en el formulario principal ---------- */
 function setDefaultFormValues() {
   titleInput.value = 'Taskeo';
   const t = new Date();
-  t.setDate(t.getDate() + 1); // Fecha mañana
+  t.setDate(t.getDate() + 1);
   dateInput.value = t.toISOString().split('T')[0];
-  timeInput.value = '17:00';  // Hora 17:00
+  timeInput.value = '17:00';
 }
+
 window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   const saved = localStorage.getItem('taskas_tasks');
@@ -31,7 +32,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderTasks();
 });
 
-// ---------- 1. Crear/guardar tarea principal ----------
+/* ---------- 1. Crear/guardar tarea principal ---------- */
 form.addEventListener('submit', e => {
   e.preventDefault();
   const task = {
@@ -52,7 +53,7 @@ form.addEventListener('submit', e => {
   renderTasks();
 });
 
-// ---------- 2. Helpers para jerarquía ----------
+/* ---------- 2. Helpers para jerarquía ---------- */
 function flattenTasks(tasks, level = 0, path = []) {
   return tasks.reduce((acc, t, i) => {
     acc.push({ task: t, level, path: [...path, i] });
@@ -66,7 +67,7 @@ function getTaskByPath(path) {
   return path.reduce((cursor, idx) => cursor.subtasks[idx], { subtasks: taskList });
 }
 
-// ---------- 3. Pintar tabla de tareas ----------
+/* ---------- 3. Pintar tabla de tareas ---------- */
 function renderTasks() {
   taskContainer.innerHTML = '';
   const flat = flattenTasks(taskList);
@@ -91,6 +92,7 @@ function renderTasks() {
     <tbody class="divide-y"></tbody>
   `;
   const tbody = table.querySelector('tbody');
+
   flat.forEach(({ task, level, path }) => {
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
@@ -107,6 +109,8 @@ function renderTasks() {
       <td class="p-2">${task.subtasks.length}</td>
       <td class="p-2 text-center">${noteIcon}</td>
     `;
+
+    // Al clicar fila → abrir panel de esa tarea
     row.addEventListener('click', () => toggleSubtaskPanel(path));
     tbody.appendChild(row);
   });
@@ -114,7 +118,7 @@ function renderTasks() {
   taskContainer.appendChild(table);
 }
 
-// ---------- 4. Panel de notas + lista + creación de subtarea completa ----------
+/* ---------- 4. Panel de notas + lista + creación de subtarea completa ---------- */
 function toggleSubtaskPanel(path) {
   const task = getTaskByPath(path);
 
@@ -122,12 +126,12 @@ function toggleSubtaskPanel(path) {
   const prev = document.getElementById('subpanel');
   if (prev) prev.remove();
 
-  // Crear nuevo panel
+  // Crear panel
   const panel = document.createElement('div');
   panel.id = 'subpanel';
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
 
-  // --- 4.1 Editar nota ---
+  // —— 4.1 Editar nota ——
   const noteHdr = document.createElement('h2');
   noteHdr.className = 'font-semibold mb-2';
   noteHdr.textContent = `Nota de “${task.title}”`;
@@ -150,7 +154,7 @@ function toggleSubtaskPanel(path) {
   });
   panel.appendChild(saveNoteBtn);
 
-  // --- 4.2 Lista de subtareas ---
+  // —— 4.2 Lista de subtareas ——
   const subHdr = document.createElement('h2');
   subHdr.className = 'font-semibold mb-2';
   subHdr.textContent = 'Subtareas';
@@ -165,18 +169,14 @@ function toggleSubtaskPanel(path) {
   });
   panel.appendChild(ul);
 
-  // --- 4.3 Formulario completo para nueva subtarea ---
+  // —— 4.3 Formulario completo para nueva subtarea ——
   const subForm = document.createElement('form');
   subForm.className = 'space-y-2 mb-2';
 
-  // Asignamos los valores por defecto
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
   subForm.innerHTML = `
     <input name="title" placeholder="Título subtarea" class="w-full p-2 border rounded" required />
-    <input name="deadline" type="date" value="${tomorrow.toISOString().split('T')[0]}" class="w-full p-2 border rounded" />
-    <input name="time" type="time" value="17:00" class="w-full p-2 border rounded" />
+    <input name="deadline" type="date" class="w-full p-2 border rounded" />
+    <input name="time" type="time" class="w-full p-2 border rounded" />
     <select name="priority" class="w-full p-2 border rounded">
       <option value="Alta">Alta</option>
       <option value="Media" selected>Media</option>
@@ -212,7 +212,7 @@ function toggleSubtaskPanel(path) {
   taskContainer.appendChild(panel);
 }
 
-// ---------- 5. Persistencia ----------
+/* ---------- 5. Persistencia ---------- */
 function saveTasks() {
   localStorage.setItem('taskas_tasks', JSON.stringify(taskList));
 }
