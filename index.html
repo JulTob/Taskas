@@ -8,21 +8,34 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Firebase SDKs (opcional: añádelos cuando uses Auth/Firestore en prod) -->
-  <!--
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
   <script>
-    const firebaseConfig = { ... };
-    firebase.initializeApp(firebaseConfig);
-  </script>
-  -->
-
-  <!-- Tu lógica -->
+      /* ⚙️ Copia tu propio snippet de configuración aquí */
+      const firebaseConfig = { /* … */ };
+      firebase.initializeApp(firebaseConfig);
+      </script>
+    <!-- Tailwind y tu script  -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="script.js"></script>
+  <!--  Tu lógica -->
   <script defer src="script.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
+    <!-- Barra de autenticación -->
+  <div id="auth-bar" class="mb-4">
+    <button id="loginBtn"
+            class="bg-red-500 text-white px-3 py-1 rounded">
+      Acceder con Google
+    </button>
+    <button id="logoutBtn"
+            class="bg-gray-500 text-white px-3 py-1 rounded hidden">
+      Salir
+    </button>
+  </div>
+  
   <div class="max-w-3xl mx-auto">
     <h1 class="text-3xl font-bold mb-4">🍻 Taskas</h1>
 
