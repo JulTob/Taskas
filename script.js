@@ -54,7 +54,7 @@ form.addEventListener('submit', e => {
     completed : false,
     timeSpent : 0,
     subtasks  : []
-  };
+    };
 
   taskList.push(task);
   saveTasks();
@@ -230,6 +230,51 @@ function toggleSubtaskPanel(path) {
 }
 
 // ---------- 5. Persistencia ----------
+/* -------------- Usa Firestore -------------- */
 function saveTasks() {
-  localStorage.setItem('taskas_tasks', JSON.stringify(taskList));
-}
+    if (!collRef) return;           // aún no logueado
+    taskList.forEach(t => collRef.doc(t.id.toString()).set(t));
+    }
+
+/* -------------- Firebase -------------- */
+const auth = firebase.auth();
+const db   = firebase.firestore();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+const loginBtn  = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+loginBtn.onclick  = () => auth.signInWithPopup(provider);
+logoutBtn.onclick = () => auth.signOut();
+
+/* referencia a la colección personal */
+let collRef = null;
+
+/* -------------- Estado de autenticación -------------- */
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    // usuario fuera
+    logoutBtn.classList.add('hidden');
+    loginBtn.classList.remove('hidden');
+    form.classList.add('hidden');
+    taskList.length = 0;
+    renderTasks();
+    return;
+  }
+
+  // usuario dentro
+  loginBtn.classList.add('hidden');
+  logoutBtn.classList.remove('hidden');
+  form.classList.remove('hidden');
+
+  collRef = db.collection('users').doc(user.uid).collection('tasks');
+
+  /* sincronización tiempo real */
+  collRef.onSnapshot(snap => {
+    taskList.length = 0;
+    snap.forEach(doc => taskList.push({ id: doc.id, ...doc.data() }));
+    renderTasks();
+  });
+});
+
+
