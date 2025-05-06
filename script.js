@@ -91,7 +91,7 @@ function renderTasks() {
   table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
   table.innerHTML = `
     <thead class="bg-gray-200 text-left">
-      <tr>
+      <tr style="padding: 2px">
         <th class="p-2">Título</th>
         <th class="p-2">Prioridad</th>
         <th class="p-2">Fecha</th>
