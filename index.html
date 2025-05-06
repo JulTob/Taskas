@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Taskas</title>
-
-  <!-- Tailwind -->
+  <!-- 1) Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
-  <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyA-EY3…",
-        authDomain: "taska-65c33.firebaseapp.com",
-        projectId: "taska-65c33",
-        storageBucket: "taska-65c33.appspot.com",
-        messagingSenderId: "287205600078",
-        appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
-        measurementId: "G-RM9DCQ136H"
-        };
-      firebase.initializeApp(firebaseConfig);
-    </script>
+  <!-- 2) Firebase compat libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
 
-  <!-- Lógica de Taskas -->
+  <!-- 3) Tu configuración idéntica a la de la consola -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-EY3–…",
+      authDomain: "taska-65c33.firebaseapp.com",
+      projectId: "taska-65c33",
+      storageBucket: "taska-65c33.appspot.com",
+      messagingSenderId: "287205600078",
+      appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
+      measurementId: "G-RM9DCQ136H"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <!-- 4) Tu lógica -->
   <script defer src="script.js"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen p-6">
 
   <!-- Barra de autenticación -->
