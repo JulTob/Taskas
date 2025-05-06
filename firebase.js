@@ -24,10 +24,47 @@ export const auth     = firebase.auth();
 export const db       = firebase.firestore();
 export const provider = new firebase.auth.GoogleAuthProvider();
 
-/**
- * Inicializa el listener de auth. Recibe dos callbacks:
- * onLogin(user), onLogout()
- */
+// ---------- Firebase ----------
+// (colócalo antes que el resto para que collRef exista)
+const auth     = firebase.auth();
+const db       = firebase.firestore();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+let collRef = null;               // /users/{uid}/tasks
+
+const loginBtn  = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+loginBtn.onclick  = () => auth.signInWithPopup(provider);
+logoutBtn.onclick = () => auth.signOut();
+
+/* === estado de autenticación === */
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    // logout → limpia UI
+    logoutBtn.classList.add('hidden');
+    loginBtn.classList.remove('hidden');
+    form.classList.add('hidden');
+    taskList.length = 0;
+    renderTasks();
+    return;
+  }
+
+  // login OK
+  loginBtn.classList.add('hidden');
+  logoutBtn.classList.remove('hidden');
+  form.classList.remove('hidden');
+
+  collRef = db.collection('users').doc(user.uid).collection('tasks');
+
+  collRef.onSnapshot(snap => {
+    taskList.length = 0;
+    snap.forEach(doc => taskList.push({ id: doc.id, ...doc.data() }));
+    renderTasks();
+  });
+});
+
+
 export function initAuth(onLogin, onLogout) {
   auth.onAuthStateChanged(user => {
     if (user) {
