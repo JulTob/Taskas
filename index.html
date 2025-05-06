@@ -13,56 +13,61 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
   <script>
-      /* ⚙️ Copia tu propio snippet de configuración aquí */
-      const firebaseConfig = { /* … */ };
-      firebase.initializeApp(firebaseConfig);
-      </script>
-    <!-- Tailwind y tu script  -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="script.js"></script>
-  <!--  Tu lógica -->
+    /* 🔑 Pega aquí tu propio bloque de configuración */
+    const firebaseConfig = { /* ... */ };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <!-- Lógica de Taskas -->
   <script defer src="script.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
-    <!-- Barra de autenticación -->
+
+  <!-- Barra de autenticación -->
   <div id="auth-bar" class="mb-4">
-    <button id="loginBtn"
-            class="bg-red-500 text-white px-3 py-1 rounded">
+    <button id="loginBtn"  class="bg-red-500 text-white px-3 py-1 rounded">
       Acceder con Google
     </button>
-    <button id="logoutBtn"
-            class="bg-gray-500 text-white px-3 py-1 rounded hidden">
+    <button id="logoutBtn" class="bg-gray-500 text-white px-3 py-1 rounded hidden">
       Salir
     </button>
   </div>
-  
+
   <div class="max-w-3xl mx-auto">
     <h1 class="text-3xl font-bold mb-4">🍻 Taskas</h1>
 
-    <form id="task-form" class="mb-4 space-y-2">
-      <input id="title"    name="title"    class="w-full p-2 border rounded"
+    <!-- Formulario (se oculta hasta login) -->
+    <form id="task-form" class="mb-4 space-y-2 hidden">
+      <input id="title" name="title"
+             class="w-full p-2 border rounded"
              placeholder="Taskeo" required />
+
       <input id="duration" name="duration" type="number"
              class="w-full p-2 border rounded"
              placeholder="Duración (min)" value="30" min="5" step="5" />
+
       <input id="deadline" name="deadline" type="date"
              class="w-full p-2 border rounded" />
-      <input id="time"     name="time"     type="time"
+
+      <input id="time" name="time" type="time"
              class="w-full p-2 border rounded" />
+
       <select id="priority" name="priority" class="w-full p-2 border rounded">
         <option value="Alta">Alta</option>
         <option value="Media" selected>Media</option>
         <option value="Baja">Baja</option>
       </select>
+
       <textarea id="notes" name="notes" rows="2"
                 class="w-full p-2 border rounded"
                 placeholder="✍︎"></textarea>
+
       <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
         ➕ Taska
       </button>
     </form>
 
-    <!-- Aquí renderizamos la tabla y el panel de subtareas -->
+    <!-- Tabla y panel dinámicos -->
     <div id="task-container"></div>
   </div>
 </body>
