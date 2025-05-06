@@ -1,4 +1,4 @@
-// firebase.js
+// back.js
 // —————————————————————————————————
 // 1) Carga y configura Firebase (ya lo tienes en index.html)
 // 2) Exporta los objetos que usarás en la app
