@@ -11,19 +11,18 @@
 
   <!-- 3) Tu configuración idéntica a la de la consola -->
   <script>
-
-const firebaseConfig = {
-      apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
-      authDomain: "taska-65c33.firebaseapp.com",
-      projectId: "taska-65c33",
-      storageBucket: "taska-65c33.appspot.com",
-      messagingSenderId: "287205600078",
-      appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
-      measurementId: "G-RM9DCQ136H"
-      };
-
-    firebase.initializeApp(firebaseConfig);
-  </script>
+    const firebaseConfig = {
+          apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
+          authDomain: "taska-65c33.firebaseapp.com",
+          projectId: "taska-65c33",
+          storageBucket: "taska-65c33.appspot.com",
+          messagingSenderId: "287205600078",
+          appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
+          measurementId: "G-RM9DCQ136H"
+          };
+    
+        firebase.initializeApp(firebaseConfig);
+    </script>
 
   <!-- 4) Tu lógica -->
   <script defer src="script.js"></script>
@@ -31,20 +30,18 @@ const firebaseConfig = {
 </head>
 
 <body class="bg-gray-100 min-h-screen p-6">
-
-  <!-- Barra de autenticación -->
-  <div id="auth-bar" class="mb-4">
-    <button id="loginBtn"  class="bg-red-500 text-white px-3 py-1 rounded">
-      Acceder con Google
-    </button>
-    <button id="logoutBtn" class="bg-gray-500 text-white px-3 py-1 rounded hidden">
-      Salir
-    </button>
-  </div>
-
   <div class="max-w-3xl mx-auto">
-    <h1 class="text-3xl font-bold mb-4">🍻 Taskas</h1>
+  <div class="flex items-center justify-between mb-4">
 
+    <h1 class="text-3xl font-bold">🍻 Taskas</h1>
+    <div id="auth-bar" class="flex gap-2">
+          <button id="loginBtn"  class="bg-red-500 text-white px-3 py-1 rounded">
+            🏃‍➡️🏠 Log In 
+            </button>
+          <button id="logoutBtn" class="bg-gray-500 text-white px-3 py-1 rounded hidden">
+            🏠🚶‍➡️ Log Out
+            </button>
+          </div>
     <!-- Formulario (se oculta hasta login) -->
     <form id="task-form" class="mb-4 space-y-2 hidden">
       <input id="title" name="title"
