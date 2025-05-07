@@ -53,6 +53,7 @@ auth.onAuthStateChanged(user => {
     snap.forEach(doc => taskList.push({ id: doc.id, ...doc.data() }));
     renderTasks();
     refreshTaskOptions()
+    renderDepsChips();
     });
   });
 
@@ -72,6 +73,7 @@ window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
   refreshTaskOptions();
+  renderDepsChips()
   });
 
 // ---------- 1. Crear tarea ----------
@@ -260,6 +262,7 @@ function saveTasks() {
 
 // --- Parentaje y Dependencia ---
 function refreshTaskOptions() {
+  renderDepsChips();
   // llena los select con todas las tareas raíz (o todas, según prefieras)
   const parentSel = document.getElementById('parentSelect');
   if (!parentSel) return;
@@ -268,14 +271,14 @@ function refreshTaskOptions() {
   parentSel.querySelectorAll('option:not([value=""])').forEach(o => o.remove());
 
   flattenTasks(taskList).forEach(({ task, level }) => {
-    const label = '‒'.repeat(level) + ' ' + task.title;
-    // opción padre
-    const optP = new Option(label, task.id);
-    parentSel.add(optP);
-    // opción dependencias
-    const optD = new Option(label, task.id);
-    });
-  }
+      const label = '‒'.repeat(level) + ' ' + task.title;
+      // opción padre
+      const optP = new Option(label, task.id);
+      parentSel.add(optP);
+      // opción dependencias
+      const optD = new Option(label, task.id);
+      });
+    }
 
 function findTaskById(id, cursor = taskList) {
       for (const t of cursor) {
