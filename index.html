@@ -93,18 +93,20 @@
       <label class="block">
           <input id="title" name="title"
                  class="mt-1 w-full p-2 border rounded font-pica"
-                 placeholder="Taskeo" required />
+                 placeholder="Task" required />
           </label>
-      <input id="duration" name="duration" type="number"
-             class="w-full p-2 border rounded"
-             placeholder="Duración (min)" value="30" min="5" step="5" />
-
-      <input id="deadline" name="deadline" type="date"
-             class="w-full p-2 border rounded" />
-
-      <input id="time" name="time" type="time"
-             class="w-full p-2 border rounded" />
-
+      <!-- Fila de duración · fecha · hora -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input id="duration" name="duration" type="number"
+            class="flex-1 p-2 border border-paper-200 rounded bg-paper-100 text-ink-900"
+            placeholder="Duración (min)" value="30" min="5" step="5" />
+  
+        <input id="deadline" name="deadline" type="date"
+             class="flex-1 p-2 border border-paper-200 rounded bg-paper-100 text-ink-900" />
+        
+        <input id="time" name="time" type="time"
+             class="flex-1 p-2 border border-paper-200 rounded bg-paper-100 text-ink-900" />
+        </div>
       <select id="priority" name="priority" class="w-full p-2 border rounded">
         <option value="Alta">Alta</option>
         <option value="Media" selected>Media</option>
