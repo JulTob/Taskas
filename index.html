@@ -2,8 +2,35 @@
 <html lang="es">
 <head>
   <!-- 1) Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
+      <!-- Google Font -->
+      <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+    
+      <!-- Tailwind (CDN) -->
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script>
+        /* Pequeña ampliación de Tailwind via CDN */
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: { fell: '"IM Fell English SC", serif' },
+              colors: {
+                brand: {
+                  50 : '#f6f6f6',
+                  100: '#e7e7e7',
+                  200: '#d1d1d1',
+                  300: '#b0b0b0',
+                  400: '#8c8c8c',
+                  500: '#6d6d6d',
+                  600: '#575757',
+                  700: '#404040',
+                  800: '#2a2a2a',
+                  900: '#161616',
+                  }
+                }
+              }
+            }
+          }
+        </script>
   <!-- 2) Firebase compat libraries -->
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
