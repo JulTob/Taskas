@@ -25,7 +25,7 @@ auth.onAuthStateChanged(user => {
     taskList.length = 0;
     renderTasks();
     return;
-  }
+    }
 
   // login OK
   loginBtn.classList.add('hidden');
@@ -38,8 +38,8 @@ auth.onAuthStateChanged(user => {
     taskList.length = 0;
     snap.forEach(doc => taskList.push({ id: doc.id, ...doc.data() }));
     renderTasks();
+    });
   });
-});
 
 // ---------- Memoria y referencias ----------
 const taskList      = [];
@@ -61,13 +61,13 @@ function setDefaultFormValues() {
   dateInput.value    = t.toISOString().split('T')[0];
   timeInput.value    = '17:00';
   durationInput.value = '30';
-}
+  }
 
 // ---------- Al cargar ----------
 window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
-});
+  });
 
 // ---------- 1. Crear tarea ----------
 form.addEventListener('submit', e => {
@@ -241,4 +241,25 @@ function toggleSubtaskPanel(path) {
 function saveTasks() {
   if (!collRef) return;
   taskList.forEach(t => collRef.doc(t.id.toString()).set(t));
-}
+  }
+
+// --- Parentaje y Dependencia ---
+function refreshTaskOptions() {
+  // llena los select con todas las tareas raíz (o todas, según prefieras)
+  const parentSel = document.getElementById('parentSelect');
+  const depsSel   = document.getElementById('depsSelect');
+
+  // limpia
+  parentSel.querySelectorAll('option:not([value=""])').forEach(o => o.remove());
+  depsSel.innerHTML = '';
+
+  flattenTasks(taskList).forEach(({ task, level }) => {
+    const label = '‒'.repeat(level) + ' ' + task.title;
+    // opción padre
+    const optP = new Option(label, task.id);
+    parentSel.add(optP);
+    // opción dependencias
+    const optD = new Option(label, task.id);
+    depsSel.add(optD);
+    });
+  }
