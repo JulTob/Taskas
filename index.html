@@ -124,15 +124,15 @@
         </label>      
       <!--  Dependencias -->
       <label class="block">
-        <span class="font-gp">Depende de</span>
-        <select id="depsSelect" multiple           
-              class="mt-1 w-full p-2 border border-brand-200 rounded
-                     bg-brand-50 text-brand-900 h-32">
-              </select>
-        <small class="text-xs text-brand-700">
-          ⌘/Ctrl-clic para seleccionar varias
-          </small>
-        </label>
+          <span class="font-gp">Depende de</span>
+          <div id="depsChips" class="flex flex-wrap gap-2 mt-1">
+            <!-- chips insertados aquí -->
+            </div>
+          <small class="text-xs text-800">Clic para seleccionar dependencias</small>
+          </label>
+
+
+      <!-- Notes -->
       <textarea id="notes" name="notes" rows="2"
                 class="w-full p-2 border rounded font-pica"
                 placeholder="✍︎"></textarea>
