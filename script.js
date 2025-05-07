@@ -1,7 +1,21 @@
 // Taskas – gestor con Google login y Firestore
 // --------------------------------------------
+// --------- 0 - Memoria y referencias ----------
+const taskList      = [];
 
-// ---------- Firebase ----------
+const form          = document.getElementById('task-form');
+const taskContainer = document.getElementById('task-container');
+
+const titleInput    = document.getElementById('title');
+const dateInput     = document.getElementById('deadline');
+const timeInput     = document.getElementById('time');
+const durationInput = document.getElementById('duration');
+const notesInput    = document.getElementById('notes');
+const parentSelect  = document.getElementById('parentSelect');
+const depsSelect    = document.getElementById('depsSelect');
+
+
+// --------- 1 - Firebase ----------
 // (colócalo antes que el resto para que collRef exista)
 const auth     = firebase.auth();
 const db       = firebase.firestore();
@@ -43,17 +57,6 @@ auth.onAuthStateChanged(user => {
     });
   });
 
-// ---------- Memoria y referencias ----------
-const taskList      = [];
-
-const form          = document.getElementById('task-form');
-const taskContainer = document.getElementById('task-container');
-
-const titleInput    = document.getElementById('title');
-const dateInput     = document.getElementById('deadline');
-const timeInput     = document.getElementById('time');
-const durationInput = document.getElementById('duration');
-const notesInput    = document.getElementById('notes');
 
 // ---------- Valores por defecto ----------
 function setDefaultFormValues() {
