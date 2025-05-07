@@ -12,7 +12,6 @@ const timeInput     = document.getElementById('time');
 const durationInput = document.getElementById('duration');
 const notesInput    = document.getElementById('notes');
 const parentSelect  = document.getElementById('parentSelect');
-const depsSelect    = document.getElementById('depsSelect');
 
 
 // --------- 1 - Firebase ----------
@@ -91,7 +90,7 @@ form.addEventListener('submit', e => {
     timeSpent : 0,
     subtasks  : [],
     parentId  : parentSelect.value ? Number(parentSelect.value) : null,
-    dependsOn : Array.from(depsSelect.selectedOptions).map(o => Number(o.value)),
+    dependsOn : [...selectedDeps],
     };
 
   if (task.parentId) {
@@ -263,13 +262,10 @@ function saveTasks() {
 function refreshTaskOptions() {
   // llena los select con todas las tareas raíz (o todas, según prefieras)
   const parentSel = document.getElementById('parentSelect');
-  const depsSel   = document.getElementById('depsSelect');
-  // ← si aún no existen, sal sin hacer nada
-  if (!parentSel || !depsSel) return;
+  if (!parentSel) return;
 
   // limpia
   parentSel.querySelectorAll('option:not([value=""])').forEach(o => o.remove());
-  depsSel.innerHTML = '';
 
   flattenTasks(taskList).forEach(({ task, level }) => {
     const label = '‒'.repeat(level) + ' ' + task.title;
@@ -278,7 +274,6 @@ function refreshTaskOptions() {
     parentSel.add(optP);
     // opción dependencias
     const optD = new Option(label, task.id);
-    depsSel.add(optD);
     });
   }
 
