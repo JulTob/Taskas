@@ -15,6 +15,7 @@ const logoutBtn = document.getElementById('logoutBtn');
 loginBtn.onclick  = () => auth.signInWithPopup(provider);
 logoutBtn.onclick = () => auth.signOut();
 
+
 /* === estado de autenticación === */
 auth.onAuthStateChanged(user => {
   if (!user) {
@@ -38,6 +39,7 @@ auth.onAuthStateChanged(user => {
     taskList.length = 0;
     snap.forEach(doc => taskList.push({ id: doc.id, ...doc.data() }));
     renderTasks();
+    refreshTaskOptions()
     });
   });
 
@@ -67,6 +69,7 @@ function setDefaultFormValues() {
 window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
+  refreshTaskOptions()
   });
 
 // ---------- 1. Crear tarea ----------
@@ -93,6 +96,7 @@ form.addEventListener('submit', e => {
   form.reset();
   setDefaultFormValues();
   renderTasks();
+  refreshTaskOptions()
 });
 
 // ---------- 2. Helpers ----------
@@ -152,8 +156,10 @@ function renderTasks() {
         task.title = newTitle;
         saveTasks();
         renderTasks();
-      }
-    });
+        refreshTaskOptions()
+        }
+      
+      });
 
     row.addEventListener('click', ev => {
       if (ev.target !== titleCell) toggleSubtaskPanel(path);
