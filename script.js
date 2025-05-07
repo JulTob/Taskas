@@ -120,7 +120,7 @@ function renderTasks() {
   table.innerHTML = `
     <thead class="bg-gray-200 text-left">
       <tr><th class="p-2">Título</th><th class="p-2">Prioridad</th>
-          <th class="p-2">Fecha</th><th class="p-2">Hora</th>
+          <th class="p-2">Fecha Límite</th><th class="p-2">Hora</th>
           <th class="p-2">Duración</th><th class="p-2">Subtareas</th>
           <th class="p-2">Notas</th></tr>
     </thead><tbody class="divide-y"></tbody>`;
