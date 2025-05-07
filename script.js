@@ -133,6 +133,7 @@ function renderTasks() {
       <tr><th class="p-2">Título</th><th class="p-2">Prioridad</th>
           <th class="p-2">Fecha Límite</th><th class="p-2">Hora</th>
           <th class="p-2">Duración</th><th class="p-2">Subtareas</th>
+          <th class="p-2">Depende</th>
           <th class="p-2">Notas</th></tr>
     </thead><tbody class="divide-y"></tbody>`;
   const tbody = table.querySelector('tbody');
@@ -151,6 +152,7 @@ function renderTasks() {
       <td class="p-2">${task.time || '—'}</td>
       <td class="p-2">${task.duration} min</td>
       <td class="p-2">${task.subtasks.length}</td>
+      <td class="p-2">${task.dependsOn?.length ? task.dependsOn.length : '—'}</td>
       <td class="p-2 text-center">${noteIcon}</td>`;
 
     const titleCell = row.firstElementChild;
@@ -274,3 +276,12 @@ function refreshTaskOptions() {
     depsSel.add(optD);
     });
   }
+
+function findTaskById(id, cursor = taskList) {
+      for (const t of cursor) {
+        if (t.id === id) return t;
+        const found = findTaskById(id, t.subtasks);
+        if (found) return found;
+        }
+      return null;
+    }
