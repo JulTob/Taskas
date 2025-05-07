@@ -74,8 +74,13 @@
             </button>
           </div>
     </div>
+    
     <!-- Formulario (se oculta hasta login) -->
-    <form id="task-form" class="mb-4 space-y-2 hidden">
+    <form 
+      id="task-form" 
+      class="space-y-3 mb-6 hidden bg-white/60 backdrop-blur-md p-4 rounded border border-brand-200"
+      >
+      
       <input id="title" name="title"
              class="w-full p-2 border rounded"
              placeholder="Taskeo" required />
@@ -100,13 +105,14 @@
                 class="w-full p-2 border rounded"
                 placeholder="✍︎"></textarea>
 
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-        ➕ Taska
-      </button>
-    </form>
+      <button class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded w-full sm:w-auto">
+        ➕ TaskAs
+        </button>
+      </form>
 
     <!-- Tabla y panel dinámicos -->
     <div id="task-container"></div>
   </div>
+  <script defer src="script.js"></script>
 </body>
 </html>
