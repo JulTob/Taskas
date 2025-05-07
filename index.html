@@ -113,27 +113,26 @@
         <option value="Media" selected>Media</option>
         <option value="Baja">Baja</option>
         </select>
-      <!-- NUEVO · Padre -->
+      <!-- Padre -->
       <label class="block">
         <span class="font-gp">Parentask</span>
-        <select id="parentSelect" 
-          class="mt-1 w-full p-2 border rounded
-                 bg-100 text-900">
-          <option value="">— root —</option>          <!-- root -->
-        </select>
-      </label>
-      
-      <!-- NUEVO · Dependencias -->
+        <select id="parentSelect"
+                class="mt-1 w-full p-2 border border-brand-200 rounded
+                       bg-brand-50 text-brand-900">
+          <option value="">— root —</option>
+          </select>
+        </label>      
+      <!--  Dependencias -->
       <label class="block">
         <span class="font-gp">Depende de</span>
         <select id="depsSelect" multiple           
-                class="mt-1 w-full p-2 border rounded
-                       bg-100 text-900 h-32">
-        </select>
-        <small class="text-xs text-800">
+              class="mt-1 w-full p-2 border border-brand-200 rounded
+                     bg-brand-50 text-brand-900 h-32">
+              </select>
+        <small class="text-xs text-brand-700">
           ⌘/Ctrl-clic para seleccionar varias
-        </small>
-      </label>
+          </small>
+        </label>
       <textarea id="notes" name="notes" rows="2"
                 class="w-full p-2 border rounded font-pica"
                 placeholder="✍︎"></textarea>
