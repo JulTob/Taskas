@@ -69,7 +69,7 @@ function setDefaultFormValues() {
 window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
-  refreshTaskOptions()
+  refreshTaskOptions();
   });
 
 // ---------- 1. Crear tarea ----------
@@ -87,16 +87,21 @@ form.addEventListener('submit', e => {
     completed : false,
     timeSpent : 0,
     subtasks  : [],
-    parentId?: number | null ,         // «hereda de»  ⇢ agrupación en subtareas
-    dependsOn?: number[]              // ids de las Taskas de las que depend
+    parentId  : parentSelect.value ? Number(parentSelect.value) : null,
+    dependsOn : Array.from(depsSelect.selectedOptions).map(o => Number(o.value)),
     };
 
-  taskList.push(task);
+  if (task.parentId) {
+    const parent = findTaskById(task.parentId);      // helper
+    parent.subtasks.push(task);
+  } else {
+    taskList.push(task);                             // raíz
+    }
   saveTasks();
   form.reset();
   setDefaultFormValues();
+  refreshTaskOptions();
   renderTasks();
-  refreshTaskOptions()
 });
 
 // ---------- 2. Helpers ----------
@@ -156,7 +161,7 @@ function renderTasks() {
         task.title = newTitle;
         saveTasks();
         renderTasks();
-        refreshTaskOptions()
+        refreshTaskOptions();
         }
       
       });
