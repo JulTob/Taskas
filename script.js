@@ -83,8 +83,10 @@ form.addEventListener('submit', e => {
     notes     : notesInput.value.trim(),
     completed : false,
     timeSpent : 0,
-    subtasks  : []
-  };
+    subtasks  : [],
+    parentId?: number | null ,         // «hereda de»  ⇢ agrupación en subtareas
+    dependsOn?: number[]              // ids de las Taskas de las que depend
+    };
 
   taskList.push(task);
   saveTasks();
@@ -227,7 +229,7 @@ function toggleSubtaskPanel(path) {
       notes    : d.get('notes').trim(),
       completed: false,
       subtasks : [],
-      timeSpent: 0
+      timeSpent: 0,
     });
     saveTasks();
   };
