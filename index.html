@@ -124,12 +124,18 @@
         </label>      
       <!--  Dependencias -->
       <label class="block">
-          <span class="font-gp">Depende de</span>
-          <div id="depsChips" class="flex flex-wrap gap-2 mt-1">
-            <!-- chips insertados aquí -->
-            </div>
-          <small class="text-xs text-800">Clic para seleccionar dependencias</small>
-          </label>
+        <span class="font-gp">Depende de</span>
+      
+        <!-- contenedor de chips -->
+        <div id="depsChips" class="flex flex-wrap gap-2 mt-1"></div>
+      
+        <!-- (opcional) select oculto si no lo quieres más -->
+        <select id="depsSelect" multiple hidden></select>
+      
+        <small class="text-xs text-brand-700">
+          Clic para seleccionar varias
+          </small>
+        </label>
 
 
       <!-- Notes -->
