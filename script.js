@@ -290,3 +290,35 @@ function findTaskById(id, cursor = taskList) {
         }
       return null;
     }
+
+let selectedDeps = [];
+
+function renderDepsChips() {
+      const container = document.getElementById('depsChips');
+      if (!container) return;
+    
+      container.innerHTML = '';  // Limpia
+    
+      flattenTasks(taskList).forEach(({ task }) => {
+            const chip = document.createElement('button');
+            chip.textContent = task.title;
+            chip.className = `
+              px-3 py-1 rounded-full border text-sm transition
+              ${selectedDeps.includes(task.id)
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-brand-800 border-brand-400 hover:bg-brand-100'}
+              `;
+        
+            chip.onclick = () => {
+              if (selectedDeps.includes(task.id)) {
+                selectedDeps = selectedDeps.filter(id => id !== task.id);
+                } 
+              else {
+                selectedDeps.push(task.id);
+                }
+              renderDepsChips();
+              };
+        
+            container.appendChild(chip);
+            });
+      }
