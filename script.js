@@ -261,6 +261,8 @@ function refreshTaskOptions() {
   // llena los select con todas las tareas raíz (o todas, según prefieras)
   const parentSel = document.getElementById('parentSelect');
   const depsSel   = document.getElementById('depsSelect');
+  // ← si aún no existen, sal sin hacer nada
+  if (!parentSel || !depsSel) return;
 
   // limpia
   parentSel.querySelectorAll('option:not([value=""])').forEach(o => o.remove());
