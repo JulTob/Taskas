@@ -67,88 +67,36 @@
     <!-- Cabecera -->
     <div class="flex items-end justify-between mb-6 border-b border-brand-200 pb-2">
       
-      <h1 class="text-5xl font-gp">🍻 TaskAs</h1>
+      <h1 class="text-5xl font-gp"
+          > 
+          🍻 TaskAs
+          </h1>
       <!-- Botones Login / Logout -->
-      <div id="auth-bar" class="flex gap-3 text-sm font-fell">
-            <button id="loginBtn"  
-                class="px-4 py-1 rounded border border-brand-400
-                       bg-brand-900 hover:bg-brand-700 text-white
-                       transition hidden">
+      <div  id="auth-bar" 
+            class="flex gap-3 text-sm font-fell"
+            >
+           <button id="loginBtn"  
+                   class="px-4 py-1 rounded border border-brand-400
+                           bg-brand-900 hover:bg-brand-700 text-white
+                           transition hidden"
+                    >
                     🏠 Log In 
-                </button>
-            <button id="logoutBtn" 
-                class="px-4 py-1 rounded border border-brand-400
-                      bg-brand-900 hover:bg-brand-700 text-white
-                      transition hidden">
-                      🚪 Log Out
-                </button>
-            </div>
-      </div>
-      
-    <!-- Formulario (se oculta hasta login) -->
-    <form 
-      id="task-form" 
-      class="space-y-3 mb-6 hidden bg-white/60 backdrop-blur-md p-4 rounded border border-brand-200"
-      >
-      <label class="block">
-          <input id="title" name="title"
-                 class="mt-1 w-full p-2 border rounded font-pica"
-                 placeholder="Task" required />
-          </label>
-      <!-- Fila de duración · fecha · hora -->
-      <div class="flex flex-col sm:flex-row gap-3">
-        <input id="duration" name="duration" type="number"
-            class="flex-1 p-2 border border-paper-200 rounded bg-paper-100 text-ink-900"
-            placeholder="Duración (min)" value="30" min="5" step="5" />
-  
-        <input id="deadline" name="deadline" type="date"
-             class="flex-1 p-2 border border-paper-200 rounded bg-paper-100 text-ink-900" />
-        
-        <input id="time" name="time" type="time"
-             class="flex-1 p-2 border border-paper-200 rounded bg-paper-100 text-ink-900" />
-        </div>
-      
-      <select id="priority" name="priority" class="w-full p-2 border rounded">
-        <option value="Alta">Alta</option>
-        <option value="Media" selected>Media</option>
-        <option value="Baja">Baja</option>
-        </select>
-      <!-- Padre -->
-      <label class="block">
-        <span class="font-gp">Parentask</span>
-        <select id="parentSelect"
-                class="mt-1 w-full p-2 border border-brand-200 rounded
-                       bg-brand-50 text-brand-900">
-          <option value="">— root —</option>
-          </select>
-        </label>      
-      <!--  Dependencias -->
-      <label class="block">
-        <span class="font-gp">Depende de</span>
-      
-        <!-- contenedor de chips -->
-        <div id="depsChips" class="flex flex-wrap gap-2 mt-1"></div>
-      
-        <!-- (opcional) select oculto si no lo quieres más -->
-        <select id="depsSelect" multiple hidden></select>
-      
-        <small class="text-xs text-brand-700">
-          Clic para seleccionar varias
-          </small>
-        </label>
-
-
-      <!-- Notes -->
-      <textarea id="notes" name="notes" rows="2"
-                class="w-full p-2 border rounded font-pica"
-                placeholder="✍︎"></textarea>
-
-      <button id="new-task-btn"
-              class="mb-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded">
-              ➕ Task As
-              </button>
-
-      </form>
+                    </button>
+           <button id="logoutBtn" 
+                   class="px-4 py-1 rounded border border-brand-400
+                          bg-brand-900 hover:bg-brand-700 text-white
+                          transition hidden"
+                  >
+                  🚪 Log Out
+                  </button>
+                </div>
+          
+          <!-- Botón para crear nueva tarea -->
+          <button id="new-task-btn"
+                  class="mb-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded font-fell tracking-wide">
+                  🜊 Task As
+                  </button>
+          </div>
 
     <!-- Tabla y panel dinámicos -->
     <div id="task-container"></div>
