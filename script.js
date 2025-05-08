@@ -74,10 +74,12 @@ window.addEventListener('DOMContentLoaded', () => {
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
   renderDepsChips()
   refreshTaskOptions();
-  document.getElementById('new-task-btn').onclick = () => {
-      showTaskModal({ mode: 'create' });
-      };
-  });
+  // Asigna correctamente el botón para crear tareas
+  const newBtn = document.getElementById('new-task-btn');
+  if (newBtn) {
+    newBtn.onclick = () => showTaskModal({ mode: 'create' });
+  }
+});
 
 // ------ Ventanita Modal -------
 function showTaskModal({ mode = 'edit', task = null, path = null }) {
@@ -100,8 +102,8 @@ function showTaskModal({ mode = 'edit', task = null, path = null }) {
       subtasks: [],
       parentId: null,
       dependsOn: []
-    };
-  }
+      };
+    }
 
   const modal = document.createElement('div');
   modal.id = 'task-modal';
@@ -295,24 +297,6 @@ function flattenTasks(tasks, lvl = 0, path = []) {
 function getTaskByPath(path) {
   return path.reduce((cur, idx) => cur.subtasks[idx], { subtasks: taskList });
 }
-
-document.getElementById('new-task-btn').onclick = () => {
-  const empty = {
-    id: Date.now(),
-    title: '',
-    deadline: '',
-    time: '',
-    duration: 30,
-    priority: 'Media',
-    notes: '',
-    completed: false,
-    timeSpent: 0,
-    subtasks: [],
-    parentId: null,
-    dependsOn: []
-  };
-  showTaskModal({ mode: 'create', task: empty });
-};
 
 // ---------- 3. Renderizar tabla ----------
 function renderTasks() {
