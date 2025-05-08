@@ -3,16 +3,17 @@
 // --------- 0 - Memoria y referencias ----------
 const taskList      = [];
 
-const form          = document.getElementById('task-form');
 const taskContainer = document.getElementById('task-container');
 
+/*
+const form          = document.getElementById('task-form');
 const titleInput    = document.getElementById('title');
 const dateInput     = document.getElementById('deadline');
 const timeInput     = document.getElementById('time');
 const durationInput = document.getElementById('duration');
 const notesInput    = document.getElementById('notes');
 const parentSelect  = document.getElementById('parentSelect');
-
+*/
 
 // --------- 1 - Firebase ----------
 // (colócalo antes que el resto para que collRef exista)
@@ -76,9 +77,7 @@ window.addEventListener('DOMContentLoaded', () => {
   refreshTaskOptions();
   // Asigna correctamente el botón para crear tareas
   const newBtn = document.getElementById('new-task-btn');
-  if (newBtn) {
-    newBtn.onclick = () => showTaskModal({ mode: 'create' });
-  }
+  newBtn.onclick = () => showTaskModal({ mode: 'create' });
 });
 
 // ------ Ventanita Modal -------
