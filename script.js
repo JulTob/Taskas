@@ -148,11 +148,11 @@ function renderTasks() {
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
     const noteIcon = task.notes ? '✏️' : '—';
+    const marker = getMarker(task);
+
 
     row.innerHTML = `
-      <td class="p-2 text-center">
-         🔴
-         </td>
+      <td class="p-2 text-center">${marker}</td>
       <td class="p-2 font-semibold" style="padding-left:${level*1.6}rem">
         ${task.title}
         </td>
@@ -178,7 +178,7 @@ function renderTasks() {
       refreshTaskOptions();
       };
 
-    const titleCell = row.firstElementChild;
+    const titleCell = row.children[1];
     titleCell.contentEditable = true;
     titleCell.addEventListener('blur', () => {
       const newTitle = titleCell.textContent.trim();
@@ -313,3 +313,26 @@ function removeTaskByPath(path, cursor = taskList) {
       removeTaskByPath(path.slice(1), cursor[idx].subtasks);
       }
     }
+
+function getMarker(task) {
+  const today      = new Date().toISOString().slice(0, 10);      // “YYYY-MM-DD”
+  const in3Days    = new Date(Date.now() + 3*864e5).toISOString().slice(0,10);
+  const in7Days    = new Date(Date.now() + 7*864e5).toISOString().slice(0,10);
+  const in30Days    = new Date(Date.now() + 30*864e5).toISOString().slice(0,10);
+
+  if (task.deadline === today && task.priority === 'Alta') return '🔴';
+  if (task.deadline === today)                             return '🟠';
+  if (task.deadline && task.deadline <= in3Days
+      task.priority === 'Alta')                            return '🟠';
+  if (task.deadline && task.deadline <= in3Days)           return '🟡';
+  if (task.deadline && task.deadline <= in7Days
+      task.priority === 'Alta')                            return '🟡';
+  if (task.deadline && task.deadline <= in7Days)           return '🟢';
+  if (task.deadline && task.deadline <= in30Days
+      task.priority === 'Alta')                            return '🟢';
+  if (task.deadline && task.deadline <= in30Days)          return '🔵';
+  if (task.deadline && task.deadline >= today)             return '⚫️';
+  if (task.priority === 'Baja')                            return '🟣';
+
+  return '🔵';
+}
