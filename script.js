@@ -322,13 +322,13 @@ function getMarker(task) {
 
   if (task.deadline === today && task.priority === 'Alta') return '🔴';
   if (task.deadline === today)                             return '🟠';
-  if (task.deadline && task.deadline <= in3Days
+  if (task.deadline && task.deadline <= in3Days &&
       task.priority === 'Alta')                            return '🟠';
   if (task.deadline && task.deadline <= in3Days)           return '🟡';
-  if (task.deadline && task.deadline <= in7Days
+  if (task.deadline && task.deadline <= in7Days &&
       task.priority === 'Alta')                            return '🟡';
   if (task.deadline && task.deadline <= in7Days)           return '🟢';
-  if (task.deadline && task.deadline <= in30Days
+  if (task.deadline && task.deadline <= in30Days &&
       task.priority === 'Alta')                            return '🟢';
   if (task.deadline && task.deadline <= in30Days)          return '🔵';
   if (task.deadline && task.deadline >= today)             return '⚫️';
