@@ -203,7 +203,7 @@ function renderTasks() {
   taskContainer.appendChild(table);
 }
 
-// ---------- 4. Panel subtareas + nota ----------
+// ---------- 4. Panel nota ----------
 function toggleSubtaskPanel(path) {
   const task = getTaskByPath(path);
   document.getElementById('subpanel')?.remove();
@@ -218,29 +218,10 @@ function toggleSubtaskPanel(path) {
               class="w-full p-2 border rounded mb-2">${task.notes}</textarea>
     <button id="save-note" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">
       Guardar nota
-    </button>
-
-    <h2 class="font-semibold mb-2">Subtareas</h2>
-    <ul id="sub-list" class="mb-4 list-disc ml-6"></ul>
-
-    <form id="sub-form" class="space-y-2">
-      <input name="title" placeholder="Título subtarea"
-             class="w-full p-2 border rounded" required>
-      <input name="deadline" type="date" class="w-full p-2 border rounded">
-      <input name="time" type="time" class="w-full p-2 border rounded">
-      <input name="duration" type="number" value="30" min="5" step="5"
-             class="w-full p-2 border rounded" placeholder="Duración (min)">
-      <select name="priority" class="w-full p-2 border rounded">
-        <option value="Alta">Alta</option>
-        <option value="Media" selected>Media</option>
-        <option value="Baja">Baja</option>
-      </select>
-      <textarea name="notes" rows="2" class="w-full p-2 border rounded"
-                placeholder="Notas subtarea"></textarea>
-      <button class="bg-green-500 text-white px-4 py-2 rounded">
-        Agregar subtarea
       </button>
-    </form>`;
+    <h2 class="font-semibold mb-2">Subtareas</h2>
+    <ul id="sub-list" class="mb-2 list-disc ml-6"></ul>
+    `;
 
   const ul = panel.querySelector('#sub-list');
   task.subtasks.forEach(st => {
