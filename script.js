@@ -76,6 +76,29 @@ window.addEventListener('DOMContentLoaded', () => {
   refreshTaskOptions();
   });
 
+// ------ Ventanita Modal -------
+function showTaskModal({ mode = 'edit', task = null, path = null }) {
+  document.getElementById('task-modal')?.remove();
+
+  // contenedor flotante
+  const modal = document.createElement('div');
+  modal.id = 'task-modal';
+  modal.className = `
+    fixed inset-0 z-50 flex items-center justify-center
+    bg-black/40 backdrop-blur-sm
+  `;
+
+  const panel = document.createElement('div');
+  panel.className = 'bg-white w-full max-w-xl p-6 rounded shadow-lg border border-brand-200 relative';
+  panel.innerHTML = '...'; // aquí insertas el mismo formulario HTML que ya tenías
+
+  // añadir al modal
+  modal.appendChild(panel);
+  document.body.appendChild(modal);
+
+  // conectar comportamiento: guardar, cancelar, chips, etc.
+}
+
 // ---------- 1. Crear tarea ----------
 form.addEventListener('submit', e => {
   e.preventDefault();
@@ -194,7 +217,7 @@ function renderTasks() {
       });
 
     row.addEventListener('click', ev => {
-      if (ev.target !== titleCell) toggleSubtaskPanel(path);
+      if (ev.target !== titleCell) showTaskModal(path);
     });
 
     tbody.appendChild(row);
@@ -314,7 +337,7 @@ function toggleSubtaskPanel(path) {
       } else {
         task.dependsOn.push(id);
       }
-      toggleSubtaskPanel(path); // recargar el panel con nuevo estado
+      showTaskModal(path); // recargar el panel con nuevo estado
     });
   });
 
