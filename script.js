@@ -5,16 +5,6 @@ const taskList      = [];
 
 const taskContainer = document.getElementById('task-container');
 
-/*
-const form          = document.getElementById('task-form');
-const titleInput    = document.getElementById('title');
-const dateInput     = document.getElementById('deadline');
-const timeInput     = document.getElementById('time');
-const durationInput = document.getElementById('duration');
-const notesInput    = document.getElementById('notes');
-const parentSelect  = document.getElementById('parentSelect');
-*/
-
 // --------- 1 - Firebase ----------
 // (colócalo antes que el resto para que collRef exista)
 const auth     = firebase.auth();
@@ -36,7 +26,7 @@ auth.onAuthStateChanged(user => {
     // logout → limpia UI
     logoutBtn.classList.add('hidden');
     loginBtn.classList.remove('hidden');
-    form.classList.add('hidden');
+    //form.classList.add('hidden');
     taskList.length = 0;
     renderTasks();
     return;
@@ -45,7 +35,6 @@ auth.onAuthStateChanged(user => {
   // login OK
   loginBtn.classList.add('hidden');
   logoutBtn.classList.remove('hidden');
-  form.classList.remove('hidden');
 
   collRef = db.collection('users').doc(user.uid).collection('tasks');
 
@@ -58,17 +47,6 @@ auth.onAuthStateChanged(user => {
     });
   });
 
-
-// ---------- Valores por defecto ----------
-function setDefaultFormValues() {
-  titleInput.value   = '';
-  const t            = new Date();
-  t.setDate(t.getDate() + 1);
-  dateInput.value    = t.toISOString().split('T')[0];
-  timeInput.value    = '17:00';
-  durationInput.value = '30';
-  }
-
 // ---------- Al cargar ----------
 window.addEventListener('DOMContentLoaded', () => {
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
@@ -76,6 +54,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Asigna correctamente el botón para crear tareas
   const newBtn = document.getElementById('new-task-btn');
   newBtn.onclick = () => showTaskModal({ mode: 'create' });
+  document.getElementById('new-task-btn').onclick = () =>
+  showTaskModal({ mode: 'create' });
+
 });
 
 // ------ Ventanita Modal -------
@@ -252,9 +233,6 @@ function showTaskModal({ mode = 'edit', task = null, path = null }) {
 }
 
 // ---------- 1. Crear tarea ----------
-form.addEventListener('submit', e => {
-  e.preventDefault();
-
   const task = {
     id        : Date.now(),
     title     : titleInput.value.trim(),
@@ -278,7 +256,6 @@ form.addEventListener('submit', e => {
     }
   saveTasks();
   form.reset();
-  setDefaultFormValues();
   refreshTaskOptions();
   renderTasks();
 });
@@ -309,7 +286,7 @@ function renderTasks() {
   table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
   table.innerHTML = `
     <thead class="bg-gray-200 text-left">
-      <tr><th class="p-2 w-6"></th>
+      <tr><th class="p-2 w-6">⚪️</th>
           <th class="p-2">Título</th><th class="p-2">Prioridad</th>
           <th class="p-2">Fecha Límite</th><th class="p-2">Hora</th>
           <th class="p-2">Duración</th><th class="p-2">Subtareas</th>
@@ -659,3 +636,5 @@ function updateTaskField(task, field, value) {
   }
 }
 
+document.getElementById('new-task-btn').onclick = () =>
+  showTaskModal({ mode: 'create' });
