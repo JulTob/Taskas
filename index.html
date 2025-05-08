@@ -67,7 +67,7 @@
     <!-- Cabecera -->
     <div class="flex items-end justify-between mb-6 border-b border-brand-200 pb-2">
       
-      <h1 class="text-5xl font-dpica">🍻 TaskAs</h1>
+      <h1 class="text-5xl font-gp">🍻 TaskAs</h1>
       <!-- Botones Login / Logout -->
       <div id="auth-bar" class="flex gap-3 text-sm font-fell">
             <button id="loginBtn"  
@@ -143,13 +143,17 @@
                 class="w-full p-2 border rounded font-pica"
                 placeholder="✍︎"></textarea>
 
-      <button class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded w-full sm:w-auto font-fell tracking-wider">        + TaskAs
-        </button>
+      <button id="new-task-btn"
+              class="mb-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded">
+              ➕ Task As
+              </button>
+
       </form>
 
     <!-- Tabla y panel dinámicos -->
     <div id="task-container"></div>
   </div>
+ 
  <script defer src="script.js"></script>
 </body>
 </html>
