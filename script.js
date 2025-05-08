@@ -235,23 +235,6 @@ function toggleSubtaskPanel(path) {
     saveTasks();
   };
 
-  panel.querySelector('#sub-form').onsubmit = e => {
-    e.preventDefault();
-    const d = new FormData(e.target);
-    task.subtasks.push({
-      id: Date.now(),
-      title    : d.get('title').trim(),
-      deadline : d.get('deadline'),
-      time     : d.get('time'),
-      duration : d.get('duration') || 30,
-      priority : d.get('priority'),
-      notes    : d.get('notes').trim(),
-      completed: false,
-      subtasks : [],
-      timeSpent: 0,
-    });
-    saveTasks();
-  };
 
   taskContainer.appendChild(panel);
 }
