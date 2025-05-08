@@ -323,7 +323,7 @@ function renderTasks() {
     taskContainer.innerHTML = '<p class="text-gray-500">No hay tareas aún.</p>';
     return;
   }
-
+  console.log(flat)
   const table = document.createElement('table');
   table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
   table.innerHTML = `
@@ -339,8 +339,6 @@ function renderTasks() {
   const tbody = table.querySelector('tbody');
 
   flat.forEach(({ task, level, path }) => {
-      const row = document.createElement('tr');
-
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
     const noteIcon = task.notes ? '✏️' : '—';
@@ -388,8 +386,8 @@ function renderTasks() {
       });
 
     row.addEventListener('click', ev => {
-      if (ev.target !== titleCell) showTaskModal(path);
-    });
+      if (ev.target !== titleCell) showTaskModal({ mode: 'edit', task, path });
+        });
 
     tbody.appendChild(row);
   });
@@ -508,7 +506,7 @@ function toggleSubtaskPanel(path) {
       } else {
         task.dependsOn.push(id);
       }
-      showTaskModal(path); // recargar el panel con nuevo estado
+      showTaskModal({ mode: 'edit', task, path });
     });
   });
 
