@@ -71,9 +71,7 @@ function setDefaultFormValues() {
 
 // ---------- Al cargar ----------
 window.addEventListener('DOMContentLoaded', () => {
-  setDefaultFormValues();
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
-  renderDepsChips()
   refreshTaskOptions();
   // Asigna correctamente el botón para crear tareas
   const newBtn = document.getElementById('new-task-btn');
