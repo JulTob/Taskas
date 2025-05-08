@@ -74,13 +74,35 @@ window.addEventListener('DOMContentLoaded', () => {
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
   renderDepsChips()
   refreshTaskOptions();
+  document.getElementById('new-task-btn').onclick = () => {
+      showTaskModal({ mode: 'create' });
+      };
   });
 
 // ------ Ventanita Modal -------
 function showTaskModal({ mode = 'edit', task = null, path = null }) {
   document.getElementById('task-modal')?.remove();
 
-  // contenedor flotante
+  const isNew = mode === 'create';
+
+  // si no hay tarea (modo create), crea una nueva vacía
+  if (!task) {
+    task = {
+      id: Date.now(),
+      title: '',
+      deadline: '',
+      time: '',
+      duration: 30,
+      priority: 'Media',
+      notes: '',
+      completed: false,
+      timeSpent: 0,
+      subtasks: [],
+      parentId: null,
+      dependsOn: []
+    };
+  }
+
   const modal = document.createElement('div');
   modal.id = 'task-modal';
   modal.className = `
@@ -90,13 +112,144 @@ function showTaskModal({ mode = 'edit', task = null, path = null }) {
 
   const panel = document.createElement('div');
   panel.className = 'bg-white w-full max-w-xl p-6 rounded shadow-lg border border-brand-200 relative';
-  panel.innerHTML = '...'; // aquí insertas el mismo formulario HTML que ya tenías
 
-  // añadir al modal
+  const allOptions = flattenTasks(taskList)
+    .filter(({ task: t }) => t.id !== task.id)
+    .map(({ task: t, level }) => {
+      const indent = '‒'.repeat(level);
+      return `<option value="${t.id}" ${t.id === task.parentId ? 'selected' : ''}>
+                ${indent} ${t.title}
+              </option>`;
+    }).join('');
+
+  const depChips = flattenTasks(taskList)
+    .filter(({ task: t }) => t.id !== task.id)
+    .map(({ task: t }) => {
+      const selected = task.dependsOn.includes(t.id);
+      return `
+        <button data-depid="${t.id}"
+                class="px-3 py-1 rounded-full border text-sm transition
+                  ${selected
+                    ? 'bg-brand-600 text-white border-brand-600'
+                    : 'bg-white text-brand-800 border-brand-400 hover:bg-brand-100'}">
+          ${t.title}
+        </button>`;
+    }).join('');
+
+  panel.innerHTML = `
+    <h2 class="font-dpica text-2xl mb-4">${isNew ? '➕ Nueva Tarea' : `Editar “${task.title}”`}</h2>
+
+    <label class="block mb-2">
+      <input id="edit-title" class="w-full p-2 border rounded font-pica"
+             placeholder="Título..." value="${task.title}" />
+    </label>
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-2">
+      <input id="edit-deadline" type="date" class="flex-1 p-2 border rounded"
+             value="${task.deadline || ''}" />
+      <input id="edit-time" type="time" class="flex-1 p-2 border rounded"
+             value="${task.time || ''}" />
+      <input id="edit-duration" type="number" class="flex-1 p-2 border rounded"
+             value="${task.duration}" min="5" step="5" />
+    </div>
+
+    <select id="edit-priority" class="w-full p-2 border rounded mb-2">
+      <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ''}>Alta</option>
+      <option value="Media" ${task.priority === 'Media' ? 'selected' : ''}>Media</option>
+      <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ''}>Baja</option>
+    </select>
+
+    <label class="block mb-2">
+      <span class="font-semibold text-sm">Tarea Padre</span>
+      <select id="edit-parent" class="w-full p-2 border rounded mt-1">
+        <option value="">— raíz —</option>
+        ${allOptions}
+      </select>
+    </label>
+
+    <label class="block mb-2">
+      <span class="font-semibold text-sm">Dependencias</span>
+      <div id="edit-deps" class="flex flex-wrap gap-2 mt-1">${depChips}</div>
+    </label>
+
+    <label class="block mb-4">
+      <input id="edit-completed" type="checkbox" class="mr-2" ${task.completed ? 'checked' : ''}>
+      <span class="text-sm">Completada</span>
+    </label>
+
+    <textarea id="edit-notes" rows="3" class="w-full p-2 border rounded mb-4"
+              placeholder="Notas...">${task.notes}</textarea>
+
+    <div class="flex justify-end gap-2">
+      <button id="cancel-task-edits" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded">
+        ✖ Cancelar
+      </button>
+      <button id="save-task-edits" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded">
+        💾 Guardar
+      </button>
+    </div>
+  `;
+
   modal.appendChild(panel);
   document.body.appendChild(modal);
 
-  // conectar comportamiento: guardar, cancelar, chips, etc.
+  // DEPENDENCIAS (chip toggle)
+  const depContainer = panel.querySelector('#edit-deps');
+  depContainer.querySelectorAll('button[data-depid]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.depid);
+      if (task.dependsOn.includes(id)) {
+        task.dependsOn = task.dependsOn.filter(d => d !== id);
+      } else {
+        task.dependsOn.push(id);
+      }
+      modal.remove();
+      showTaskModal({ mode, task, path }); // recargar con nuevo estado
+    });
+  });
+
+  panel.querySelector('#cancel-task-edits').onclick = () => modal.remove();
+
+  panel.querySelector('#save-task-edits').onclick = () => {
+    const newData = {
+      title:     panel.querySelector('#edit-title').value.trim(),
+      deadline:  panel.querySelector('#edit-deadline').value || null,
+      time:      panel.querySelector('#edit-time').value || null,
+      duration:  parseInt(panel.querySelector('#edit-duration').value, 10) || 30,
+      priority:  panel.querySelector('#edit-priority').value,
+      notes:     panel.querySelector('#edit-notes').value.trim(),
+      completed: panel.querySelector('#edit-completed').checked,
+      parentId:  panel.querySelector('#edit-parent').value
+                  ? Number(panel.querySelector('#edit-parent').value)
+                  : null,
+      dependsOn: task.dependsOn
+    };
+
+    if (mode === 'edit') {
+      // si ha cambiado de padre, mover
+      if (newData.parentId !== task.parentId) {
+        removeTaskByPath(path);
+        const newParent = findTaskById(newData.parentId);
+        if (newParent) newParent.subtasks.push(task);
+        else taskList.push(task);
+      }
+      Object.assign(task, newData);
+    } else {
+      // nueva tarea
+      Object.assign(task, newData);
+      if (task.parentId) {
+        const parent = findTaskById(task.parentId);
+        parent?.subtasks.push(task);
+      } else {
+        taskList.push(task);
+      }
+    }
+
+    updateTaskField(task, 'dummy', null);
+    modal.remove();
+    renderTasks();
+    refreshTaskOptions();
+  };
 }
 
 // ---------- 1. Crear tarea ----------
@@ -142,6 +295,24 @@ function flattenTasks(tasks, lvl = 0, path = []) {
 function getTaskByPath(path) {
   return path.reduce((cur, idx) => cur.subtasks[idx], { subtasks: taskList });
 }
+
+document.getElementById('new-task-btn').onclick = () => {
+  const empty = {
+    id: Date.now(),
+    title: '',
+    deadline: '',
+    time: '',
+    duration: 30,
+    priority: 'Media',
+    notes: '',
+    completed: false,
+    timeSpent: 0,
+    subtasks: [],
+    parentId: null,
+    dependsOn: []
+  };
+  showTaskModal({ mode: 'create', task: empty });
+};
 
 // ---------- 3. Renderizar tabla ----------
 function renderTasks() {
@@ -356,6 +527,22 @@ function toggleSubtaskPanel(path) {
       dependsOn: task.dependsOn  // ya se modificó en vivo con los botones
     };
 
+    if (mode === 'edit') {
+  // actualizas los datos de la tarea original
+  Object.assign(task, newData);
+  updateTaskField(task, 'dummy', null);
+} else {
+  // creas nueva tarea en el array adecuado
+  if (newData.parentId) {
+    const parent = findTaskById(newData.parentId);
+    parent?.subtasks.push(task);
+  } else {
+    taskList.push(task);
+  }
+  updateTaskField(task, 'dummy', null);
+}
+
+    
     // si ha cambiado de padre, hay que moverlo
     if (newData.parentId !== task.parentId) {
       removeTaskByPath(path);
