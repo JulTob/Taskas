@@ -150,14 +150,12 @@ function renderTasks() {
     const noteIcon = task.notes ? '✏️' : '—';
 
     row.innerHTML = `
-    <td class="p-2 text-center">
-+   <button class="text-brand-700 hover:text-red-700" title="Borrar">
-+     🗑️
-+   </button>
-+ </td>
+      <td class="p-2 text-center">
+         🔴
+         </td>
       <td class="p-2 font-semibold" style="padding-left:${level*1.6}rem">
-        🔴 ${task.title}
-      </td>
+        ${task.title}
+        </td>
       <td class="p-2">${task.priority}</td>
       <td class="p-2">${task.deadline || '—'}</td>
       <td class="p-2">${task.time || '—'}</td>
