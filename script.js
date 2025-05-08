@@ -212,6 +212,30 @@ function toggleSubtaskPanel(path) {
   panel.id = 'subpanel';
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
 
+  // opciones para tareas padres y dependencias
+  const allOptions = flattenTasks(taskList)
+    .filter(({ task: t }) => t.id !== task.id)  // no puede depender de sí misma
+    .map(({ task: t, level }) => {
+      const indent = '‒'.repeat(level);
+      return `<option value="${t.id}" ${t.id === task.parentId ? 'selected' : ''}>
+                ${indent} ${t.title}
+              </option>`;
+    }).join('');
+
+  const depChips = flattenTasks(taskList)
+    .filter(({ task: t }) => t.id !== task.id)
+    .map(({ task: t }) => {
+      const selected = task.dependsOn.includes(t.id);
+      return `
+        <button data-depid="${t.id}"
+                class="px-3 py-1 rounded-full border text-sm transition
+                  ${selected
+                    ? 'bg-brand-600 text-white border-brand-600'
+                    : 'bg-white text-brand-800 border-brand-400 hover:bg-brand-100'}">
+          ${t.title}
+        </button>`;
+    }).join('');
+
   panel.innerHTML = `
     <h2 class="font-semibold mb-4">Editar “${task.title}”</h2>
 
@@ -247,6 +271,24 @@ function toggleSubtaskPanel(path) {
       </select>
     </label>
 
+    <label class="block mb-2">
+      <span class="font-semibold">Tarea Padre</span>
+      <select id="edit-parent" class="w-full p-2 border rounded">
+        <option value="">— raíz —</option>
+        ${allOptions}
+      </select>
+    </label>
+
+    <label class="block mb-2">
+      <span class="font-semibold">Dependencias</span>
+      <div id="edit-deps" class="flex flex-wrap gap-2 mt-1">${depChips}</div>
+    </label>
+
+    <label class="block mb-4">
+      <input id="edit-completed" type="checkbox" class="mr-2" ${task.completed ? 'checked' : ''}>
+      <span class="font-semibold">Completada</span>
+    </label>
+
     <label class="block mb-4">
       <span class="font-semibold">Notas</span>
       <textarea id="edit-notes" rows="3" class="w-full p-2 border rounded">${task.notes}</textarea>
@@ -262,6 +304,20 @@ function toggleSubtaskPanel(path) {
     </button>
   `;
 
+  // toggle de dependencias
+  const depContainer = panel.querySelector('#edit-deps');
+  depContainer.querySelectorAll('button[data-depid]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.depid);
+      if (task.dependsOn.includes(id)) {
+        task.dependsOn = task.dependsOn.filter(d => d !== id);
+      } else {
+        task.dependsOn.push(id);
+      }
+      toggleSubtaskPanel(path); // recargar el panel con nuevo estado
+    });
+  });
+
   panel.querySelector('#save-task-edits').onclick = () => {
     const newData = {
       title:     panel.querySelector('#edit-title').value.trim(),
@@ -269,13 +325,30 @@ function toggleSubtaskPanel(path) {
       time:      panel.querySelector('#edit-time').value || null,
       duration:  parseInt(panel.querySelector('#edit-duration').value, 10) || 30,
       priority:  panel.querySelector('#edit-priority').value,
-      notes:     panel.querySelector('#edit-notes').value.trim()
+      notes:     panel.querySelector('#edit-notes').value.trim(),
+      completed: panel.querySelector('#edit-completed').checked,
+      parentId:  panel.querySelector('#edit-parent').value
+                  ? Number(panel.querySelector('#edit-parent').value)
+                  : null,
+      dependsOn: task.dependsOn  // ya se modificó en vivo con los botones
     };
 
-    Object.entries(newData).forEach(([k, v]) => task[k] = v);
-    updateTaskField(task, 'dummy', null); // fuerza persistencia
+    // si ha cambiado de padre, hay que moverlo
+    if (newData.parentId !== task.parentId) {
+      removeTaskByPath(path);
+      const newParent = findTaskById(newData.parentId);
+      if (newParent) {
+        newParent.subtasks.push(task);
+      } else {
+        taskList.push(task);
+      }
+    }
+
+    Object.assign(task, newData);
+    updateTaskField(task, 'dummy', null);
     renderTasks();
     panel.remove();
+    refreshTaskOptions();
   };
 
   panel.querySelector('#cancel-task-edits').onclick = () => {
@@ -284,6 +357,7 @@ function toggleSubtaskPanel(path) {
 
   taskContainer.appendChild(panel);
 }
+
 
 
 // ---------- 5. Persistencia (Firestore) ----------
