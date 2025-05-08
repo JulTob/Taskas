@@ -146,49 +146,7 @@ function renderTasks() {
 
   flat.forEach(({ task, level, path }) => {
       const row = document.createElement('tr');
-  // … your existing row.innerHTML …
 
-  // existing titleCell handler…
-  const titleCell = row.children[1];
-  titleCell.contentEditable = true;
-  titleCell.addEventListener('blur', () => {
-    const newTitle = titleCell.textContent.trim();
-    if (newTitle && newTitle !== task.title) {
-      updateTaskField(task, 'title', newTitle);
-      refreshTaskOptions();
-    }
-  });
-
-  // — NEW: deadline cell inline edit —
-  const deadlineCell = row.children[3];
-  deadlineCell.contentEditable = true;
-  deadlineCell.addEventListener('blur', () => {
-    const newDeadline = deadlineCell.textContent.trim();
-    // basic YYYY-MM-DD validation
-    if (/^\d{4}-\d{2}-\d{2}$/.test(newDeadline) && newDeadline !== task.deadline) {
-      updateTaskField(task, 'deadline', newDeadline);
-      renderTasks();
-    } else {
-      // revert if invalid
-      deadlineCell.textContent = task.deadline || '';
-    }
-  });
-
-  // — NEW: duration cell inline edit —
-  const durationCell = row.children[5];
-  durationCell.contentEditable = true;
-  durationCell.addEventListener('blur', () => {
-    const v = parseInt(durationCell.textContent, 10);
-    if (!isNaN(v) && v > 0 && v !== task.duration) {
-      updateTaskField(task, 'duration', v);
-      renderTasks();
-      } 
-    else {
-      // revert if invalid
-      durationCell.textContent = task.duration + ' min';
-      }
-    });
-    
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
     const noteIcon = task.notes ? '✏️' : '—';
