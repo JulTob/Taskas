@@ -315,24 +315,27 @@ function removeTaskByPath(path, cursor = taskList) {
     }
 
 function getMarker(task) {
-  const today      = new Date().toISOString().slice(0, 10);      // “YYYY-MM-DD”
-  const in3Days    = new Date(Date.now() + 3*864e5).toISOString().slice(0,10);
-  const in7Days    = new Date(Date.now() + 7*864e5).toISOString().slice(0,10);
-  const in30Days    = new Date(Date.now() + 30*864e5).toISOString().slice(0,10);
+  const today = new Date();
+  const deadline = task.deadline ? new Date(task.deadline) : null;
 
-  if (task.deadline === today && task.priority === 'Alta') return '🔴';
-  if (task.deadline === today)                             return '🟠';
-  if (task.deadline && task.deadline <= in3Days &&
-      task.priority === 'Alta')                            return '🟠';
-  if (task.deadline && task.deadline <= in3Days)           return '🟡';
-  if (task.deadline && task.deadline <= in7Days &&
-      task.priority === 'Alta')                            return '🟡';
-  if (task.deadline && task.deadline <= in7Days)           return '🟢';
-  if (task.deadline && task.deadline <= in30Days &&
-      task.priority === 'Alta')                            return '🟢';
-  if (task.deadline && task.deadline <= in30Days)          return '🔵';
-  if (task.deadline && task.deadline >= today)             return '⚫️';
-  if (task.priority === 'Baja')                            return '🟣';
+  if (!deadline) {
+    if (task.priority === 'Baja') return '🟣';
+    return '🔵';
+  }
+
+  const diffTime = deadline - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return '⚫️'; // Fecha pasada
+  if (diffDays === 0 && task.priority === 'Alta') return '🔴';
+  if (diffDays === 0) return '🟠';
+  if (diffDays <= 3 && task.priority === 'Alta') return '🟠';
+  if (diffDays <= 3) return '🟡';
+  if (diffDays <= 7 && task.priority === 'Alta') return '🟡';
+  if (diffDays <= 7) return '🟢';
+  if (diffDays <= 30 && task.priority === 'Alta') return '🟢';
+  if (diffDays <= 30) return '🔵';
+  if (task.priority === 'Baja') return '🟣';
 
   return '🔵';
 }
