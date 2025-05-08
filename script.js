@@ -134,11 +134,13 @@ function renderTasks() {
   table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
   table.innerHTML = `
     <thead class="bg-gray-200 text-left">
-      <tr><th class="p-2">Título</th><th class="p-2">Prioridad</th>
+      <tr><th class="p-2 w-6"></th>
+          <th class="p-2">Título</th><th class="p-2">Prioridad</th>
           <th class="p-2">Fecha Límite</th><th class="p-2">Hora</th>
           <th class="p-2">Duración</th><th class="p-2">Subtareas</th>
           <th class="p-2">Depende</th>
           <th class="p-2">Notas</th></tr>
+          <th class="p-2 w-6"></th>
     </thead><tbody class="divide-y"></tbody>`;
   const tbody = table.querySelector('tbody');
 
@@ -148,6 +150,11 @@ function renderTasks() {
     const noteIcon = task.notes ? '✏️' : '—';
 
     row.innerHTML = `
+    <td class="p-2 text-center">
++   <button class="text-brand-700 hover:text-red-700" title="Borrar">
++     🗑️
++   </button>
++ </td>
       <td class="p-2 font-semibold" style="padding-left:${level*1.6}rem">
         🔴 ${task.title}
       </td>
@@ -157,7 +164,21 @@ function renderTasks() {
       <td class="p-2">${task.duration} min</td>
       <td class="p-2">${task.subtasks.length}</td>
       <td class="p-2">${task.dependsOn?.length ? task.dependsOn.length : '—'}</td>
-      <td class="p-2 text-center">${noteIcon}</td>`;
+      <td class="p-2 text-center">${noteIcon}</td>
+      <td class="p-2 text-center">
+        <button class="text-brand-700 hover:text-red-700" title="Borrar">
+          🗑️
+          </button>
+          </td>`;
+    const deleteBtn = row.querySelector('button');
+    deleteBtn.onclick = (ev) => {
+      ev.stopPropagation();
+      if (!confirm(`¿Borrar “${task.title}” y sus subtareas?`)) return;
+      removeTaskByPath(path);
+      saveTasks();
+      renderTasks();
+      refreshTaskOptions();
+      };
 
     const titleCell = row.firstElementChild;
     titleCell.contentEditable = true;
@@ -320,3 +341,13 @@ function renderDepsChips() {
             container.appendChild(chip);
             });
       }
+
+function removeTaskByPath(path, cursor = taskList) {
+    const idx = path[0];
+    if (path.length === 1) {
+      cursor.splice(idx, 1);           // elimina en este nivel
+      } 
+    else {
+      removeTaskByPath(path.slice(1), cursor[idx].subtasks);
+      }
+    }
