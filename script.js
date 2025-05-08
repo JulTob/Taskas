@@ -60,7 +60,7 @@ auth.onAuthStateChanged(user => {
 
 // ---------- Valores por defecto ----------
 function setDefaultFormValues() {
-  titleInput.value   = 'Taskeo';
+  titleInput.value   = '';
   const t            = new Date();
   t.setDate(t.getDate() + 1);
   dateInput.value    = t.toISOString().split('T')[0];
@@ -72,8 +72,8 @@ function setDefaultFormValues() {
 window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
-  refreshTaskOptions();
   renderDepsChips()
+  refreshTaskOptions();
   });
 
 // ---------- 1. Crear tarea ----------
