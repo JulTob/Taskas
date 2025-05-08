@@ -255,31 +255,78 @@ function toggleSubtaskPanel(path) {
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
 
   panel.innerHTML = `
-    <h2 class="font-semibold mb-2">Nota de “${task.title}”</h2>
-    <textarea id="note-edit" rows="3"
-              class="w-full p-2 border rounded mb-2">${task.notes}</textarea>
-    <button id="save-note" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">
-      Guardar nota
-      </button>
-    <h2 class="font-semibold mb-2">Subtareas</h2>
-    <ul id="sub-list" class="mb-2 list-disc ml-6"></ul>
-    `;
+    <h2 class="font-semibold mb-4">Editar “${task.title}”</h2>
 
-  const ul = panel.querySelector('#sub-list');
-  task.subtasks.forEach(st => {
-    const li = document.createElement('li');
-    li.textContent = st.title;
-    ul.appendChild(li);
-  });
+    <label class="block mb-2">
+      <span class="font-semibold">Título</span>
+      <input id="edit-title" class="w-full p-2 border rounded" value="${task.title}" />
+    </label>
 
-  panel.querySelector('#save-note').onclick = () => {
-    task.notes = panel.querySelector('#note-edit').value.trim();
-    saveTasks();
+    <div class="flex flex-col sm:flex-row gap-3 mb-2">
+      <label class="flex-1">
+        <span class="font-semibold">Fecha límite</span>
+        <input id="edit-deadline" type="date" class="w-full p-2 border rounded"
+               value="${task.deadline || ''}" />
+      </label>
+      <label class="flex-1">
+        <span class="font-semibold">Hora</span>
+        <input id="edit-time" type="time" class="w-full p-2 border rounded"
+               value="${task.time || ''}" />
+      </label>
+      <label class="flex-1">
+        <span class="font-semibold">Duración</span>
+        <input id="edit-duration" type="number" class="w-full p-2 border rounded"
+               value="${task.duration}" min="5" step="5" />
+      </label>
+    </div>
+
+    <label class="block mb-2">
+      <span class="font-semibold">Prioridad</span>
+      <select id="edit-priority" class="w-full p-2 border rounded">
+        <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ''}>Alta</option>
+        <option value="Media" ${task.priority === 'Media' ? 'selected' : ''}>Media</option>
+        <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ''}>Baja</option>
+      </select>
+    </label>
+
+    <label class="block mb-4">
+      <span class="font-semibold">Notas</span>
+      <textarea id="edit-notes" rows="3" class="w-full p-2 border rounded">${task.notes}</textarea>
+    </label>
+
+    <button id="save-task-edits"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mr-2">
+      💾 Guardar
+    </button>
+    <button id="cancel-task-edits"
+            class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded">
+      ✖ Cancelar
+    </button>
+  `;
+
+  panel.querySelector('#save-task-edits').onclick = () => {
+    const newData = {
+      title:     panel.querySelector('#edit-title').value.trim(),
+      deadline:  panel.querySelector('#edit-deadline').value || null,
+      time:      panel.querySelector('#edit-time').value || null,
+      duration:  parseInt(panel.querySelector('#edit-duration').value, 10) || 30,
+      priority:  panel.querySelector('#edit-priority').value,
+      notes:     panel.querySelector('#edit-notes').value.trim()
+    };
+
+    Object.entries(newData).forEach(([k, v]) => task[k] = v);
+    updateTaskField(task, 'dummy', null); // fuerza persistencia
+    renderTasks();
+    panel.remove();
   };
 
+  panel.querySelector('#cancel-task-edits').onclick = () => {
+    panel.remove();
+  };
 
   taskContainer.appendChild(panel);
 }
+
 
 // ---------- 5. Persistencia (Firestore) ----------
 function saveTasks() {
@@ -385,11 +432,9 @@ function getMarker(task) {
       }
 
 function updateTaskField(task, field, value) {
-      // Update in-memory
-      task[field] = value;
-      // Persist to Firestore
-      if (collRef) {
-        collRef.doc(task.id.toString()).update({ [field]: value });
-        }
-      }
+  if (field !== 'dummy') task[field] = value;
+  if (collRef) {
+    collRef.doc(task.id.toString()).set(task);
+  }
+}
 
