@@ -2,27 +2,27 @@
 
 // 1. Valores por defecto del formulario
 function setDefaultFormValues(formEl) {
-  formEl.elements['title'].value    = 'Taskeo';
-  const t = new Date(); t.setDate(t.getDate() + 1);
-  formEl.elements['deadline'].value = t.toISOString().split('T')[0];
-  formEl.elements['time'].value     = '17:00';
-  formEl.elements['duration'].value = '30';
-  // Reiniciar parent y dependencias
-  formEl.elements['parent'].value = '';
-  formEl.querySelector('#dep-chips').innerHTML = '';
-  formEl._selectedDeps = [];
-  }
+    formEl.elements['title'].value    = 'Taskeo';
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    formEl.elements['deadline'].value = t.toISOString().split('T')[0];
+    formEl.elements['time'].value     = '17:00';
+    formEl.elements['duration'].value = '30';
+    // Reiniciar parent y dependencias
+    formEl.elements['parent'].value = '';
+    formEl.querySelector('#dep-chips').innerHTML = '';
+    formEl._selectedDeps = [];
+    }
 
 
 // 2. Inicialización de Firebase
 function initFirebase(config) {
-  firebase.initializeApp(config);
-  return {
-      auth: firebase.auth(),
-      db: firebase.firestore(),
-      provider: new firebase.auth.GoogleAuthProvider()
-      };
-  }  
+    firebase.initializeApp(config);
+    return {
+        auth: firebase.auth(),
+        db: firebase.firestore(),
+        provider: new firebase.auth.GoogleAuthProvider()
+        };
+    }  
 
 // 3. Módulo de autenticación
 function setupAuth(fb, ui, onLogin, onLogout) {
