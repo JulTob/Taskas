@@ -303,79 +303,81 @@ function renderDepChips(ui) {
 
 // Punto de entrada
 (function main() {
-  const fb = initFirebase(firebaseConfig);
-  const ui = {
-    newTaskBtn: document.getElementById('new-task-btn'),
-    popup:      document.getElementById('task-popup'),
-    form:       document.getElementById('task-form'),
-    taskContainer: document.getElementById('task-container'),
-    depChips:   document.getElementById('dep-chips'),
-    dataModule: null,
-    _selectedDeps: [],
-    _parentForSub: null
-  };
+      const fb = initFirebase(firebaseConfig);
+      const ui = {
+          newTaskBtn: document.getElementById('new-task-btn'),
+          popup:      document.getElementById('task-popup'),
+          form:       document.getElementById('task-form'),
+          taskContainer: document.getElementById('task-container'),
+          depChips:   document.getElementById('dep-chips'),
+          dataModule: null,
+          _selectedDeps: [],
+          _parentForSub: null,
+          loginBtn:  document.getElementById('loginBtn'),
+          logoutBtn: document.getElementById('logoutBtn'),
+          };
 
-  setupAuth(fb, ui,
-    user => {
-      ui.dataModule = createDataModule(fb.db, user.uid);
-      ui.dataModule.subscribe(snap => {
-        TaskModule.clear();
-        snap.forEach(doc => TaskModule.add({ id: +doc.id, ...doc.data() }));
-        renderTasks(ui);
-      });
-      ui.loginBtn.classList.add('hidden');
-      ui.logoutBtn.classList.remove('hidden');
-      setDefaultFormValues(ui.form);
-    },
-    () => {
-      TaskModule.clear();
-      renderTasks(ui);
-      ui.dataModule = null;
-      ui.logoutBtn.classList.add('hidden');
-      ui.loginBtn.classList.remove('hidden');
-    }
-  );
-
-  // 1) Menú emergente y dependencias
-  setupMenu(ui);
-
-  // 2) Submit único para crear Task o SubTask
-  ui.form.addEventListener('submit', e => {
-    e.preventDefault();
-    const f = ui.form.elements;
-    const isSub = !!ui._parentForSub;
-    const task = {
-      id: Date.now(),
-      title: f['title'].value.trim(),
-      deadline: f['deadline'].value,
-      time: f['time'].value,
-      priority: f['priority'].value,
-      duration: f['duration'].value || 30,
-      notes: f['notes'].value.trim(),
-      completed: false,
-      timeSpent: 0,
-      subtasks: [],
-      dependencies: ui._selectedDeps
-    };
-    if (isSub) {
-      const parent = TaskModule.getByPath(ui._parentForSub);
-      parent.subtasks.push(task);
-      ui._parentForSub = null;
-    } else {
-      TaskModule.add(task);
-    }
-    ui.dataModule.save(TaskModule.list);
-    ui.form.reset();
-    setDefaultFormValues(ui.form);
-    renderTasks(ui);
-    ui.popup.classList.add('hidden');
-  });
-
-  // 3) Al cargar la página
-  window.addEventListener('DOMContentLoaded', () => {
-    setDefaultFormValues(ui.form);
-    renderTasks(ui);
-  });
-})();
+        setupAuth(fb, ui,
+          user => {
+            ui.dataModule = createDataModule(fb.db, user.uid);
+            ui.dataModule.subscribe(snap => {
+              TaskModule.clear();
+              snap.forEach(doc => TaskModule.add({ id: +doc.id, ...doc.data() }));
+              renderTasks(ui);
+            });
+            ui.loginBtn.classList.add('hidden');
+            ui.logoutBtn.classList.remove('hidden');
+            setDefaultFormValues(ui.form);
+          },
+          () => {
+            TaskModule.clear();
+            renderTasks(ui);
+            ui.dataModule = null;
+            ui.logoutBtn.classList.add('hidden');
+            ui.loginBtn.classList.remove('hidden');
+          }
+        );
+      
+        // 1) Menú emergente y dependencias
+        setupMenu(ui);
+      
+        // 2) Submit único para crear Task o SubTask
+        ui.form.addEventListener('submit', e => {
+          e.preventDefault();
+          const f = ui.form.elements;
+          const isSub = !!ui._parentForSub;
+          const task = {
+            id: Date.now(),
+            title: f['title'].value.trim(),
+            deadline: f['deadline'].value,
+            time: f['time'].value,
+            priority: f['priority'].value,
+            duration: f['duration'].value || 30,
+            notes: f['notes'].value.trim(),
+            completed: false,
+            timeSpent: 0,
+            subtasks: [],
+            dependencies: ui._selectedDeps
+          };
+          if (isSub) {
+            const parent = TaskModule.getByPath(ui._parentForSub);
+            parent.subtasks.push(task);
+            ui._parentForSub = null;
+          } else {
+            TaskModule.add(task);
+          }
+          ui.dataModule.save(TaskModule.list);
+          ui.form.reset();
+          setDefaultFormValues(ui.form);
+          renderTasks(ui);
+          ui.popup.classList.add('hidden');
+        });
+      
+        // 3) Al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+          setDefaultFormValues(ui.form);
+          renderTasks(ui);
+        });
+      })();
 
 
