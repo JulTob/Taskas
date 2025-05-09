@@ -22,6 +22,29 @@ export const db   = getFirestore(app);
 export const provider = new GoogleAuthProvider();            // docs → Google provider :contentReference[oaicite:2]{index=2}
 export { signInWithPopup, onAuthStateChanged, collection, doc, onSnapshot };
 
+// auth.js
+import { auth, provider, signInWithPopup, onAuthStateChanged } from './firebase.js';
+import { connectTaskListener, clearTasks } from './tasks.js';
+
+const loginBtn  = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+loginBtn.onclick  = () => signInWithPopup(auth, provider);
+logoutBtn.onclick = () => auth.signOut();
+
+onAuthStateChanged(auth, user => {            // docs → onAuthStateChanged :contentReference[oaicite:3]{index=3}
+  if (!user) {
+    loginBtn.classList.remove('hidden');
+    logoutBtn.classList.add('hidden');
+    clearTasks();
+    return;
+  }
+  loginBtn.classList.add('hidden');
+  logoutBtn.classList.remove('hidden');
+  connectTaskListener(user.uid);              // ← pasamos la responsabilidad al módulo tasks
+});
+
+
 // 2) Botones de login/logout
 const loginBtn  = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
