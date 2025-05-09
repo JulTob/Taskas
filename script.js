@@ -76,6 +76,12 @@ const TaskModule = {
 };
 
 // 6. UI: render y panel de subtareas
+const PRIORITY_ICON = {
+  'Alta':  '🔴',  // rojo
+  'Media': '🟠',  // naranja
+  'Baja':  '🟢'   // verde
+  };
+
 function renderTasks(ui) {
   const container = ui.taskContainer;
   container.innerHTML = '';
