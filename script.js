@@ -1,5 +1,6 @@
 // Taskas – gestor con Google login y Firestore
 // --------------------------------------------
+console.log('Taskas script cargado 👉', new Date().toLocaleTimeString());
 
 // 0) Datos en memoria y referencias
 const taskList      = [];
