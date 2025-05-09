@@ -78,17 +78,19 @@ const TaskModule = {
 const PRIORITY_ICON = {
   'Alta':  '🔴',  // rojo
   'Media': '🟠',  // naranja
-  'Baja':  '🟢'   // verde
+  'Baja':  '🟢',   // verde
+  'Completado':  '⚫️',  
+  'Retrasada':  '🚩' 
   };
 
 function renderTasks(ui) {
-  const container = ui.taskContainer;
-  container.innerHTML = '';
+  const { taskContainer, dataModule } = ui;
+  taskContainer.innerHTML = '';
   const flat = TaskModule.flatten();
   if (!flat.length) {
-    container.innerHTML = '<p class="text-gray-500">No hay tareas aún.</p>';
-    return;
-  }
+        taskContainer.innerHTML = '<p class="text-gray-500">No hay tareas.</p>';
+        return;
+        }
   // Crear tabla con columna extra "Acciones"
   const table = document.createElement('table');
   table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
@@ -106,65 +108,80 @@ function renderTasks(ui) {
       </tr>
     </thead>
     <tbody class="divide-y"></tbody>`;
+  
   const tbody = table.querySelector('tbody');
 
   flat.forEach(({ task, level, path }) => {
+    const pathStr = path.join('-');
+    const priIcon = PRIORITY_ICON[task.priority] || '⚪';
+    const deps = (task.dependencies || [])
+            .map(id => {
+                  const t = TaskModule.list.find(x => x.id.toString() === id.toString());
+                  return t ? t.title : '—';
+                  })
+            .join(', ') || '—';
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
-
-    // Interpretar icono de prioridad
-    const priIcon = PRIORITY_ICON[task.priority] || '⚪';
-
-    // Convertir path a string "0-2-1" para dataset
-    const pathStr = path.join('-');
-
     row.innerHTML = `
       <td class="p-2 font-semibold" style="padding-left:${level*1.5}rem">
         ${task.title}
-      </td>
+        </td>
       <td class="p-2">${priIcon} ${task.priority}</td>
       <td class="p-2">${task.deadline || '—'}</td>
       <td class="p-2">${task.time || '—'}</td>
       <td class="p-2">${task.duration} min</td>
+      <td class="p-2">${deps}</td>
       <td class="p-2">${task.subtasks.length}</td>
       <td class="p-2 text-center">${task.notes ? '✏️' : '—'}</td>
       <td class="p-2 text-center">
+        <button data-path="${pathStr}" class="add-sub mr-2">➕</button>
         <button data-path="${pathStr}" class="delete-btn">❌</button>
-      </td>`;
+        </td>`;
 
-    // Inline-edit título (igual que antes)
+    // Inline-edit título
     const titleCell = row.firstElementChild;
     titleCell.contentEditable = true;
     titleCell.addEventListener('blur', () => {
-      const newTitle = titleCell.textContent.trim();
-      if (newTitle && newTitle !== task.title) {
-        task.title = newTitle;
-        ui.dataModule && ui.dataModule.save(TaskModule.list);
-        renderTasks(ui);
-      }
-    });
+          const newTitle = titleCell.textContent.trim();
+          if (newTitle && newTitle !== task.title) {
+              task.title = newTitle;
+              ui.dataModule && ui.dataModule.save(TaskModule.list);
+              dataModule && dataModule.save(TaskModule.list);
+              renderTasks(ui);
+              }
+          });
 
-    // Click en fila abre panel subtareas
-    row.addEventListener('click', ev => {
-      if (ev.target !== titleCell && !ev.target.classList.contains('delete-btn')) {
-        toggleSubtaskPanel(path, ui);
-      }
-    });
+    // ➕ subtarea
+    row.querySelector('.add-sub').addEventListener('click', ev => {
+        ev.stopPropagation();
+        ui._parentForSub = path;
+        ui.popup.classList.remove('hidden');
+        ui.form.elements['parent'].value = pathStr;
+        });
+
 
     // Botón borrar
     row.querySelector('.delete-btn').addEventListener('click', ev => {
-      ev.stopPropagation();            // que no abra subtareas
-      const p = ev.currentTarget.dataset.path
-                  .split('-')
-                  .map(n => parseInt(n, 10));
-      deleteTaskByPath(p, ui);
+          ev.stopPropagation();            
+          //-- que no abra subtareas
+          const p = ev.currentTarget.dataset.path
+                      .split('-')
+                      .map(n=>+n);
+          deleteTaskByPath(p, ui);
+          });
+
+    // click en resto de fila abre panel de nota/subtareas
+    row.addEventListener('click', ev => {
+          if (!ev.target.closest('button')) toggleSubtaskPanel(path, ui);
+          });
+    
+    tbody.appendChild(row);
     });
 
-    tbody.appendChild(row);
-  });
-
   container.appendChild(table);
-}
+  }
+
+
 
 // Panel
 
@@ -190,6 +207,8 @@ function toggleSubtaskPanel(path, ui) {
         <option value="Alta">Alta</option>
         <option value="Media" selected>Media</option>
         <option value="Baja">Baja</option>
+        <option value="Completada">Completada</option>
+        <option value="Retrasada">Retrasada</option>
       </select>
       <textarea name="notes" rows="2" class="w-full p-2 border rounded" placeholder="Notas subtarea"></textarea>
       <button class="bg-green-500 text-white px-4 py-2 rounded">Agregar subtarea</button>
@@ -226,77 +245,6 @@ function toggleSubtaskPanel(path, ui) {
 
   ui.taskContainer.append(panel);
 }
-
-// 7. Punto de entrada
-(function main() {
-  const firebaseConfig = {
-    apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
-    authDomain: "taska-65c33.firebaseapp.com",
-    projectId: "taska-65c33",
-    storageBucket: "taska-65c33.appspot.com",
-    messagingSenderId: "287205600078",
-    appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
-    measurementId: "G-RM9DCQ136H"
-  };
-
-  const fb = initFirebase(firebaseConfig);
-  const ui = {
-    loginBtn:      document.getElementById('loginBtn'),
-    logoutBtn:     document.getElementById('logoutBtn'),
-    form:          document.getElementById('task-form'),
-    taskContainer: document.getElementById('task-container'),
-    dataModule:    null
-  };
-
-  setupAuth(fb, ui,
-    user => {
-      ui.dataModule = createDataModule(fb.db, user.uid);
-      ui.dataModule.subscribe(snapshot => {
-        TaskModule.clear();
-        snapshot.forEach(doc => TaskModule.add({ id: doc.id, ...doc.data() }));
-        renderTasks(ui);
-      });
-      ui.loginBtn.classList.add('hidden');
-      ui.logoutBtn.classList.remove('hidden');
-      setDefaultFormValues();
-    },
-    () => {
-      ui.logoutBtn.classList.add('hidden');
-      ui.loginBtn.classList.remove('hidden');
-      TaskModule.clear();
-      renderTasks(ui);
-      ui.dataModule = null;
-    }
-  );
-
-  // Inicializa UI y formulario
-  window.addEventListener('DOMContentLoaded', () => {
-    setDefaultFormValues();
-    renderTasks(ui);
-  });
-
-  ui.form.addEventListener('submit', e => {
-    e.preventDefault();
-    const f = ui.form.elements;
-    const task = {
-      id: Date.now(),
-      title:    f['title'].value.trim(),
-      deadline: f['deadline'].value,
-      time:     f['time'].value,
-      priority: f['priority'].value,
-      duration: f['duration'].value || 30,
-      notes:    f['notes'].value.trim(),
-      completed:false,
-      timeSpent:0,
-      subtasks: []
-    };
-    TaskModule.add(task);
-    ui.dataModule && ui.dataModule.save(TaskModule.list);
-    ui.form.reset();
-    setDefaultFormValues();
-    renderTasks(ui);
-  });
-})();
 
 // BORRADO
 function deleteTaskByPath(path, ui) {
@@ -351,65 +299,83 @@ function renderDepChips(ui) {
   });
 }
 
-// 7. Renderizar tareas con botón ➕ para subtareas
-function renderTasks(ui) {
-  const cont = ui.taskContainer; cont.innerHTML='';
-  const flat = TaskModule.flatten();
-  if(!flat.length){ cont.innerHTML='<p class="text-gray-500">No hay tareas aún.</p>'; return; }
-  const table = document.createElement('table'); table.className='w-full';
-  const thead = `<tr><th>Título</th><th>Prioridad</th><th>Depende de</th><th>Acciones</th></tr>`;
-  table.innerHTML = `<thead>${thead}</thead><tbody></tbody>`;
-  flat.forEach(({task,level,path})=>{
-    const row = document.createElement('tr');
-    const deps = task.dependencies?.map(id=>{
-      const t=TaskModule.list.find(x=>x.id===parseInt(id)); return t? t.title:'?';
-    }).join(', ')||'—';
-    row.innerHTML = `
-      <td style="padding-left:${level*1.5}rem">${task.title}</td>
-      <td>${task.priority}</td>
-      <td>${deps}</td>
-      <td><button data-path="${path.join('-')}" class="add-sub">➕</button></td>`;
-    row.querySelector('.add-sub').onclick = e=>{
-      e.stopPropagation(); ui._parentForSub = path; document.getElementById('task-popup').classList.remove('hidden');
-      ui.form.elements['parent'].value = path.join('-');
-    };
-    table.querySelector('tbody').append(row);
-  });
-  cont.append(table);
-}
 
-// 8. Integración final en main
-(function main(){
-  const fbConfig = { /* ... */ };
-  const fb = initFirebase(fbConfig);
+
+// Punto de entrada
+(function main() {
+  const fb = initFirebase(firebaseConfig);
   const ui = {
     newTaskBtn: document.getElementById('new-task-btn'),
     popup:      document.getElementById('task-popup'),
     form:       document.getElementById('task-form'),
     taskContainer: document.getElementById('task-container'),
-    depChips:   document.getElementById('dep-chips')
+    depChips:   document.getElementById('dep-chips'),
+    dataModule: null,
+    _selectedDeps: [],
+    _parentForSub: null
   };
+
   setupAuth(fb, ui,
-    user=>{
-      ui.dataModule = createDataModule(fb.db,user.uid);
-      ui.dataModule.subscribe(snap=>{ TaskModule.clear(); snap.forEach(d=>TaskModule.add({id:parseInt(d.id),...d.data()})); renderTasks(ui); });
-    }, _=>{ TaskModule.clear(); renderTasks(ui); }
+    user => {
+      ui.dataModule = createDataModule(fb.db, user.uid);
+      ui.dataModule.subscribe(snap => {
+        TaskModule.clear();
+        snap.forEach(doc => TaskModule.add({ id: +doc.id, ...doc.data() }));
+        renderTasks(ui);
+      });
+      ui.loginBtn.classList.add('hidden');
+      ui.logoutBtn.classList.remove('hidden');
+      setDefaultFormValues(ui.form);
+    },
+    () => {
+      TaskModule.clear();
+      renderTasks(ui);
+      ui.dataModule = null;
+      ui.logoutBtn.classList.add('hidden');
+      ui.loginBtn.classList.remove('hidden');
+    }
   );
+
+  // 1) Menú emergente y dependencias
   setupMenu(ui);
-  ui.form.addEventListener('submit', e=>{
+
+  // 2) Submit único para crear Task o SubTask
+  ui.form.addEventListener('submit', e => {
     e.preventDefault();
-    const f=e.target.elements;
-    const parentPath = f['parent'].value.split('-').map(x=>parseInt(x));
-    const parent = parentPath[0]!=NaN? TaskModule.getByPath(parentPath): null;
-    const task = { id:Date.now(), title:f['title'].value.trim(), deadline:f['deadline'].value, time:f['time'].value, priority:f['priority'].value, duration:f['duration'].value, notes:f['notes'].value.trim(), completed:false, timeSpent:0, subtasks:[], dependencies: ui._selectedDeps };
-    if(parentPath.length) parent.subtasks.push(task);
-    else TaskModule.add(task);
+    const f = ui.form.elements;
+    const isSub = !!ui._parentForSub;
+    const task = {
+      id: Date.now(),
+      title: f['title'].value.trim(),
+      deadline: f['deadline'].value,
+      time: f['time'].value,
+      priority: f['priority'].value,
+      duration: f['duration'].value || 30,
+      notes: f['notes'].value.trim(),
+      completed: false,
+      timeSpent: 0,
+      subtasks: [],
+      dependencies: ui._selectedDeps
+    };
+    if (isSub) {
+      const parent = TaskModule.getByPath(ui._parentForSub);
+      parent.subtasks.push(task);
+      ui._parentForSub = null;
+    } else {
+      TaskModule.add(task);
+    }
     ui.dataModule.save(TaskModule.list);
-    ui.form.reset(); setDefaultFormValues(ui.form);
+    ui.form.reset();
+    setDefaultFormValues(ui.form);
     renderTasks(ui);
     ui.popup.classList.add('hidden');
   });
-  // Inicial
-  window.dispatchEvent(new Event('DOMContentLoaded'));
+
+  // 3) Al cargar la página
+  window.addEventListener('DOMContentLoaded', () => {
+    setDefaultFormValues(ui.form);
+    renderTasks(ui);
+  });
 })();
+
 
