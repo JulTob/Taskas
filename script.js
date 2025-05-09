@@ -11,68 +11,68 @@ function setDefaultFormValues(formEl) {
   formEl.elements['parent'].value = '';
   formEl.querySelector('#dep-chips').innerHTML = '';
   formEl._selectedDeps = [];
-}
+  }
 
 
 // 2. Inicialización de Firebase
 function initFirebase(config) {
   firebase.initializeApp(config);
   return {
-    auth: firebase.auth(),
-    db: firebase.firestore(),
-    provider: new firebase.auth.GoogleAuthProvider()
-  };
-}
+      auth: firebase.auth(),
+      db: firebase.firestore(),
+      provider: new firebase.auth.GoogleAuthProvider()
+      };
+  }  
 
 // 3. Módulo de autenticación
 function setupAuth(fb, ui, onLogin, onLogout) {
-  const { auth, provider } = fb;
-  ui.loginBtn.onclick  = () => auth.signInWithPopup(provider);
-  ui.logoutBtn.onclick = () => auth.signOut();
-
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      onLogin(user);
-    } else {
-      onLogout();
-    }
-  });
-}
+      const { auth, provider } = fb;
+      ui.loginBtn.onclick  = () => auth.signInWithPopup(provider);
+      ui.logoutBtn.onclick = () => auth.signOut();
+  
+      auth.onAuthStateChanged(user => {
+          if (user) {
+              onLogin(user);
+              } 
+          else {
+              onLogout();
+              }
+          });
+      }
 
 // 4. Módulo de datos (Firestore)
 function createDataModule(db, uid) {
-  const collRef = db.collection('users').doc(uid).collection('tasks');
-  return {
-    subscribe: listener => collRef.onSnapshot(listener),
-    save:      tasks => tasks.forEach(t => collRef.doc(t.id.toString()).set(t))
-  };
-}
+      const collRef = db.collection('users').doc(uid).collection('tasks');
+      return {
+            subscribe: listener => collRef.onSnapshot(listener),
+            save:      tasks => tasks.forEach(t => collRef.doc(t.id.toString()).set(t))
+            };
+      }
 
 // 5. Módulo de tareas
 const TaskModule = {
-  list: [],
-  add(task) {
-    this.list.push(task);
-  },
-  clear() {
-    this.list.length = 0;
-  },
-  flatten() {
-    function recurse(arr, lvl=0, path=[]) {
-      return arr.reduce((acc, t, i) => {
-        acc.push({ task: t, level: lvl, path: [...path, i] });
-        if (t.subtasks && t.subtasks.length) {
-          acc.push(...recurse(t.subtasks, lvl+1, [...path, i]));
-        }
-        return acc;
-      }, []);
-    }
-    return recurse(this.list);
-  },
-  getByPath(path) {
-    return path.reduce((cur, idx) => cur.subtasks[idx], { subtasks: this.list });
-  }
-};
+        list: [],
+        add(task) {
+            this.list.push(task);
+            },
+        clear() {
+            this.list.length = 0;
+            },
+        flatten() {
+              const out = [];
+              function rec(arr, lvl=0, path=[]) {
+                    arr.forEach((t,i)=>{
+                        out.push({task:t, level:lvl, path:[...path,i]});
+                        if(t.subtasks) rec(t.subtasks, lvl+1, [...path,i]);
+                        });
+                    }
+              rec(this.list);
+              return out;
+              },
+        getByPath(path) {
+                return path.reduce((cur, idx) => cur.subtasks[idx], { subtasks: this.list });
+                }
+        };
 
 // 6. UI: render y panel de subtareas
 const PRIORITY_ICON = {
@@ -313,4 +313,103 @@ function deleteTaskByPath(path, ui) {
   ui.dataModule && ui.dataModule.save(TaskModule.list);
   renderTasks(ui);
 }
+
+
+// 6. UI: manejo de menú emergente y formulario
+function setupMenu(ui) {
+  const popup = document.getElementById('task-popup');
+  ui.newTaskBtn.onclick = () => popup.classList.toggle('hidden');
+  // dependencias: seleccionar tarea padre y dependencias
+  ui.form.elements['parent'].onchange = e => ui._currentParent = e.target.value;
+  // chips de dependencias
+  const depList = ui.form.elements['dependencies'];
+  depList.onchange = e => {
+    const sel = Array.from(e.target.selectedOptions).map(o=>o.value);
+    ui._selectedDeps = sel;
+    renderDepChips(ui);
+  };
+}
+
+function renderDepChips(ui) {
+  const container = ui.depChips;
+  container.innerHTML = '';
+  ui._selectedDeps.forEach(id => {
+    const t = TaskModule.list.find(ts=>ts.id.toString()===id);
+    if(!t) return;
+    const chip = document.createElement('span');
+    chip.className = 'inline-flex items-center bg-gray-200 rounded-full px-2 py-1 mr-2';
+    chip.textContent = t.title;
+    const x = document.createElement('button'); x.textContent='✖'; x.className='ml-1';
+    x.onclick = ()=>{
+      ui._selectedDeps = ui._selectedDeps.filter(d=>d!==id);
+      Array.from(ui.form.elements['dependencies'].options)
+           .find(o=>o.value===id).selected=false;
+      renderDepChips(ui);
+    };
+    chip.append(x);
+    container.append(chip);
+  });
+}
+
+// 7. Renderizar tareas con botón ➕ para subtareas
+function renderTasks(ui) {
+  const cont = ui.taskContainer; cont.innerHTML='';
+  const flat = TaskModule.flatten();
+  if(!flat.length){ cont.innerHTML='<p class="text-gray-500">No hay tareas aún.</p>'; return; }
+  const table = document.createElement('table'); table.className='w-full';
+  const thead = `<tr><th>Título</th><th>Prioridad</th><th>Depende de</th><th>Acciones</th></tr>`;
+  table.innerHTML = `<thead>${thead}</thead><tbody></tbody>`;
+  flat.forEach(({task,level,path})=>{
+    const row = document.createElement('tr');
+    const deps = task.dependencies?.map(id=>{
+      const t=TaskModule.list.find(x=>x.id===parseInt(id)); return t? t.title:'?';
+    }).join(', ')||'—';
+    row.innerHTML = `
+      <td style="padding-left:${level*1.5}rem">${task.title}</td>
+      <td>${task.priority}</td>
+      <td>${deps}</td>
+      <td><button data-path="${path.join('-')}" class="add-sub">➕</button></td>`;
+    row.querySelector('.add-sub').onclick = e=>{
+      e.stopPropagation(); ui._parentForSub = path; document.getElementById('task-popup').classList.remove('hidden');
+      ui.form.elements['parent'].value = path.join('-');
+    };
+    table.querySelector('tbody').append(row);
+  });
+  cont.append(table);
+}
+
+// 8. Integración final en main
+(function main(){
+  const fbConfig = { /* ... */ };
+  const fb = initFirebase(fbConfig);
+  const ui = {
+    newTaskBtn: document.getElementById('new-task-btn'),
+    popup:      document.getElementById('task-popup'),
+    form:       document.getElementById('task-form'),
+    taskContainer: document.getElementById('task-container'),
+    depChips:   document.getElementById('dep-chips')
+  };
+  setupAuth(fb, ui,
+    user=>{
+      ui.dataModule = createDataModule(fb.db,user.uid);
+      ui.dataModule.subscribe(snap=>{ TaskModule.clear(); snap.forEach(d=>TaskModule.add({id:parseInt(d.id),...d.data()})); renderTasks(ui); });
+    }, _=>{ TaskModule.clear(); renderTasks(ui); }
+  );
+  setupMenu(ui);
+  ui.form.addEventListener('submit', e=>{
+    e.preventDefault();
+    const f=e.target.elements;
+    const parentPath = f['parent'].value.split('-').map(x=>parseInt(x));
+    const parent = parentPath[0]!=NaN? TaskModule.getByPath(parentPath): null;
+    const task = { id:Date.now(), title:f['title'].value.trim(), deadline:f['deadline'].value, time:f['time'].value, priority:f['priority'].value, duration:f['duration'].value, notes:f['notes'].value.trim(), completed:false, timeSpent:0, subtasks:[], dependencies: ui._selectedDeps };
+    if(parentPath.length) parent.subtasks.push(task);
+    else TaskModule.add(task);
+    ui.dataModule.save(TaskModule.list);
+    ui.form.reset(); setDefaultFormValues(ui.form);
+    renderTasks(ui);
+    ui.popup.classList.add('hidden');
+  });
+  // Inicial
+  window.dispatchEvent(new Event('DOMContentLoaded'));
+})();
 
