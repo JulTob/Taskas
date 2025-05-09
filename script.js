@@ -33,10 +33,15 @@ auth.onAuthStateChanged(user => {
   // Referencia Firestore y snapshot
   collRef = db.collection('users').doc(user.uid).collection('tasks');
   collRef.onSnapshot(snap => {
-    taskList.length = 0;
-    snap.forEach(doc => taskList.push({ id: doc.id, ...doc.data() }));
-    renderTasks();
-  });
+      taskList.length = 0;
+      snap.forEach(doc => {
+        const data = { id: doc.id, ...doc.data() };
+        console.log("Tarea recibida:", data);
+        taskList.push(data);
+        });
+      renderTasks();
+      });
+
 });
 
 // 4) Al cargar pagina
