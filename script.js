@@ -44,6 +44,7 @@ function setupAuth(fb, ui, onLogin, onLogout) {
 function createDataModule(db, uid) {
       const collRef = db.collection('users').doc(uid).collection('tasks');
       return {
+            collRef,
             subscribe: listener => collRef.onSnapshot(listener),
             save:      tasks => tasks.forEach(t => collRef.doc(t.id.toString()).set(t))
             };
