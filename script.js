@@ -1,19 +1,18 @@
 // script.js - Refactor completo para TaskAs
 
 // 1. Valores por defecto del formulario
-function setDefaultFormValues() {
-  const titleInput   = document.getElementById('title');
-  const dateInput    = document.getElementById('deadline');
-  const timeInput    = document.getElementById('time');
-  const durationInput= document.getElementById('duration');
-
-  titleInput.value    = 'Taskeo';
-  const t             = new Date();
-  t.setDate(t.getDate() + 1);
-  dateInput.value     = t.toISOString().split('T')[0];
-  timeInput.value     = '17:00';
-  durationInput.value = '30';
+function setDefaultFormValues(formEl) {
+  formEl.elements['title'].value    = 'Taskeo';
+  const t = new Date(); t.setDate(t.getDate() + 1);
+  formEl.elements['deadline'].value = t.toISOString().split('T')[0];
+  formEl.elements['time'].value     = '17:00';
+  formEl.elements['duration'].value = '30';
+  // Reiniciar parent y dependencias
+  formEl.elements['parent'].value = '';
+  formEl.querySelector('#dep-chips').innerHTML = '';
+  formEl._selectedDeps = [];
 }
+
 
 // 2. Inicialización de Firebase
 function initFirebase(config) {
