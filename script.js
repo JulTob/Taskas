@@ -75,8 +75,10 @@ window.addEventListener('DOMContentLoaded', () => {
   renderTasks();
   // Botón nueva tarea
   const newBtn = document.getElementById('new-task-btn');
-  newBtn.onclick = () => showTaskModal({ mode: 'create' });
-});
+  if (newBtn && !newBtn.onclick) {          // evita asignarlo dos veces
+    newBtn.onclick = () => showTaskModal({ mode: 'create' });
+    }
+  });
 
 // 5) Mostrar/editar en modal
 function showTaskModal({ mode = 'edit', task = null, path = null }) {
