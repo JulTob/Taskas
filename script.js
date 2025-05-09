@@ -84,6 +84,7 @@ function renderTasks(ui) {
     container.innerHTML = '<p class="text-gray-500">No hay tareas aún.</p>';
     return;
   }
+  // Crear tabla con columna extra "Acciones"
   const table = document.createElement('table');
   table.className = 'w-full table-auto bg-white rounded shadow overflow-hidden';
   table.innerHTML = `
@@ -96,6 +97,7 @@ function renderTasks(ui) {
         <th class="p-2">Duración</th>
         <th class="p-2">Subtareas</th>
         <th class="p-2">Notas</th>
+        <th class="p-2">Acciones</th>
       </tr>
     </thead>
     <tbody class="divide-y"></tbody>`;
@@ -104,17 +106,28 @@ function renderTasks(ui) {
   flat.forEach(({ task, level, path }) => {
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
-    const noteIcon = task.notes ? '✏️' : '—';
+
+    // Interpretar icono de prioridad
+    const priIcon = PRIORITY_ICON[task.priority] || '⚪';
+
+    // Convertir path a string "0-2-1" para dataset
+    const pathStr = path.join('-');
+
     row.innerHTML = `
-      <td class="p-2 font-semibold" style="padding-left:${level*1.5}rem">${task.title}</td>
-      <td class="p-2">${task.priority}</td>
+      <td class="p-2 font-semibold" style="padding-left:${level*1.5}rem">
+        ${task.title}
+      </td>
+      <td class="p-2">${priIcon} ${task.priority}</td>
       <td class="p-2">${task.deadline || '—'}</td>
       <td class="p-2">${task.time || '—'}</td>
       <td class="p-2">${task.duration} min</td>
       <td class="p-2">${task.subtasks.length}</td>
-      <td class="p-2 text-center">${noteIcon}</td>`;
+      <td class="p-2 text-center">${task.notes ? '✏️' : '—'}</td>
+      <td class="p-2 text-center">
+        <button data-path="${pathStr}" class="delete-btn">❌</button>
+      </td>`;
 
-    // Edición inline del título
+    // Inline-edit título (igual que antes)
     const titleCell = row.firstElementChild;
     titleCell.contentEditable = true;
     titleCell.addEventListener('blur', () => {
@@ -126,14 +139,29 @@ function renderTasks(ui) {
       }
     });
 
-    // Click para panel subtareas
+    // Click en fila abre panel subtareas
     row.addEventListener('click', ev => {
-      if (ev.target !== titleCell) toggleSubtaskPanel(path, ui);
+      if (ev.target !== titleCell && !ev.target.classList.contains('delete-btn')) {
+        toggleSubtaskPanel(path, ui);
+      }
     });
+
+    // Botón borrar
+    row.querySelector('.delete-btn').addEventListener('click', ev => {
+      ev.stopPropagation();            // que no abra subtareas
+      const p = ev.currentTarget.dataset.path
+                  .split('-')
+                  .map(n => parseInt(n, 10));
+      deleteTaskByPath(p, ui);
+    });
+
     tbody.appendChild(row);
   });
+
   container.appendChild(table);
 }
+
+// Panel
 
 function toggleSubtaskPanel(path, ui) {
   const task = TaskModule.getByPath(path);
@@ -264,3 +292,20 @@ function toggleSubtaskPanel(path, ui) {
     renderTasks(ui);
   });
 })();
+
+// BORRADO
+function deleteTaskByPath(path, ui) {
+  // Si es una tarea de primer nivel
+  if (path.length === 1) {
+    TaskModule.list.splice(path[0], 1);
+    } 
+  else {
+    // Obtener array padre y eliminar índice
+    const parent = TaskModule.getByPath(path.slice(0, -1));
+    parent.subtasks.splice(path[path.length - 1], 1);
+    }
+  // Guardar cambios y re-renderizar
+  ui.dataModule && ui.dataModule.save(TaskModule.list);
+  renderTasks(ui);
+}
+
