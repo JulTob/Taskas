@@ -8,14 +8,6 @@ const taskContainer = document.getElementById('task-container');
 
 // 1) Firebase
 // firebase.js  (ES Modules)
-import { initializeApp }   from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getAuth,
-         GoogleAuthProvider,
-         signInWithPopup,
-         onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getFirestore,
-         collection, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
 export const app  = initializeApp({ /* tu config */ });      // docs → “Initialize Firebase” :contentReference[oaicite:1]{index=1}
 export const auth = getAuth(app);
 export const db   = getFirestore(app);
