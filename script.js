@@ -179,6 +179,7 @@ function renderTasks(ui) {
     });
 
   container.appendChild(table);
+  updateDependencyOptions(ui);
   }
 
 
@@ -380,4 +381,15 @@ function renderDepChips(ui) {
         });
       })();
 
+function updateDependencyOptions(ui) {
+  const select = ui.form.elements['dependencies'];
+  select.innerHTML = ''; // Limpiar opciones antiguas
+
+  TaskModule.flatten().forEach(({ task }) => {
+    const opt = document.createElement('option');
+    opt.value = task.id;
+    opt.textContent = task.title;
+    select.appendChild(opt);
+  });
+}
 
