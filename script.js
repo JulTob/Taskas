@@ -2,7 +2,7 @@
 
 // 1. Valores por defecto del formulario
 function setDefaultFormValues(formEl) {
-    formEl.elements['title'].value    = 'Taskeo';
+    formEl.elements['title'].value    = '';
     const t = new Date(); t.setDate(t.getDate() + 1);
     formEl.elements['deadline'].value = t.toISOString().split('T')[0];
     formEl.elements['time'].value     = '17:00';
@@ -105,8 +105,8 @@ function renderTasks(ui) {
         <th class="p-2">Subtareas</th>
         <th class="p-2">Notas</th>
         <th class="p-2">Acciones</th>
-      </tr>
-    </thead>
+        </tr>
+      </thead>
     <tbody class="divide-y"></tbody>`;
   
   const tbody = table.querySelector('tbody');
@@ -123,20 +123,20 @@ function renderTasks(ui) {
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
     row.innerHTML = `
-      <td class="p-2 font-semibold" style="padding-left:${level*1.5}rem">
-        ${task.title}
-        </td>
-      <td class="p-2">${priIcon} ${task.priority}</td>
-      <td class="p-2">${task.deadline || '—'}</td>
-      <td class="p-2">${task.time || '—'}</td>
-      <td class="p-2">${task.duration} min</td>
-      <td class="p-2">${deps}</td>
-      <td class="p-2">${task.subtasks.length}</td>
-      <td class="p-2 text-center">${task.notes ? '✏️' : '—'}</td>
-      <td class="p-2 text-center">
-        <button data-path="${pathStr}" class="add-sub mr-2">➕</button>
-        <button data-path="${pathStr}" class="delete-btn">❌</button>
-        </td>`;
+          <td class="p-2 font-semibold" style="padding-left:${level*1.5}rem">
+                ${task.title}
+                </td>
+          <td class="p-2">${priIcon} ${task.priority}</td>
+          <td class="p-2">${task.deadline || '—'}</td>
+          <td class="p-2">${task.time || '—'}</td>
+          <td class="p-2">${task.duration} min</td>
+          <td class="p-2">${deps}</td>
+          <td class="p-2">${task.subtasks.length}</td>
+          <td class="p-2 text-center">${task.notes ? '✏️' : '—'}</td>
+          <td class="p-2 text-center">
+            <button data-path="${pathStr}" class="add-sub mr-2">➕</button>
+            <button data-path="${pathStr}" class="delete-btn">❌</button>
+            </td>`;
 
     // Inline-edit título
     const titleCell = row.firstElementChild;
@@ -249,19 +249,32 @@ function toggleSubtaskPanel(path, ui) {
 
 // BORRADO
 function deleteTaskByPath(path, ui) {
-  // Si es una tarea de primer nivel
-  if (path.length === 1) {
-    TaskModule.list.splice(path[0], 1);
-    } 
-  else {
-    // Obtener array padre y eliminar índice
-    const parent = TaskModule.getByPath(path.slice(0, -1));
-    parent.subtasks.splice(path[path.length - 1], 1);
-    }
-  // Guardar cambios y re-renderizar
-  ui.dataModule && ui.dataModule.save(TaskModule.list);
-  renderTasks(ui);
-}
+      let deletedTaskId = null;
+      if (path.length === 1) {
+            // Eliminar del array raíz
+            const deleted = TaskModule.list.splice(path[0], 1)[0];
+            deletedTaskId = deleted.id;
+            } 
+      else {
+            // Eliminar subtarea → solo local (no tiene doc en Firestore)
+            const parent = TaskModule.getByPath(path.slice(0, -1));
+            parent.subtasks.splice(path[path.length - 1], 1);
+            }
+    
+      // Guardar cambios
+      ui.dataModule && ui.dataModule.save(TaskModule.list);
+    
+      // Borrar documento en Firestore si es tarea raíz
+      if (deletedTaskId && ui.dataModule && ui.dataModule.collRef) {
+          ui.dataModule.collRef
+              .doc(deletedTaskId.toString())
+              .delete()
+              .then(() => console.log(`🔥 Borrada tarea ${deletedTaskId} de Firestore`))
+              .catch(err => console.error('Error al borrar:', err));
+          }
+      renderTasks(ui);
+      }
+
 
 
 // 6. UI: manejo de menú emergente y formulario
