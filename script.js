@@ -1,20 +1,7 @@
 // Taskas – gestor con Google login y Firestore
 // --------------------------------------------
-// --------- 0 - Memoria y referencias ----------
-const taskList      = [];
 
-const form          = document.getElementById('task-form');
-const taskContainer = document.getElementById('task-container');
-
-const titleInput    = document.getElementById('title');
-const dateInput     = document.getElementById('deadline');
-const timeInput     = document.getElementById('time');
-const durationInput = document.getElementById('duration');
-const notesInput    = document.getElementById('notes');
-const parentSelect  = document.getElementById('parentSelect');
-
-
-// --------- 1 - Firebase ----------
+// ---------- Firebase ----------
 // (colócalo antes que el resto para que collRef exista)
 const auth     = firebase.auth();
 const db       = firebase.firestore();
@@ -28,7 +15,6 @@ const logoutBtn = document.getElementById('logoutBtn');
 loginBtn.onclick  = () => auth.signInWithPopup(provider);
 logoutBtn.onclick = () => auth.signOut();
 
-
 /* === estado de autenticación === */
 auth.onAuthStateChanged(user => {
   if (!user) {
@@ -39,7 +25,7 @@ auth.onAuthStateChanged(user => {
     taskList.length = 0;
     renderTasks();
     return;
-    }
+  }
 
   // login OK
   loginBtn.classList.add('hidden');
@@ -52,11 +38,20 @@ auth.onAuthStateChanged(user => {
     taskList.length = 0;
     snap.forEach(doc => taskList.push({ id: doc.id, ...doc.data() }));
     renderTasks();
-    refreshTaskOptions()
-    renderDepsChips();
-    });
   });
+});
 
+// ---------- Memoria y referencias ----------
+const taskList      = [];
+
+const form          = document.getElementById('task-form');
+const taskContainer = document.getElementById('task-container');
+
+const titleInput    = document.getElementById('title');
+const dateInput     = document.getElementById('deadline');
+const timeInput     = document.getElementById('time');
+const durationInput = document.getElementById('duration');
+const notesInput    = document.getElementById('notes');
 
 // ---------- Valores por defecto ----------
 function setDefaultFormValues() {
@@ -66,15 +61,13 @@ function setDefaultFormValues() {
   dateInput.value    = t.toISOString().split('T')[0];
   timeInput.value    = '17:00';
   durationInput.value = '30';
-  }
+}
 
 // ---------- Al cargar ----------
 window.addEventListener('DOMContentLoaded', () => {
   setDefaultFormValues();
   renderTasks();           // mostrará “No hay tareas…” hasta hacer login
-  refreshTaskOptions();
-  renderDepsChips()
-  });
+});
 
 // ---------- 1. Crear tarea ----------
 form.addEventListener('submit', e => {
@@ -90,21 +83,13 @@ form.addEventListener('submit', e => {
     notes     : notesInput.value.trim(),
     completed : false,
     timeSpent : 0,
-    subtasks  : [],
-    parentId  : parentSelect.value ? Number(parentSelect.value) : null,
-    dependsOn : [...selectedDeps],
-    };
+    subtasks  : []
+  };
 
-  if (task.parentId) {
-    const parent = findTaskById(task.parentId);      // helper
-    parent.subtasks.push(task);
-  } else {
-    taskList.push(task);                             // raíz
-    }
+  taskList.push(task);
   saveTasks();
   form.reset();
   setDefaultFormValues();
-  refreshTaskOptions();
   renderTasks();
 });
 
@@ -135,9 +120,8 @@ function renderTasks() {
   table.innerHTML = `
     <thead class="bg-gray-200 text-left">
       <tr><th class="p-2">Título</th><th class="p-2">Prioridad</th>
-          <th class="p-2">Fecha Límite</th><th class="p-2">Hora</th>
+          <th class="p-2">Fecha</th><th class="p-2">Hora</th>
           <th class="p-2">Duración</th><th class="p-2">Subtareas</th>
-          <th class="p-2">Depende</th>
           <th class="p-2">Notas</th></tr>
     </thead><tbody class="divide-y"></tbody>`;
   const tbody = table.querySelector('tbody');
@@ -148,15 +132,14 @@ function renderTasks() {
     const noteIcon = task.notes ? '✏️' : '—';
 
     row.innerHTML = `
-      <td class="p-2 font-semibold" style="padding-left:${level*1.6}rem">
-        🔴 ${task.title}
+      <td class="p-2 font-semibold" style="padding-left:${level*1.5}rem">
+        ${task.title}
       </td>
       <td class="p-2">${task.priority}</td>
       <td class="p-2">${task.deadline || '—'}</td>
       <td class="p-2">${task.time || '—'}</td>
       <td class="p-2">${task.duration} min</td>
       <td class="p-2">${task.subtasks.length}</td>
-      <td class="p-2">${task.dependsOn?.length ? task.dependsOn.length : '—'}</td>
       <td class="p-2 text-center">${noteIcon}</td>`;
 
     const titleCell = row.firstElementChild;
@@ -167,10 +150,8 @@ function renderTasks() {
         task.title = newTitle;
         saveTasks();
         renderTasks();
-        refreshTaskOptions();
-        }
-      
-      });
+      }
+    });
 
     row.addEventListener('click', ev => {
       if (ev.target !== titleCell) toggleSubtaskPanel(path);
@@ -246,7 +227,7 @@ function toggleSubtaskPanel(path) {
       notes    : d.get('notes').trim(),
       completed: false,
       subtasks : [],
-      timeSpent: 0,
+      timeSpent: 0
     });
     saveTasks();
   };
@@ -258,65 +239,4 @@ function toggleSubtaskPanel(path) {
 function saveTasks() {
   if (!collRef) return;
   taskList.forEach(t => collRef.doc(t.id.toString()).set(t));
-  }
-
-// --- Parentaje y Dependencia ---
-function refreshTaskOptions() {
-  renderDepsChips();
-  // llena los select con todas las tareas raíz (o todas, según prefieras)
-  const parentSel = document.getElementById('parentSelect');
-  if (!parentSel) return;
-
-  // limpia
-  parentSel.querySelectorAll('option:not([value=""])').forEach(o => o.remove());
-
-  flattenTasks(taskList).forEach(({ task, level }) => {
-      const label = '‒'.repeat(level) + ' ' + task.title;
-      // opción padre
-      const optP = new Option(label, task.id);
-      parentSel.add(optP);
-      // opción dependencias
-      const optD = new Option(label, task.id);
-      });
-    }
-
-function findTaskById(id, cursor = taskList) {
-      for (const t of cursor) {
-        if (t.id === id) return t;
-        const found = findTaskById(id, t.subtasks);
-        if (found) return found;
-        }
-      return null;
-    }
-
-let selectedDeps = [];
-
-function renderDepsChips() {
-      const container = document.getElementById('depsChips');
-      if (!container) return;
-    
-      container.innerHTML = '';  // Limpia
-    
-      flattenTasks(taskList).forEach(({ task }) => {
-            const chip = document.createElement('button');
-            chip.textContent = task.title;
-            chip.className = `
-              px-3 py-1 rounded-full border text-sm transition
-              ${selectedDeps.includes(task.id)
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-brand-800 border-brand-400 hover:bg-brand-100'}
-              `;
-        
-            chip.onclick = () => {
-              if (selectedDeps.includes(task.id)) {
-                selectedDeps = selectedDeps.filter(id => id !== task.id);
-                } 
-              else {
-                selectedDeps.push(task.id);
-                }
-              renderDepsChips();
-              };
-        
-            container.appendChild(chip);
-            });
-      }
+}
