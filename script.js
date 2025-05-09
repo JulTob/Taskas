@@ -1,5 +1,6 @@
 // script.js - Refactor completo para TaskAs
 
+
 // 1. Valores por defecto del formulario
 function setDefaultFormValues() {
   const titleInput   = document.getElementById('title');
