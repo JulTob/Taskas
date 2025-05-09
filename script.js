@@ -73,10 +73,9 @@ auth.onAuthStateChanged(user => {
 // 4) Al cargar pagina
 window.addEventListener('DOMContentLoaded', () => {
   renderTasks();
-  // Botón nueva tarea
   const newBtn = document.getElementById('new-task-btn');
-  if (newBtn && !newBtn.onclick) {          // evita asignarlo dos veces
-    newBtn.onclick = () => showTaskModal({ mode: 'create' });
+  if (newBtn) {
+    newBtn.onclick = () => showTaskModal({ mode:'create' });
     }
   });
 
