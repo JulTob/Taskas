@@ -178,7 +178,7 @@ function renderTasks(ui) {
     tbody.appendChild(row);
     });
 
-  container.appendChild(table);
+  taskContainer.appendChild(table);
   updateDependencyOptions(ui);
   }
 
