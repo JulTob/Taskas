@@ -117,35 +117,14 @@
                     <textarea name="notes" rows="2" class="w-full p-2 border rounded"
                               placeholder="Notas de la tarea"></textarea>
                 
-<!-- PARENT DROPDOWN -->
-<label class="block font-semibold">Ramal de</label>
-<div id="parent-dropdown" class="relative">
-  <button type="button"
-          class="w-full p-2 border rounded text-left flex justify-between items-center"
-          data-open="false">
-    <span data-placeholder>Raíz</span>
-    <svg class="w-4 h-4" /* icono */></svg>
-  </button>
-  <ul class="absolute left-0 right-0 bg-white border rounded shadow mt-1 hidden max-h-60 overflow-auto">
-    <!-- Aquí irán <li data-id="...">Título de la tarea</li> -->
-  </ul>
-  <!-- campo real para el form -->
-  <input type="hidden" name="parent">
-</div>                
-<label class="block font-semibold mt-4">Dependencias</label>
-<div id="deps-dropdown" class="relative">
-  <button type="button"
-          class="w-full p-2 border rounded text-left flex justify-between items-center"
-          data-open="false">
-    <span data-placeholder>Selecciona dependencias…</span>
-    <svg class="w-4 h-4" /* icono */></svg>
-  </button>
-  <ul class="absolute left-0 right-0 bg-white border rounded shadow mt-1 hidden max-h-60 overflow-auto">
-    <!-- Aquí irán <li><label><input type="checkbox" data-id="..."> Título</label></li> -->
-  </ul>
-  <!-- contenedor de chips -->
-  <div id="deps-chips" class="flex flex-wrap gap-2 mt-2"></div>
-</div>                
+<select name="parent">            <!-- solo una opción -->
+  <!-- updateFormOptions rellenará esto -->
+  </select>
+
+<select name="dependencies" multiple>  <!-- varias opciones -->
+  <!-- aquí sí puedes elegir muchas -->
+  </select>
+               
                     <div class="text-right">
                           <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
                             ✅ Guardar tarea
