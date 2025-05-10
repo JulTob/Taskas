@@ -121,6 +121,7 @@ function renderTasks(ui) {
                   return t ? t.title : '—';
                   })
             .join(', ') || '—';
+    const subCount = task.subtasks ? task.subtasks.length : 0;
     const row = document.createElement('tr');
     row.className = 'cursor-pointer hover:bg-gray-50';
     row.innerHTML = `
@@ -132,7 +133,7 @@ function renderTasks(ui) {
           <td class="p-2">${task.time || '—'}</td>
           <td class="p-2">${task.duration} min</td>
           <td class="p-2">${deps}</td>
-          <td class="p-2">${task.subtasks.length}</td>
+          <td class="p-2">${subCount}</td>
           <td class="p-2 text-center">${task.notes ? '✏️' : '—'}</td>
           <td class="p-2 text-center">
             <button data-path="${pathStr}" class="add-sub mr-2">➕</button>
