@@ -17,7 +17,7 @@ function setDefaultFormValues(formEl) {
 // 2. Inicialización de Firebase
 function initFirebase(config) {
     firebase.initializeApp(config);
-    return {
+    return {e
         auth: firebase.auth(),
         db: firebase.firestore(),
         provider: new firebase.auth.GoogleAuthProvider()
@@ -371,16 +371,16 @@ function renderDepChips(ui) {
             notes: f['notes'].value.trim(),
             completed: false,
             timeSpent: 0,
-            subtasks: [],
+            parentId: isSub ? getParentIdFromPath(ui._parentForSub) : null,
             dependencies: ui._selectedDeps
-          };
+            };
           if (isSub) {
             const parent = TaskModule.getByPath(ui._parentForSub);
             parent.subtasks.push(task);
             ui._parentForSub = null;
           } else {
             TaskModule.add(task);
-          }
+            }
           ui.dataModule.save(TaskModule.list);
           ui.form.reset();
           setDefaultFormValues(ui.form);
