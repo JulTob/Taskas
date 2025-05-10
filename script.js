@@ -1,4 +1,4 @@
-// script.js - Refactor completo para TaskAs
+// script.js 
 
 // 1. Valores por defecto del formulario
 function setDefaultFormValues(formEl) {
@@ -17,7 +17,7 @@ function setDefaultFormValues(formEl) {
 // 2. Inicialización de Firebase
 function initFirebase(config) {
     firebase.initializeApp(config);
-    return {e
+    return {
         auth: firebase.auth(),
         db: firebase.firestore(),
         provider: new firebase.auth.GoogleAuthProvider()
@@ -371,7 +371,7 @@ function renderDepChips(ui) {
                 notes: f['notes'].value.trim(),
                 completed: false,
                 timeSpent: 0,
-                parentId: parentId: ui.currentParentId || null,
+                parentId: null,
                 dependencies: ui._selectedDeps
                 };
           if (isSub) {
