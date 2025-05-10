@@ -103,6 +103,7 @@ function renderTasks(ui) {
         <th class="p-2">Fecha</th>
         <th class="p-2">Hora</th>
         <th class="p-2">Duración</th>
+        <th class="p-2">Dependencias</th>
         <th class="p-2">Subtareas</th>
         <th class="p-2">Notas</th>
         <th class="p-2">Acciones</th>
