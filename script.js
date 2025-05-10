@@ -230,17 +230,17 @@ function toggleSubtaskPanel(path, ui) {
     e.preventDefault();
     const d = new FormData(e.target);
     task.subtasks.push({
-      id: Date.now(),
-      title: d.get('title').trim(),
-      deadline: d.get('deadline'),
-      time: d.get('time'),
-      duration: d.get('duration') || 30,
-      priority: d.get('priority'),
-      notes: d.get('notes').trim(),
-      completed: false,
-      subtasks: [],
-      timeSpent: 0
-    });
+        id: Date.now(),
+        title: d.get('title').trim(),
+        deadline: d.get('deadline'),
+        time: d.get('time'),
+        duration: d.get('duration') || 30,
+        priority: d.get('priority'),
+        notes: d.get('notes').trim(),
+        completed: false,
+        subtasks: [],
+        timeSpent: 0
+        });
     ui.dataModule && ui.dataModule.save(TaskModule.list);
     renderTasks(ui);
   };
@@ -272,7 +272,7 @@ function deleteTaskByPath(path, ui) {
               .delete()
               .then(() => console.log(`🔥 Borrada tarea ${deletedTaskId} de Firestore`))
               .catch(err => console.error('Error al borrar:', err));
-          }
+            }
       renderTasks(ui);
       }
 
@@ -280,39 +280,39 @@ function deleteTaskByPath(path, ui) {
 
 // 6. UI: manejo de menú emergente y formulario
 function setupMenu(ui) {
-  const popup = document.getElementById('task-popup');
-  ui.newTaskBtn.onclick = () => popup.classList.toggle('hidden');
-  // dependencias: seleccionar tarea padre y dependencias
-  ui.form.elements['parent'].onchange = e => ui._currentParent = e.target.value;
-  // chips de dependencias
-  const depList = ui.form.elements['dependencies'];
-  depList.onchange = e => {
-    const sel = Array.from(e.target.selectedOptions).map(o=>o.value);
-    ui._selectedDeps = sel;
-    renderDepChips(ui);
-  };
-}
+    const popup = document.getElementById('task-popup');
+    ui.newTaskBtn.onclick = () => popup.classList.toggle('hidden');
+    // dependencias: seleccionar tarea padre y dependencias
+    ui.form.elements['parent'].onchange = e => ui._currentParent = e.target.value;
+    // chips de dependencias
+    const depList = ui.form.elements['dependencies'];
+    depList.onchange = e => {
+        const sel = Array.from(e.target.selectedOptions).map(o=>o.value);
+        ui._selectedDeps = sel;
+        renderDepChips(ui);
+        };
+    }
 
 function renderDepChips(ui) {
-  const container = ui.depChips;
-  container.innerHTML = '';
-  ui._selectedDeps.forEach(id => {
-    const t = TaskModule.list.find(ts=>ts.id.toString()===id);
-    if(!t) return;
-    const chip = document.createElement('span');
-    chip.className = 'inline-flex items-center bg-gray-200 rounded-full px-2 py-1 mr-2';
-    chip.textContent = t.title;
-    const x = document.createElement('button'); x.textContent='✖'; x.className='ml-1';
-    x.onclick = ()=>{
-      ui._selectedDeps = ui._selectedDeps.filter(d=>d!==id);
-      Array.from(ui.form.elements['dependencies'].options)
-           .find(o=>o.value===id).selected=false;
-      renderDepChips(ui);
-    };
-    chip.append(x);
-    container.append(chip);
-  });
-}
+        const container = ui.depChips;
+        container.innerHTML = '';
+        ui._selectedDeps.forEach(id => {
+                const t = TaskModule.list.find(ts=>ts.id.toString()===id);
+                if(!t) return;
+                const chip = document.createElement('span');
+                chip.className = 'inline-flex items-center bg-gray-200 rounded-full px-2 py-1 mr-2';
+                chip.textContent = t.title;
+                const x = document.createElement('button'); x.textContent='✖'; x.className='ml-1';
+                x.onclick = ()=>{
+                    ui._selectedDeps = ui._selectedDeps.filter(d=>d!==id);
+                    Array.from(ui.form.elements['dependencies'].options)
+                       .find(o=>o.value===id).selected=false;
+                    renderDepChips(ui);
+                    };
+                chip.append(x);
+                container.append(chip);
+                });
+        }
 
 
 
@@ -362,18 +362,18 @@ function renderDepChips(ui) {
           const f = ui.form.elements;
           const isSub = !!ui._parentForSub;
           const task = {
-            id: Date.now(),
-            title: f['title'].value.trim(),
-            deadline: f['deadline'].value,
-            time: f['time'].value,
-            priority: f['priority'].value,
-            duration: f['duration'].value || 30,
-            notes: f['notes'].value.trim(),
-            completed: false,
-            timeSpent: 0,
-            parentId: isSub ? getParentIdFromPath(ui._parentForSub) : null,
-            dependencies: ui._selectedDeps
-            };
+                id: Date.now(),
+                title: f['title'].value.trim(),
+                deadline: f['deadline'].value,
+                time: f['time'].value,
+                priority: f['priority'].value,
+                duration: f['duration'].value || 30,
+                notes: f['notes'].value.trim(),
+                completed: false,
+                timeSpent: 0,
+                parentId: parentId: ui.currentParentId || null,
+                dependencies: ui._selectedDeps
+                };
           if (isSub) {
             const parent = TaskModule.getByPath(ui._parentForSub);
             parent.subtasks.push(task);
