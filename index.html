@@ -57,7 +57,8 @@
     </script> -->
 
   <style>
-      .chip { @apply px-2 py-1 rounded-full shadow-sm; }
+      .chip { @apply px-2 py-1 rounded-full shadow-sm; };
+      .chip:hover { @apply ring-2 ring-brand-400; };
       </style>
 
   </head>
@@ -155,16 +156,22 @@
               <select name="parent" class="w-full p-2 border rounded"></select>
               <!-- BLOQUE POMODORO -->
               <div id="timer-block"
-                   class="hidden flex items-center gap-2 text-sm">
+                   class="hidden flex items-center gap-3 text-sm">
                   <span id="timer-display"
                         class="min-w-[6ch] text-right text-red-600">0&nbsp;min</span>
-                  <button type="button" id="tomato-btn" 
-                      class="chip bg-red-500 text-white">🍅</button>
-                  <button type="button" id="inc-btn"    
-                    class="chip bg-slate-200">🔺</button>
-                  <button type="button" id="dec-btn"    
-                    class="chip bg-slate-200">🔻</button>
-                  </div>  
+                  <!-- consola -->
+                  <div class="flex items-center gap-2 bg-slate-100 rounded-full px-3 py-1">
+                      <button type="button" id="tomato-btn" 
+                          class="chip bg-red-500 text-white">🍅</button>
+                      <!-- flechas en columna -->
+                      <div class="flex flex-col">
+                          <button type="button" id="inc-btn"    
+                              class="chip bg-slate-200 leading-none">🔺</button>
+                          <button type="button" id="dec-btn"    
+                              class="chip bg-slate-200 leading-none mt-1">🔻</button>
+                          </div>  
+                      </div> 
+                  </div> 
 
               <div class="text-right">
                   <button 
