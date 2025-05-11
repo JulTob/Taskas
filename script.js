@@ -1,4 +1,5 @@
 // script.js 
+/* ------------------- constantes ------------------- */
 const PRIORITIES = [
     'Alta', 
     'Media', 
@@ -10,7 +11,7 @@ const PRIORITIES = [
 
 // -------- Inicialización de Firebase --------
 function initFirebase(config) {
-    const app = firebase.initializeApp(config);
+    firebase.initializeApp(config);
     return {
         auth: firebase.auth(),
         db: firebase.firestore(),
@@ -47,7 +48,7 @@ function openModal(task, ui) {
       const { modal, overlay, form } = ui;
       modal.classList.remove('hidden');
       overlay.classList.remove('hidden');
-      overlay.onclick = closeModal;         
+      overlay.onclick = closeModal(ui);         
         // clic fuera = cerrar
     
       // título
@@ -236,13 +237,14 @@ function setDefaultFormValues(formEl) {
 
         ui.dataModule.subscribe(snap => {
               TaskModule.clear();
-              const data = doc.data();
-              snap.forEach(doc => TaskModule.add({ 
-                  id: +doc.id, 
-                  ...data,
-                  timer       : data.timer ?? 0,
-                  timerRunning: false
-                  }));
+              snap.forEach(doc => 
+                  const data = doc.data();
+                  TaskModule.add({ 
+                      id: +doc.id, 
+                      ...data,
+                      timer       : data.timer ?? 0,
+                      timerRunning: false
+                      }));
               renderTasks(ui);
               });
       
