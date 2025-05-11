@@ -348,6 +348,26 @@ function setDefaultFormValues(formEl) {
     task.priority  = f['priority'].value;
     task.notes     = f['notes'].value.trim();
     task.parentId  = f['parent'].value === '' ? null : +f['parent'].value;
+
+    // ① Proteger contra “padre = yo mismo”
+    if (task.parentId === task.id) task.parentId = null;
+
+    // ② (opcional) Proteger contra bucles: que su nuevo padre no sea un descendiente
+    // ------------------------------------------------------------
+    function isDescendant(candidateId, targetId) {
+    // ¿targetId está en la cadena de padres de candidateId?
+    let p = TaskModule.getById(candidateId)?.parentId;
+    while (p != null) {
+      if (p === targetId) return true;
+      p = TaskModule.getById(p)?.parentId ?? null;
+      }
+    return false;
+    }
+    if (task.parentId && isDescendant(task.parentId, task.id)) {
+        alert('No puedes hacer que una tarea sea hija de su propio descendiente.');
+        task.parentId = null;
+        }
+    // ------------------------------------------------------------
     
     /* 3· Añadir a la lista si es una tarea nueva */
     if (!isEdit) TaskModule.add(task);
