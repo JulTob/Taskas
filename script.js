@@ -102,12 +102,12 @@ function openModal(task, ui) {
           tomatoBtn.onclick = () => startPomodoro(task, ui, timerBox);
           
           incBtn.onclick = () => {
-            task.timer = (task.timer ?? 0) + 5;
+            task.timer = (task.timer ?? 0) + 1;
             timerBox.textContent = fmt(task.timer*60);
             };
           
           decBtn.onclick = () => {
-            task.timer = Math.max(0,(task.timer ?? 0)-5);
+            task.timer = Math.max(0,(task.timer ?? 0) - 1);
             timerBox.textContent = fmt(task.timer*60);
             };
           form.elements['editId'].value  = task.id;
