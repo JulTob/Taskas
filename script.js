@@ -85,7 +85,7 @@ function openModal(task, ui) {
     
       // ── referencias a los controles de tiempo ──
       const timerBlock   = form.querySelector('#timer-block');
-      const timerDisplay = form.querySelector('#timer-display');
+      const timerBox     = form.querySelector('#timer-box');
       const tomatoBtn    = form.querySelector('#tomato-btn');
       const incBtn       = form.querySelector('#inc-btn');
       const decBtn       = form.querySelector('#dec-btn');
@@ -96,18 +96,20 @@ function openModal(task, ui) {
     
       if (task) {   
           // ----- EDITAR -----
-          timerDisplay.textContent = `${task.timer ?? 0} min`;
+          timerBox.textContent = fmt((task.timer ?? 0)*60);
           timerBlock.classList.remove('hidden');
           
-          tomatoBtn.onclick = () => startPomodoro(task, ui, timerDisplay);
-          incBtn.onclick    = () => {
-              task.timer = (task.timer ?? 0) + 5;
-              timerDisplay.textContent = `${task.timer} min`;
-              };
-          decBtn.onclick    = () => {
-              task.timer = Math.max(0, (task.timer ?? 0) - 5);
-              timerDisplay.textContent = `${task.timer} min`;
-              };  
+          tomatoBtn.onclick = () => startPomodoro(task, ui, timerBox);
+          
+          incBtn.onclick = () => {
+            task.timer = (task.timer ?? 0) + 5;
+            timerBox.textContent = fmt(task.timer*60);
+            };
+          
+          decBtn.onclick = () => {
+            task.timer = Math.max(0,(task.timer ?? 0)-5);
+            timerBox.textContent = fmt(task.timer*60);
+            };
           form.elements['editId'].value  = task.id;
           form.elements['title'].value   = task.title;
           form.elements['deadline'].value= task.deadline;
