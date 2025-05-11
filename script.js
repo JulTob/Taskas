@@ -1,4 +1,6 @@
-// script.js (reestructurado con modelo plano usando parentId)
+// script.js 
+const PRIORITIES = ['Alta', 'Media', 'Baja', 'Retraso', 'Completa'];
+
 
 // -------- 1. Inicialización de Firebase --------
 function initFirebase(config) {
@@ -75,6 +77,15 @@ function renderTasks(ui) {
 
   flat.forEach(({ task, level }) => {
     const row = document.createElement('tr');
+    const bg = {
+          'Alta'     : 'bg-red-100',
+          'Media'    : '',
+          'Baja'     : 'bg-green-50',
+          'Retraso'  : 'bg-yellow-200',
+          'Completa' : 'bg-gray-200 line-through opacity-60'
+          }[task.priority] || '';
+    row.className = bg;
+
     row.innerHTML = `
       <td class="p-2" style="padding-left:${level * 1.5}rem">${task.title}</td>
       <td class="p-2">${task.priority}</td>
@@ -116,25 +127,21 @@ function toggleSubtaskPanel(id, ui) {
 
     <!-- fecha y hora -->
     <div class="flex gap-2 mb-2">
-      <input  id="edit-date"   type="date"
-              class="flex-1 p-2 border rounded"
-              value="${task.deadline || ''}">
-      <input  id="edit-time"   type="time"
-              class="flex-1 p-2 border rounded"
-              value="${task.time || ''}">
-    </div>
+          <input  id="edit-date"   type="date"
+                  class="flex-1 p-2 border rounded"
+                  value="${task.deadline || ''}">
+          <input  id="edit-time"   type="time"
+                  class="flex-1 p-2 border rounded"
+                  value="${task.time || ''}">
+          </div>
 
     <!-- duración y prioridad -->
     <div class="flex gap-2 mb-2">
-      <input  id="edit-duration" type="number" min="5" step="5"
-              class="flex-1 p-2 border rounded"
-              value="${task.duration}">
-      <select id="edit-priority" class="flex-1 p-2 border rounded">
-        <option ${task.priority==='Alta'    ?'selected':''}>Alta</option>
-        <option ${task.priority==='Media'   ?'selected':''}>Media</option>
-        <option ${task.priority==='Baja'    ?'selected':''}>Baja</option>
-      </select>
-    </div>
+            <input  id="edit-duration" type="number" min="5" step="5"
+                    class="flex-1 p-2 border rounded"
+                    value="${task.duration}">
+            <select id="edit-priority" class="flex-1 p-2 border rounded"></select>
+            </div>
 
     <!-- notas -->
     <textarea id="edit-notes" rows="3"
@@ -144,17 +151,21 @@ function toggleSubtaskPanel(id, ui) {
 
     <button id="save-edit"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-      💾 Guardar cambios
-    </button>
+        💾 Guardar 
+        </button>
   `;
+  
+  const sel = panel.querySelector('#edit-priority');
+  PRIORITIES.forEach(p => sel.add(new Option(p, p, false, p === task.priority)));
 
   panel.querySelector('#save-edit').onclick = () => {
+    
     // 1· Actualizar objeto
     task.title     = panel.querySelector('#edit-title').value.trim();
     task.deadline  = panel.querySelector('#edit-date').value;
     task.time      = panel.querySelector('#edit-time').value;
-    task.duration  = +panel.querySelector('#edit-duration').value;
-    task.priority  = panel.querySelector('#edit-priority').value;
+    task.duration  = panel.querySelector('#edit-duration').value;
+    task.priority  = sel.value;
     task.notes     = panel.querySelector('#edit-notes').value.trim();
 
     // 2· Persistir y refrescar UI
@@ -202,14 +213,22 @@ function setDefaultFormValues(formEl) {
   const t = new Date();
   t.setDate(t.getDate() + 1); // mañana
 
+  // construir lista de opciones cada vez que se abra el formulario
+  const sel = formEl.elements['priority'];
+  sel.innerHTML = '';                                     // limpia
+  PRIORITIES.forEach(p => {                               // repuebla
+      const opt = new Option(p, p, false, p === 'Media');   // 'Media' marcada
+      sel.add(opt);
+      });
+
+
   formEl.elements['title'].value = '';
   formEl.elements['deadline'].value = t.toISOString().split('T')[0];
   formEl.elements['time'].value = '17:00';
   formEl.elements['duration'].value = '30';
-  formEl.elements['priority'].value = 'Media';
   formEl.elements['notes'].value = '';
   formEl.elements['parent'].value = '';
-}
+  }
 
 
 // -------- 9. Punto de entrada --------
