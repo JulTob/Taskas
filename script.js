@@ -156,7 +156,9 @@ function renderTasks(ui) {
             <td class="p-2">${task.priority}</td>
             <td class="p-2">${task.deadline || '—'}</td>
             <td class="p-2">${task.time || '—'}</td>
-            <td class="p-2">${task.duration} min</td>
+            <td class="p-2">${task.duration} min <br>
+                  <span class="text-xs text-gray-500">${task.timer ?? 0} min</span>
+                </td>
             <td class="p-2">
               <button data-id="${task.id}" class="edit-btn text-blue-500">✏️</button>
               <button data-id="${task.id}" class="delete-btn text-red-500">❌</button>
