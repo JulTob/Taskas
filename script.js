@@ -141,12 +141,6 @@ function toggleSubtaskPanel(id, ui) {
               class="w-full p-2 border rounded mb-2"
               placeholder="Notas">${task.notes||''}</textarea>
 
-    <!-- completada -->
-    <label class="inline-flex items-center gap-2 mb-4">
-      <input id="edit-completed" type="checkbox"
-             class="h-4 w-4" ${task.completed?'checked':''}>
-      <span class="select-none">Marcar como completada</span>
-    </label><br>
 
     <button id="save-edit"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
@@ -162,7 +156,6 @@ function toggleSubtaskPanel(id, ui) {
     task.duration  = +panel.querySelector('#edit-duration').value;
     task.priority  = panel.querySelector('#edit-priority').value;
     task.notes     = panel.querySelector('#edit-notes').value.trim();
-    task.completed = panel.querySelector('#edit-completed').checked;
 
     // 2· Persistir y refrescar UI
     ui.dataModule.save(TaskModule.list);
