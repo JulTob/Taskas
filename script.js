@@ -21,7 +21,7 @@ const firebaseConfig = {
           };
 
 function initFirebase(config) {
-    firebase.initializeApp(config);
+    //firebase.initializeApp(config);
     return {
         auth: firebase.auth(),
         db: firebase.firestore(),
