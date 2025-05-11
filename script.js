@@ -373,7 +373,7 @@ function renderDepChips(ui) {
                 notes: f['notes'].value.trim(),
                 completed: false,
                 timeSpent: 0,
-                parentId: null,
+                parentId: f['parent'].value || null,
                 dependencies: ui._selectedDeps
                 };
           if (isSub) {
