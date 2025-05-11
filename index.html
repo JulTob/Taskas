@@ -96,58 +96,64 @@
         <div id="task-container"> </div>
       </div>
   
-      <!-- ─────── Selector de relaciones (si lo usas) ─────── -->
-  <div id="relation-picker" class="hidden absolute bg-white p-4 shadow z-50">
-    <h3 class="font-semibold mb-2">Elige padre</h3>
-    <ul id="parent-list"></ul>
-    <h3 class="font-semibold mt-4 mb-2">Dependencias</h3>
-    <ul id="dep-list"></ul>
-    <button id="save-relations"
-            class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-      Guardar
-    </button>
-  </div>
+      <!-- ─────── Selector de relaciones ─────── -->
+      <!-- selector de relaciones -->
+      <div id="relation-picker" class="hidden absolute bg-white p-4 shadow z-50">
+          <h3 class="font-semibold mb-2">Elige padre</h3>
+          <ul id="parent-list"></ul>
+          <h3 class="font-semibold mt-4 mb-2">Dependencias</h3>
+          <ul id="dep-list"></ul>
+          <button id="save-relations"
+                  class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                  💾 Guardar
+                  </button>
+          </div>
 
-  <!-- ─────────── Modal + overlay ─────────── -->
-  <div id="modal-overlay"
-       class="fixed inset-0 bg-black/40 hidden z-40"></div>
-
-  <div id="task-modal"
-       class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-              w-full max-w-lg bg-white p-6 border rounded-lg shadow-lg hidden
-              z-50">
-    <h2 id="modal-title" class="text-xl font-semibold mb-4"></h2>
-
-    <form id="modal-form" class="space-y-4">
-      <input type="hidden" name="editId">
-
-      <input name="title" class="w-full p-2 border rounded" required
-             placeholder="Título de la tarea">
-
-      <div class="flex gap-2">
-        <input type="date" name="deadline" class="flex-1 p-2 border rounded">
-        <input type="time" name="time"     class="flex-1 p-2 border rounded">
-      </div>
-
-      <div class="flex gap-2">
-        <input type="number" name="duration" min="5" step="5"
-               class="flex-1 p-2 border rounded" placeholder="Duración (min)">
-        <select name="priority" class="flex-1 p-2 border rounded"></select>
-      </div>
-
-      <textarea name="notes" rows="2"
-                class="w-full p-2 border rounded"
-                placeholder="Notas de la tarea"></textarea>
-
-      <select name="parent" class="w-full p-2 border rounded"></select>
-
-      <div class="text-right">
-        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-          💾 Guardar
-        </button>
-      </div>
-    </form>
-  </div>
+      <!-- ─────────── Modal + overlay ─────────── -->
+      <!-- overlay -->
+      <div id="modal-overlay"
+           class="fixed inset-0 bg-black/40 hidden z-40"
+           aria-hidden="true"
+           ></div>
+  
+      <!-- modal -->
+      <div id="task-modal"
+           role="dialog" aria-modal="true"
+           class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                  w-full max-w-lg bg-white p-6 border rounded-lg shadow-lg hidden
+                  z-50">
+            <h2 id="modal-title" class="text-xl font-semibold mb-4"></h2>
+    
+            <form id="modal-form" class="space-y-4">
+                  <input type="hidden" name="editId">
+          
+                  <input name="title" class="w-full p-2 border rounded" required
+                         placeholder="Título de la tarea">
+          
+                  <div class="flex gap-2">
+                      <input type="date" name="deadline" class="flex-1 p-2 border rounded">
+                      <input type="time" name="time"     class="flex-1 p-2 border rounded">
+                      </div>
+          
+                  <div class="flex gap-2">
+                  <input type="number" name="duration" min="5" step="5"
+                         class="flex-1 p-2 border rounded" placeholder="Duración (min)">
+                  <select name="priority" class="flex-1 p-2 border rounded"></select>
+                  </div>
+          
+              <textarea name="notes" rows="2"
+                          class="w-full p-2 border rounded"
+                          placeholder="Notas de la tarea"></textarea>
+          
+              <select name="parent" class="w-full p-2 border rounded"></select>
+          
+              <div class="text-right">
+                  <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                      💾 Guardar
+                      </button>
+                  </div>
+            </form>
+          </div>
 
  <script defer src="script.js"></script>
 </body>
