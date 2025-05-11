@@ -31,7 +31,7 @@ const TaskModule = {
     const out = [];
     function rec(parentId = null, level = 0, path = []) {
       TaskModule.list
-        .filter(t => (t.parentId ?? null) === parentId)
+        .filter(t => (t.parentId ?? null) == parentId)
         .sort((a, b) => a.deadline.localeCompare(b.deadline))
         .forEach((t, i) => {
           const currentPath = [...path, i];
