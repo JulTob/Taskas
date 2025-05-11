@@ -237,14 +237,15 @@ function setDefaultFormValues(formEl) {
 
         ui.dataModule.subscribe(snap => {
               TaskModule.clear();
-              snap.forEach(doc => 
+              snap.forEach(doc => {
                   const data = doc.data();
                   TaskModule.add({ 
                       id: +doc.id, 
                       ...data,
                       timer       : data.timer ?? 0,
                       timerRunning: false
-                      }));
+                      });
+                  });
               renderTasks(ui);
               });
       
