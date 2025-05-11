@@ -31,7 +31,7 @@ const TaskModule = {
     const out = [];
     function rec(parentId = null, level = 0, path = []) {
       TaskModule.list
-        .filter(t => t.parentId === parentId)
+        .filter(t => (t.parentId ?? null) === parentId)
         .sort((a, b) => a.deadline.localeCompare(b.deadline))
         .forEach((t, i) => {
           const currentPath = [...path, i];
@@ -57,7 +57,7 @@ function renderTasks(ui) {
 
   const table = document.createElement('table');
   table.className = 'w-full table-auto bg-white rounded shadow';
-  table.innerHTML = 
+  table.innerHTML = `
     <thead class="bg-gray-200">
       <tr>
         <th class="p-2">Título</th>
@@ -69,13 +69,13 @@ function renderTasks(ui) {
       </tr>
     </thead>
     <tbody class="divide-y"></tbody>
-  ;
+  `;
 
   const tbody = table.querySelector('tbody');
 
   flat.forEach(({ task, level }) => {
     const row = document.createElement('tr');
-    row.innerHTML = 
+    row.innerHTML = `
       <td class="p-2" style="padding-left:${level * 1.5}rem">${task.title}</td>
       <td class="p-2">${task.priority}</td>
       <td class="p-2">${task.deadline || '—'}</td>
@@ -85,7 +85,7 @@ function renderTasks(ui) {
         <button data-id="${task.id}" class="edit-btn text-blue-500">✏️</button>
         <button data-id="${task.id}" class="delete-btn text-red-500">❌</button>
       </td>
-    ;
+    `;
 
     row.querySelector('.edit-btn').onclick = () => toggleSubtaskPanel(task.id, ui);
     row.querySelector('.delete-btn').onclick = () => deleteTask(task.id, ui);
@@ -106,11 +106,11 @@ function toggleSubtaskPanel(id, ui) {
   const panel = document.createElement('div');
   panel.id = 'subpanel';
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
-  panel.innerHTML = 
+  panel.innerHTML = `
     <h2 class="font-semibold mb-2">Editar tarea: ${task.title}</h2>
     <textarea id="note-edit" rows="3" class="w-full p-2 border rounded mb-2">${task.notes || ''}</textarea>
     <button id="save-note" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Guardar</button>
-  ;
+  `;
 
   panel.querySelector('#save-note').onclick = () => {
     task.notes = panel.querySelector('#note-edit').value.trim();
@@ -149,7 +149,22 @@ function updateFormOptions(ui) {
 }
 
 
-// -------- 8. Punto de entrada --------
+// -------- 8. Valores por defecto --------
+function setDefaultFormValues(formEl) {
+  const t = new Date();
+  t.setDate(t.getDate() + 1); // mañana
+
+  formEl.elements['title'].value = '';
+  formEl.elements['deadline'].value = t.toISOString().split('T')[0];
+  formEl.elements['time'].value = '17:00';
+  formEl.elements['duration'].value = '30';
+  formEl.elements['priority'].value = 'Media';
+  formEl.elements['notes'].value = '';
+  formEl.elements['parent'].value = '';
+}
+
+
+// -------- 9. Punto de entrada --------
 (function main() {
   const fb = initFirebase(firebaseConfig);
   const ui = {
@@ -178,6 +193,7 @@ function updateFormOptions(ui) {
 
       ui.loginBtn.classList.add('hidden');
       ui.logoutBtn.classList.remove('hidden');
+      setDefaultFormValues(ui.form);
     } else {
       TaskModule.clear();
       renderTasks(ui);
@@ -200,12 +216,17 @@ function updateFormOptions(ui) {
       duration: f['duration'].value,
       priority: f['priority'].value,
       notes: f['notes'].value,
-      parentId: f['parent'].value || null
+      parentId: f['parent'].value === '' ? null : f['parent'].value
     };
     TaskModule.add(task);
     ui.dataModule.save(TaskModule.list);
     ui.form.reset();
+    setDefaultFormValues(ui.form);
     renderTasks(ui);
     ui.popup.classList.add('hidden');
   };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setDefaultFormValues(ui.form);
+  });
 })();
