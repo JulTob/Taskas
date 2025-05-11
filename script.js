@@ -1,5 +1,11 @@
 // script.js 
-const PRIORITIES = ['Alta', 'Media', 'Baja', 'Retraso', 'Completa'];
+const PRIORITIES = [
+    'Alta', 
+    'Media', 
+    'Baja', 
+    'Retraso', 
+    'Completa'
+    ];
 
 
 // -------- 1. Inicialización de Firebase --------
@@ -60,13 +66,11 @@ function openModal(task, ui) {
       form.elements['title'].focus();
       }
 
-function closeModal() {
-  ui.modal.classList.add('hidden');
-  ui.overlay.classList.add('hidden');
-  }
-
-
-                    
+function closeModal(u) {
+      u.modal.classList.add('hidden');
+      u.overlay.classList.add('hidden');
+      }
+                
 const TaskModule = {
   list: [],
 
@@ -114,15 +118,15 @@ function renderTasks(ui) {
   table.className = 'w-full table-auto bg-white rounded shadow';
   table.innerHTML = `
     <thead class="bg-gray-200">
-      <tr>
-        <th class="p-2">Título</th>
-        <th class="p-2">Prioridad</th>
-        <th class="p-2">Fecha</th>
-        <th class="p-2">Hora</th>
-        <th class="p-2">Duración</th>
-        <th class="p-2">Acciones</th>
-      </tr>
-    </thead>
+        <tr>
+            <th class="p-2">Título</th>
+            <th class="p-2">Prioridad</th>
+            <th class="p-2">Fecha</th>
+            <th class="p-2">Hora</th>
+            <th class="p-2">Duración</th>
+            <th class="p-2">Acciones</th>
+            </tr>
+        </thead>
     <tbody class="divide-y"></tbody>
   `;
 
@@ -290,7 +294,7 @@ function setDefaultFormValues(formEl) {
       newTaskBtn: document.getElementById('new-task-btn'),
       modal   : document.getElementById('task-modal'),
       overlay : document.getElementById('modal-overlay'),      
-      form: document.getElementById('task-form'),
+      form: document.getElementById('modal-form'),
       taskContainer: document.getElementById('task-container'),
       loginBtn: document.getElementById('loginBtn'),
       logoutBtn: document.getElementById('logoutBtn'),
@@ -351,10 +355,7 @@ function setDefaultFormValues(formEl) {
     /* 4· Persistir y refrescar UI */
     ui.dataModule.save(TaskModule.list);
     renderTasks(ui);
-  
-    /* 5· Cerrar el modal y limpiar formulario */
-    ui.modal.classList.add('hidden');
-    ui.overlay.classList.add('hidden');
+    closeModal(ui); 
     ui.form.reset();
     };
 
