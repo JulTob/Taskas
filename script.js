@@ -70,9 +70,10 @@ const TaskModule = {
               rec(this.list);
               return out;
               },
-        getByPath(path) {
-                return path.reduce((cur, idx) => cur.subtasks[idx], { subtasks: this.list });
+        getById(id) {
+                return this.list.find(t => t.id.toString() === id.toString());
                 }
+
         };
 
 // 6. UI: render y panel de subtareas
@@ -189,8 +190,8 @@ function renderTasks(ui) {
 
 // Panel
 
-function toggleSubtaskPanel(path, ui) {
-  const task = TaskModule.getByPath(path);
+function toggleSubtaskPanel(id, ui) {
+  const task = TaskModule.getById(id);
   document.getElementById('subpanel')?.remove();
 
   const panel = document.createElement('div');
@@ -446,5 +447,21 @@ function updateFormOptions(ui) {
 
   // 3) Chips (visualización) según lo ya seleccionado
   renderDepChips(ui);
+}
+
+flatten() {
+  const out = [];
+  function rec(parentId = null, level = 0, path = []) {
+    TaskModule.list
+      .filter(t => t.parentId === parentId)
+      .sort((a, b) => a.deadline.localeCompare(b.deadline)) // opcional
+      .forEach((t, i) => {
+        const currentPath = [...path, i];
+        out.push({ task: t, level, path: currentPath });
+        rec(t.id, level + 1, currentPath);
+      });
+  }
+  rec();
+  return out;
 }
 
