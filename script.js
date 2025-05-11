@@ -232,7 +232,9 @@ function setDefaultFormValues(formEl) {
       logoutBtn: document.getElementById('logoutBtn'),
       dataModule: null
       };
-    
+  
+  window.__TASKAS_UI__ = ui;   // NEW
+
   // Evitar scroll accidental en el input de duración
   document.addEventListener('wheel', e => {
       if (e.target.name === 'duration' && document.activeElement === e.target) {
