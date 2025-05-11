@@ -17,10 +17,9 @@ function startPomodoro(task, ui, displayEl){
              interval: setInterval(tick, 1000) };
 
   // aspecto activo
-  btn.textContent = '⏲️';
+  btn.textContent = '🍅';                     // seguimos usando tomate
   btn.classList.remove('bg-red-500');
-  btn.classList.add('bg-green-600', 'animate-pulse');
-}
+  btn.classList.add('bg-green-600', 'heartbeat');   // ← en lugar de animate-pulse}
 
 function tick(){
   if(!active) return;
@@ -50,7 +49,7 @@ function stopPomodoro(){
   clearInterval(active.interval);
   // aspecto inactivo
   active.btn.textContent = '🍅';
-  active.btn.classList.remove('bg-green-600', 'animate-pulse');
+  active.btn.classList.remove('bg-green-600', 'heartbeat');
   active.btn.classList.add('bg-red-500');
 
   // texto final
