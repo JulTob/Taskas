@@ -1,5 +1,4 @@
 // script.js 
-console.log("✅ script.js cargado");
 
 /* ------------------- constantes ------------------- */
 const PRIORITIES = [
