@@ -1,4 +1,5 @@
 // script.js 
+console.log("✅ script.js loaded");
 /* ------------------- constantes ------------------- */
 const PRIORITIES = [
     'Alta', 
