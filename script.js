@@ -362,9 +362,10 @@ function renderDepChips(ui) {
         ui.form.addEventListener('submit', e => {
           e.preventDefault();
           const f = ui.form.elements;
+          const taskId = crypto.randomUUID(); // o usar Firestore's auto ID si quieres dejarlo en blanco
           const isSub = !!ui._parentForSub;
           const task = {
-                id: Date.now(),
+                id: taskId,
                 title: f['title'].value.trim(),
                 deadline: f['deadline'].value,
                 time: f['time'].value,
