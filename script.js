@@ -300,20 +300,36 @@ function setDefaultFormValues(formEl) {
       logoutBtn: document.getElementById('logoutBtn'),
       dataModule: null
       };
+    
+  // una sola vez, al arrancar la app
+  document.addEventListener('wheel', e => {
+    if (e.target.name === 'duration' && document.activeElement === e.target) {
+      e.preventDefault();          // bloquea la rueda
+      }
+    }, { passive:false });
 
   fb.auth.onAuthStateChanged(user => {
         if (user) {
             ui.dataModule = {
                 collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
-                save: tasks => tasks.forEach(t => ui.dataModule.collRef.doc(t.id.toString()).set(t)),
-                subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
-                };
-    
-            ui.dataModule.subscribe(snap => {
-                  TaskModule.clear();
-                  snap.forEach(doc => TaskModule.add({ id: +doc.id, ...doc.data() }));
-                  renderTasks(ui);
-                  });
+                save: tasks => tasks.forEach(t => 
+                  const { timerRunning, ...persist } = t;      // quita flag volátil      
+                  ui.dataModule.collRef.doc(t.id.toString()).set(persist);
+            }),
+        subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
+        };
+
+        ui.dataModule.subscribe(snap => {
+              TaskModule.clear();
+              const data = doc.data();
+              snap.forEach(doc => TaskModule.add({ 
+                  id: +doc.id, 
+                  ...data,
+                  timer       : data.timer ?? 0,
+                  timerRunning: false
+                  }));
+              renderTasks(ui);
+              });
       
             ui.loginBtn.classList.add('hidden');
             ui.logoutBtn.classList.remove('hidden');
@@ -338,8 +354,11 @@ function setDefaultFormValues(formEl) {
     const isEdit = f['editId'].value !== '';
     const task   = isEdit
           ? TaskModule.getById(+f['editId'].value)    // editar: objeto existente
-          : { id: Date.now() };                       // nuevo: objeto vacío
-
+          : {
+              id: Date.now() ,
+              timer    : 0,
+              timerRunning : false,
+              };                       // nuevo: TaskAs objeto 
     /* 2· Rellenar/actualizar campos */
     task.title     = f['title'].value.trim();
     task.deadline  = f['deadline'].value;         // '' si no se elige
@@ -355,18 +374,18 @@ function setDefaultFormValues(formEl) {
     // ② (opcional) Proteger contra bucles: que su nuevo padre no sea un descendiente
     // ------------------------------------------------------------
     function isDescendant(candidateId, targetId) {
-    // ¿targetId está en la cadena de padres de candidateId?
-    let p = TaskModule.getById(candidateId)?.parentId;
-    while (p != null) {
-      if (p === targetId) return true;
-      p = TaskModule.getById(p)?.parentId ?? null;
-      }
-    return false;
-    }
+          // ¿targetId está en la cadena de padres de candidateId?
+          let p = TaskModule.getById(candidateId)?.parentId;
+          while (p != null) {
+                if (p === targetId) return true;
+                p = TaskModule.getById(p)?.parentId ?? null;
+                }
+          return false;
+          }
     if (task.parentId && isDescendant(task.parentId, task.id)) {
-        alert('No puedes hacer que una tarea sea hija de su propio descendiente.');
-        task.parentId = null;
-        }
+          alert('No puedes hacer que una tarea sea hija de su propio descendiente.');
+          task.parentId = null;
+          }
     // ------------------------------------------------------------
     
     /* 3· Añadir a la lista si es una tarea nueva */
@@ -383,3 +402,13 @@ function setDefaultFormValues(formEl) {
     setDefaultFormValues(ui.form);
   });
 })();
+
+
+function startTimer(task, ui) {
+    task.timerRunning = true;
+    activeTimer = { … };
+  
+    // no persistas timerRunning; pero **sí** puedes escribir el primer segundo
+    ui.dataModule.save(TaskModule.list);
+    }
+
