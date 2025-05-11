@@ -219,13 +219,20 @@ function setDefaultFormValues(formEl) {
   fb.auth.onAuthStateChanged(user => {
         if (user) {
             ui.dataModule = {
-                collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
-                save: tasks => tasks.forEach(t => 
-                  const { timerRunning, ...persist } = t;      // quita flag volátil      
-                  ui.dataModule.collRef.doc(t.id.toString()).set(persist);
-            }),
-        subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
-        };
+                collRef: fb.db
+                    .collection('users')
+                    .doc(user.uid)
+                    .collection('tasks'),
+                save: tasks => { 
+                    tasks.forEach(t => {
+                          const { timerRunning, ...persist } = t;      // quita flag volátil      
+                          ui.dataModule.collRef
+                            .doc(t.id.toString())
+                            .set(persist);
+                            });
+                    },
+            subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
+            };
 
         ui.dataModule.subscribe(snap => {
               TaskModule.clear();
