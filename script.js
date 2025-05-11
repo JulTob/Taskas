@@ -106,18 +106,73 @@ function toggleSubtaskPanel(id, ui) {
   const panel = document.createElement('div');
   panel.id = 'subpanel';
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
+
   panel.innerHTML = `
-    <h2 class="font-semibold mb-2">Editar tarea: ${task.title}</h2>
-    <textarea id="note-edit" rows="3" class="w-full p-2 border rounded mb-2">${task.notes || ''}</textarea>
-    <button id="save-note" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Guardar</button>
+    <h2 class="font-semibold mb-3">Editar tarea</h2>
+
+    <!-- título -->
+    <input  id="edit-title"   class="w-full p-2 border rounded mb-2"
+            value="${task.title}"          placeholder="Título">
+
+    <!-- fecha y hora -->
+    <div class="flex gap-2 mb-2">
+      <input  id="edit-date"   type="date"
+              class="flex-1 p-2 border rounded"
+              value="${task.deadline || ''}">
+      <input  id="edit-time"   type="time"
+              class="flex-1 p-2 border rounded"
+              value="${task.time || ''}">
+    </div>
+
+    <!-- duración y prioridad -->
+    <div class="flex gap-2 mb-2">
+      <input  id="edit-duration" type="number" min="5" step="5"
+              class="flex-1 p-2 border rounded"
+              value="${task.duration}">
+      <select id="edit-priority" class="flex-1 p-2 border rounded">
+        <option ${task.priority==='Alta'    ?'selected':''}>Alta</option>
+        <option ${task.priority==='Media'   ?'selected':''}>Media</option>
+        <option ${task.priority==='Baja'    ?'selected':''}>Baja</option>
+      </select>
+    </div>
+
+    <!-- notas -->
+    <textarea id="edit-notes" rows="3"
+              class="w-full p-2 border rounded mb-2"
+              placeholder="Notas">${task.notes||''}</textarea>
+
+    <!-- completada -->
+    <label class="inline-flex items-center gap-2 mb-4">
+      <input id="edit-completed" type="checkbox"
+             class="h-4 w-4" ${task.completed?'checked':''}>
+      <span class="select-none">Marcar como completada</span>
+    </label><br>
+
+    <button id="save-edit"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+      💾 Guardar cambios
+    </button>
   `;
 
-  panel.querySelector('#save-note').onclick = () => {
-    task.notes = panel.querySelector('#note-edit').value.trim();
+  panel.querySelector('#save-edit').onclick = () => {
+    // 1· Actualizar objeto
+    task.title     = panel.querySelector('#edit-title').value.trim();
+    task.deadline  = panel.querySelector('#edit-date').value;
+    task.time      = panel.querySelector('#edit-time').value;
+    task.duration  = +panel.querySelector('#edit-duration').value;
+    task.priority  = panel.querySelector('#edit-priority').value;
+    task.notes     = panel.querySelector('#edit-notes').value.trim();
+    task.completed = panel.querySelector('#edit-completed').checked;
+
+    // 2· Persistir y refrescar UI
     ui.dataModule.save(TaskModule.list);
+    renderTasks(ui);
+
+    // 3· Cerrar panel
+    panel.remove();
   };
 
-  ui.taskContainer.append(panel);
+  ui.taskContainer.prepend(panel);
 }
 
 
