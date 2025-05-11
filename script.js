@@ -21,7 +21,7 @@ const firebaseConfig = {
           appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
           measurementId: "G-RM9DCQ136H"
           };
-
+/* 20:59-11-5
 function initFirebase(config) {
     firebase.initializeApp(config);
     return {
@@ -29,6 +29,18 @@ function initFirebase(config) {
         db: firebase.firestore(),
         provider: new firebase.auth.GoogleAuthProvider()
         };
+    }
+*/
+function initFirebase(config) {
+  const app = firebase.apps.length
+      ? firebase.app()             // ya existe, reutilízalo
+      : firebase.initializeApp(config);
+
+  return {
+    auth: app.auth(),
+    db  : app.firestore(),
+    provider: new firebase.auth.GoogleAuthProvider()
+      };
     }
 
 
