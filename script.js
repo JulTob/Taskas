@@ -95,9 +95,9 @@ function openModal(task, ui) {
       }
 
 
-function closeModal(u) {
-      u.modal.classList.add('hidden');
-      u.overlay.classList.add('hidden');
+function closeModal(ui) {
+      ui.modal.classList.add('hidden');
+      ui.overlay.classList.add('hidden');
       }
 
 // -------- Render de tareas --------
