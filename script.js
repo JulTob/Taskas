@@ -1,4 +1,4 @@
-// script.js (reestructurado con modelo plano usando parentId)
+// script.js 
 
 // -------- 1. Inicialización de Firebase --------
 function initFirebase(config) {
@@ -30,15 +30,15 @@ const TaskModule = {
   flatten() {
     const out = [];
     function rec(parentId = null, level = 0, path = []) {
-      TaskModule.list
-        .filter(t => t.parentId === parentId)
-        .sort((a, b) => a.deadline.localeCompare(b.deadline))
-        .forEach((t, i) => {
-          const currentPath = [...path, i];
-          out.push({ task: t, level, path: currentPath });
-          rec(t.id, level + 1, currentPath);
-        });
-    }
+            TaskModule.list
+              .filter(t => (t.parentId ?? null) === parentId)
+              .sort((a, b) => a.deadline.localeCompare(b.deadline))
+              .forEach((t, i) => {
+                const currentPath = [...path, i];
+                out.push({ task: t, level, path: currentPath });
+                rec(t.id, level + 1, currentPath);
+                });
+            }
     rec();
     return out;
   }
@@ -200,7 +200,7 @@ function updateFormOptions(ui) {
       duration: f['duration'].value,
       priority: f['priority'].value,
       notes: f['notes'].value,
-      parentId: f['parent'].value || null
+      pparentId: f['parent'].value === '' ? null : f['parent'].value
     };
     TaskModule.add(task);
     ui.dataModule.save(TaskModule.list);
