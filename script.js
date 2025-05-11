@@ -4,16 +4,69 @@ const PRIORITIES = ['Alta', 'Media', 'Baja', 'Retraso', 'Completa'];
 
 // -------- 1. Inicialización de Firebase --------
 function initFirebase(config) {
-  firebase.initializeApp(config);
-  return {
-    auth: firebase.auth(),
-    db: firebase.firestore(),
-    provider: new firebase.auth.GoogleAuthProvider()
-  };
-}
+    firebase.initializeApp(config);
+    return {
+        auth: firebase.auth(),
+        db: firebase.firestore(),
+        provider: new firebase.auth.GoogleAuthProvider()
+        };
+    }
 
 
 // -------- 2. Módulo de Tareas --------
+
+function editTask(id, ui) {
+    openModal(TaskModule.getById(id), ui);
+    }
+
+// abre el modal; recibe null (crear) o un objeto tarea (editar)
+function openModal(task, ui) {
+      const { modal, overlay, form } = ui;
+      modal.classList.remove('hidden');
+      overlay.classList.remove('hidden');
+      overlay.onclick = closeModal;         
+      // clic fuera = cerrar
+    
+      // título
+      modal.querySelector('#modal-title').textContent =
+            task ? 'Editar tarea' : 'Nueva tarea';
+    
+      // lista de prioridades
+      const priSel = form.elements['priority'];
+      priSel.innerHTML = '';
+      PRIORITIES.forEach(p => priSel.add(new Option(p, p, false, p === 'Media')));
+    
+      // lista de padres
+      updateFormOptions(ui);
+    
+      if (task) {           
+          // ----- EDITAR -----
+          form.elements['editId'].value  = task.id;
+          form.elements['title'].value   = task.title;
+          form.elements['deadline'].value= task.deadline;
+          form.elements['time'].value    = task.time;
+          form.elements['duration'].value= task.duration;
+          priSel.value                   = task.priority;
+          form.elements['notes'].value   = task.notes || '';
+          form.elements['parent'].value  = task.parentId ?? '';
+          } 
+      else {              
+          // ----- NUEVA -----
+          form.reset();
+          form.elements['editId'].value = '';
+          setDefaultFormValues(form);
+          }
+    
+      form.elements['title'].focus();
+      }
+
+function closeModal() {
+  ui.modal.classList.add('hidden');
+  ui.overlay.classList.add('hidden');
+  }
+
+
+                    
 const TaskModule = {
   list: [],
 
@@ -98,15 +151,14 @@ function renderTasks(ui) {
       </td>
     `;
 
-    row.querySelector('.edit-btn').onclick = () => toggleSubtaskPanel(task.id, ui);
+    row.querySelector('.edit-btn').onclick = () => editTask(task.id, ui)
     row.querySelector('.delete-btn').onclick = () => deleteTask(task.id, ui);
-
     tbody.appendChild(row);
-  });
+    });
 
   taskContainer.appendChild(table);
   updateFormOptions(ui);
-}
+  }
 
 
 // -------- 4. Subtarea panel --------
@@ -191,22 +243,22 @@ function deleteTask(id, ui) {
 
 // -------- 6. Configuración del menú y envío de formulario --------
 function setupMenu(ui) {
-  ui.newTaskBtn.onclick = () => ui.popup.classList.toggle('hidden');
-}
+    ui.newTaskBtn.onclick = () => openModal(null, ui);
+    }
 
 
 // -------- 7. Actualizar opciones de select --------
 function updateFormOptions(ui) {
-  const parentSelect = ui.form.elements['parent'];
-  parentSelect.innerHTML = '<option value="">Sin tarea padre</option>';
-  TaskModule.list.forEach(task => {
-    const opt = document.createElement('option');
-    opt.value = task.id;
-    opt.textContent = task.title;
-    parentSelect.appendChild(opt);
-  });
-}
-
+      const parentSelect = ui.form.elements['parent'];
+      parentSelect.innerHTML = '<option value="">Sin tarea padre</option>';
+      TaskModule.list.forEach(task => {
+            const opt = document.createElement('option');
+            opt.value = task.id;
+            opt.textContent = task.title;
+            parentSelect.appendChild(opt);
+            });
+      }
+    
 
 // -------- 8. Valores por defecto --------
 function setDefaultFormValues(formEl) {
@@ -235,63 +287,76 @@ function setDefaultFormValues(formEl) {
 (function main() {
   const fb = initFirebase(firebaseConfig);
   const ui = {
-    newTaskBtn: document.getElementById('new-task-btn'),
-    popup: document.getElementById('task-popup'),
-    form: document.getElementById('task-form'),
-    taskContainer: document.getElementById('task-container'),
-    loginBtn: document.getElementById('loginBtn'),
-    logoutBtn: document.getElementById('logoutBtn'),
-    dataModule: null
-  };
-
-  fb.auth.onAuthStateChanged(user => {
-    if (user) {
-      ui.dataModule = {
-        collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
-        save: tasks => tasks.forEach(t => ui.dataModule.collRef.doc(t.id.toString()).set(t)),
-        subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
+      newTaskBtn: document.getElementById('new-task-btn'),
+      modal   : document.getElementById('task-modal'),
+      overlay : document.getElementById('modal-overlay'),      
+      form: document.getElementById('task-form'),
+      taskContainer: document.getElementById('task-container'),
+      loginBtn: document.getElementById('loginBtn'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      dataModule: null
       };
 
-      ui.dataModule.subscribe(snap => {
-        TaskModule.clear();
-        snap.forEach(doc => TaskModule.add({ id: +doc.id, ...doc.data() }));
-        renderTasks(ui);
-      });
-
-      ui.loginBtn.classList.add('hidden');
-      ui.logoutBtn.classList.remove('hidden');
-      setDefaultFormValues(ui.form);
-    } else {
-      TaskModule.clear();
-      renderTasks(ui);
-      ui.dataModule = null;
-      ui.logoutBtn.classList.add('hidden');
-      ui.loginBtn.classList.remove('hidden');
-    }
-  });
+  fb.auth.onAuthStateChanged(user => {
+        if (user) {
+            ui.dataModule = {
+                collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
+                save: tasks => tasks.forEach(t => ui.dataModule.collRef.doc(t.id.toString()).set(t)),
+                subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
+                };
+    
+            ui.dataModule.subscribe(snap => {
+                  TaskModule.clear();
+                  snap.forEach(doc => TaskModule.add({ id: +doc.id, ...doc.data() }));
+                  renderTasks(ui);
+                  });
+      
+            ui.loginBtn.classList.add('hidden');
+            ui.logoutBtn.classList.remove('hidden');
+            setDefaultFormValues(ui.form);
+            } 
+        else {
+              TaskModule.clear();
+              renderTasks(ui);
+              ui.dataModule = null;
+              ui.logoutBtn.classList.add('hidden');
+              ui.loginBtn.classList.remove('hidden');
+              }
+        });
 
   setupMenu(ui);
 
   ui.form.onsubmit = e => {
     e.preventDefault();
     const f = ui.form.elements;
-    const task = {
-      id: Date.now(),
-      title: f['title'].value,
-      deadline: f['deadline'].value,
-      time: f['time'].value,
-      duration: f['duration'].value,
-      priority: f['priority'].value,
-      notes: f['notes'].value,
-      parentId: f['parent'].value === '' ? null : f['parent'].value
-    };
-    TaskModule.add(task);
+
+      /* 1· ¿nuevo o edición? */
+    const isEdit = f['editId'].value !== '';
+    const task   = isEdit
+          ? TaskModule.getById(+f['editId'].value)    // editar: objeto existente
+          : { id: Date.now() };                       // nuevo: objeto vacío
+
+    /* 2· Rellenar/actualizar campos */
+    task.title     = f['title'].value.trim();
+    task.deadline  = f['deadline'].value;         // '' si no se elige
+    task.time      = f['time'].value;
+    task.duration  = +f['duration'].value;        // número
+    task.priority  = f['priority'].value;
+    task.notes     = f['notes'].value.trim();
+    task.parentId  = f['parent'].value === '' ? null : +f['parent'].value;
+    
+    /* 3· Añadir a la lista si es una tarea nueva */
+    if (!isEdit) TaskModule.add(task);
+    
+    /* 4· Persistir y refrescar UI */
     ui.dataModule.save(TaskModule.list);
-    ui.form.reset();
-    setDefaultFormValues(ui.form);
     renderTasks(ui);
-    ui.popup.classList.add('hidden');
-  };
+  
+    /* 5· Cerrar el modal y limpiar formulario */
+    ui.modal.classList.add('hidden');
+    ui.overlay.classList.add('hidden');
+    ui.form.reset();
+    };
 
   window.addEventListener('DOMContentLoaded', () => {
     setDefaultFormValues(ui.form);
