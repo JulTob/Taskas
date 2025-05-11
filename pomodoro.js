@@ -1,38 +1,39 @@
-// pomodoro.js
+// pomodoro.js  (cargar después de script.js)
 console.log("🍅 pomodoro cargado");
 
 const POMO_MIN = 25;
-let active = null;   // {task, seconds, display, btn, interval}
+let active = null;   // {task, seconds, boxEl, btnEl, interval}
 
-function startPomodoro(task, ui, displayEl){
-  // si ya está contando -> detener
+function fmt(s){
+  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const ss= (s%60).toString().padStart(2,'0');
+  return `${m}:${ss}`;
+}
+
+function startPomodoro(task, ui, boxEl){
+  // mismo botón = toggle ⇒ detener
   if (active && active.task.id === task.id) return stopPomodoro();
 
-  stopPomodoro(); // cancela otro
+  stopPomodoro();                       // cancela otro
 
-  // referencia del botón dentro del modal actual
   const btn = document.querySelector('#tomato-btn');
-
-  active = { task, seconds: 0, display: displayEl, btn,
+  active = { task, seconds: 0, boxEl, btn,
              interval: setInterval(tick, 1000) };
 
-  // aspecto activo
-  btn.textContent = '🍅';                     // seguimos usando tomate
-  btn.classList.remove('bg-red-500');
-  btn.classList.add('bg-green-600', 'heartbeat');   // ← en lugar de animate-pulse}
+  btn.classList.add('heartbeat');
+}
 
 function tick(){
   if(!active) return;
   active.seconds++;
-  updateDisplay();
-  if (active.seconds >= POMO_MIN*60) finishPomodoro();
+  updateBox();
+  if(active.seconds >= POMO_MIN*60) finishPomodoro();
 }
 
-function updateDisplay(){
+function updateBox(){
   if(!active) return;
-  const m = Math.floor(active.seconds/60);
-  active.display.textContent =
-      `${(active.task.timer ?? 0) + m} min`;
+  const totalSec = (active.task.timer ?? 0)*60 + active.seconds;
+  active.boxEl.textContent = fmt(totalSec);
 }
 
 function finishPomodoro(){
@@ -45,15 +46,12 @@ function finishPomodoro(){
 
 function stopPomodoro(){
   if(!active) return;
-
   clearInterval(active.interval);
-  // aspecto inactivo
-  active.btn.textContent = '🍅';
-  active.btn.classList.remove('bg-green-600', 'heartbeat');
-  active.btn.classList.add('bg-red-500');
+  active.btn.classList.remove('heartbeat');
 
-  // texto final
-  active.display.textContent = `${active.task.timer ?? 0} min`;
+  // deja el acumulado final
+  const totalSec = (active.task.timer ?? 0)*60;
+  active.boxEl.textContent = fmt(totalSec);
   active = null;
 }
 
