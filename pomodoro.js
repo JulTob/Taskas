@@ -6,15 +6,15 @@ let active = null;          // {task, seconds, displayEl, interval}
 const POMO_MIN = 25;
 
 function startPomodoro(task, ui, displayEl){
-  stopPomodoro();           // cancela uno previo
-  active = {
-    task,
-    seconds : 0,
-    display : displayEl,
-    interval: setInterval(tick, 1000)
-  };
-  updateDisplay();
-}
+    stopPomodoro();           // cancela uno previo
+    active = {
+      task,
+      seconds : 0,
+      display : displayEl,
+      interval: setInterval(tick, 1000)
+      };
+    updateDisplay();
+    }
 
 function tick(){
   if(!active) return;
