@@ -10,6 +10,16 @@ const PRIORITIES = [
 
 
 // -------- Inicialización de Firebase --------
+const firebaseConfig = {
+          apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
+          authDomain: "taska-65c33.firebaseapp.com",
+          projectId: "taska-65c33",
+          storageBucket: "taska-65c33.appspot.com",
+          messagingSenderId: "287205600078",
+          appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
+          measurementId: "G-RM9DCQ136H"
+          };
+
 function initFirebase(config) {
     firebase.initializeApp(config);
     return {
@@ -48,7 +58,7 @@ function openModal(task, ui) {
       const { modal, overlay, form } = ui;
       modal.classList.remove('hidden');
       overlay.classList.remove('hidden');
-      overlay.onclick = closeModal(ui);         
+      overlay.onclick = () => closeModal(ui);         
         // clic fuera = cerrar
     
       // título
@@ -318,7 +328,7 @@ function setDefaultFormValues(formEl) {
 
 function startTimer(task, ui) {
     task.timerRunning = true;
-    activeTimer = { … };
+    //activeTimer = { … };
   
     // no persistas timerRunning; pero **sí** puedes escribir el primer segundo
     ui.dataModule.save(TaskModule.list);
