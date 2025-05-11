@@ -188,6 +188,7 @@ function setDefaultFormValues(formEl) {
       formEl.elements['time'].value = '17:00';
       formEl.elements['duration'].value = '30';
       formEl.elements['parent'].value = '';
+      }
 
 
 // -------- 9. Punto de entrada --------
