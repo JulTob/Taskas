@@ -83,11 +83,31 @@ function openModal(task, ui) {
       priSel.innerHTML = '';
       PRIORITIES.forEach(p => priSel.add(new Option(p, p, false, p === 'Media')));
     
+      // ── referencias a los controles de tiempo ──
+      const timerBlock   = form.querySelector('#timer-block');
+      const timerDisplay = form.querySelector('#timer-display');
+      const tomatoBtn    = form.querySelector('#tomato-btn');
+      const incBtn       = form.querySelector('#inc-btn');
+      const decBtn       = form.querySelector('#dec-btn');
+
+
       // lista de padres
       updateFormOptions(ui);
     
-      if (task) {           
+      if (task) {   
           // ----- EDITAR -----
+          timerDisplay.textContent = `${task.timer ?? 0} min`;
+          timerBlock.classList.remove('hidden');
+          
+          tomatoBtn.onclick = () => startPomodoro(task, ui, timerDisplay);
+          incBtn.onclick    = () => {
+              task.timer = (task.timer ?? 0) + 5;
+              timerDisplay.textContent = `${task.timer} min`;
+              };
+          decBtn.onclick    = () => {
+              task.timer = Math.max(0, (task.timer ?? 0) - 5);
+              timerDisplay.textContent = `${task.timer} min`;
+              };  
           form.elements['editId'].value  = task.id;
           form.elements['title'].value   = task.title;
           form.elements['deadline'].value= task.deadline;
@@ -99,6 +119,7 @@ function openModal(task, ui) {
           } 
       else {              
           // ----- NUEVA -----
+          timerBlock.classList.add('hidden');
           form.reset();
           form.elements['editId'].value = '';
           setDefaultFormValues(form);
