@@ -392,6 +392,7 @@ function renderDepChips(ui) {
       
         // 3) Al cargar la página
         window.addEventListener('DOMContentLoaded', () => {
+          updateFormOptions(ui);
           setDefaultFormValues(ui.form);
           renderTasks(ui);
         });
@@ -411,23 +412,26 @@ function updateDependencyOptions(ui) {
 
 
 function updateFormOptions(ui) {
-  const { form } = ui;
+    const { form } = ui;
 
-  // 1) Parent: solo UNA selección posible
-  const parentSelect = form.elements['parent'];
-  parentSelect.innerHTML = '';  
-  // Opción “sin parent”
-  const noneOpt = document.createElement('option');
-  noneOpt.value = '';
-  noneOpt.textContent = 'Sin tarea padre';
-  parentSelect.appendChild(noneOpt);
-  // Resto de tareas
-  TaskModule.list.forEach(task => {
-    const opt = document.createElement('option');
-    opt.value = task.id;
-    opt.textContent = task.title;
-    parentSelect.appendChild(opt);
-  });
+      // 1) Parent: solo UNA selección posible
+    const parentSelect = form.elements['parent'];
+    parentSelect.multiple = false;       // por si acaso
+    parentSelect.innerHTML = '';  
+    // Opción “sin parent”
+    const noneOpt = document.createElement('option');
+    noneOpt.value = '';
+    noneOpt.textContent = 'Sin tarea padre';
+    parentSelect.appendChild(noneOpt);
+    // Resto de tareas
+    TaskModule.flatten()
+        .filter(({task}) => task.id !== ui._editingTaskId)    // si estás editando
+        .forEach(({ task }) => {
+            const opt = document.createElement('option');
+            opt.value = task.id;
+            opt.textContent = task.title;
+            parentSelect.appendChild(opt);
+            });
 
   // 2) Dependencias: selección MÚLTIPLE
   const depSelect = form.elements['dependencies'];
