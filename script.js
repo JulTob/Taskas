@@ -107,7 +107,7 @@ function toggleSubtaskPanel(id, ui) {
   panel.id = 'subpanel';
   panel.className = 'bg-white p-4 mb-4 border rounded shadow';
   panel.innerHTML = `
-    <h2 class="font-semibold mb-2">Editar tarea: ${task.title}</h2>
+    <h2 class="font-semibold mb-2">Editar ${task.title}</h2>
     <textarea id="note-edit" rows="3" class="w-full p-2 border rounded mb-2">${task.notes || ''}</textarea>
     <button id="save-note" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Guardar</button>
   `;
@@ -148,8 +148,22 @@ function updateFormOptions(ui) {
   });
 }
 
+// -------- 8. Valores poer defecto --------
+function setDefaultFormValues(formEl) {
+      const t = new Date();
+      t.setDate(t.getDate() + 1); // mañana
+    
+      formEl.elements['title'].value = '';
+      formEl.elements['deadline'].value = t.toISOString().split('T')[0]; // yyyy-mm-dd
+      formEl.elements['time'].value = '17:00';
+      formEl.elements['duration'].value = '30';
+      formEl.elements['priority'].value = 'Media';
+      formEl.elements['notes'].value = '';
+      formEl.elements['parent'].value = '';
+      }
 
-// -------- 8. Punto de entrada --------
+
+// -------- Punto de entrada --------
 (function main() {
   const fb = initFirebase(firebaseConfig);
   const ui = {
@@ -205,7 +219,13 @@ function updateFormOptions(ui) {
     TaskModule.add(task);
     ui.dataModule.save(TaskModule.list);
     ui.form.reset();
+    setDefaultFormValues(ui.form);
     renderTasks(ui);
     ui.popup.classList.add('hidden');
-  };
+    
+  window.addEventListener('DOMContentLoaded', () => {
+    setDefaultFormValues(ui.form);
+    });
+    
 })();
+
