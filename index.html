@@ -148,7 +148,16 @@
                           placeholder="Notas de la tarea"></textarea>
           
               <select name="parent" class="w-full p-2 border rounded"></select>
-          
+              <!-- BLOQUE POMODORO -->
+              <div id="timer-block"
+                   class="hidden flex items-center gap-2 text-sm">
+                  <span id="timer-display"
+                        class="min-w-[6ch] text-right text-red-600">0&nbsp;min</span>
+                  <button type="button" id="tomato-btn" class="px-2">🍅</button>
+                  <button type="button" id="inc-btn"    class="px-2">🔺</button>
+                  <button type="button" id="dec-btn"    class="px-2">🔻</button>
+                  </div>  
+
               <div class="text-right">
                   <button 
                     type="submit"
