@@ -224,6 +224,7 @@ function renderTasks(ui) {
         }
 
     updateFormOptions(ui);
+    if (window.showDiagram) window.showDiagram();
     }
 
 function editTask(id, ui) {
