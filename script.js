@@ -265,17 +265,12 @@ function setDefaultFormValues(formEl) {
 // ---------- Punto de entrada de diagrama -----
 
 function showDiagram() {
-  const tasks = TaskModule.list;
-  const graphCode = generateTaskGraph(tasks);
-
-  const container = document.getElementById('diagram');
-  container.innerHTML = `<pre class="mermaid">${graphCode}</pre>`;
-
-  // Trigger Mermaid render (must include mermaid lib)
-  if (window.mermaid) {
-    mermaid.init(undefined, container);
+  const graphCode = generateTaskGraph(TaskModule.list);
+  const diagramEl = document.getElementById('diagram');
+  diagramEl.textContent = graphCode;
+  mermaid.init(undefined, diagramEl);
     }
-  }    
+ 
 
 // -------- Punto de entrada --------
 (function main() {
