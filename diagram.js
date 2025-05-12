@@ -15,35 +15,32 @@ class Node {
           this.title = sanitizeLabel(task.title ?? 'TaskAs');
           this.priority  = task.priority;          // 'Alta' | 'Media' | 'Baja'
           this.deadline  = task.deadline;          // 'YYYY-MM-DD'
-          this.daysLeft  = this.calcDaysLeft();    // número de días, o null
           }  
   
-    calcDaysLeft() {
-          if (!this.deadline) return null;
+    // calcula días restantes, mínimo 0
+    get daysLeft() {
+          if (!this.deadline) return 0;
           const today = new Date();
           const due   = new Date(this.deadline);
-          // redondeo hacia arriba de días restantes
-          return Math.ceil((due - today) / (1000 * 60 * 60 * 24));
-          }        
+          return Math.max(0,
+                Math.ceil((due - today) / (1000*60*60*24))
+                );
+          }     
   
     toMermaid() {
-            // Puedes añadir aquí según this.options: style, shape, etc.
-            return `${this.id}["${this.title}"]`;
-            // etiqueta con título y días si hay fecha
-            let label = this.title;
-            if (this.daysLeft != null) label += `\\n(${this.daysLeft}d)`;
-        
-            // definición básica
-            let def = `${this.id}["${label}"]`;
-        
-            // asigno clase según prioridad
-            if (this.priority === 'Baja')   def += ':::low';
-            if (this.priority === 'Media')  def += ':::medium';
-            if (this.priority === 'Alta')   def += ':::high';
-        
-            return `  ${def};\n`;
-            }
-    }
+          // siempre mostramos "(Nd)"
+          const label = `${this.title}\\n(${this.daysLeft}d)`;
+          let node  = `${this.id}["${label}"]`;
+      
+          // :::low, :::medium, :::high
+          if (this.priority === 'Baja')  node += ':::low';
+          if (this.priority === 'Media') node += ':::medium';
+          if (this.priority === 'Alta')  node += ':::high';
+      
+          return `  ${node};\n`;
+          }    
+  }
+
 
 // Clase para representar un enlace (arista)
 class Edge {
@@ -55,52 +52,46 @@ class Edge {
               return `   ${this.from} --> ${this.to};\n`;
               }
         }
-
-// Clase principal del diagrama
-export class Diagram {
-    /**
-     * @param {Array} tasks   Array de objetos {id, title, priority, deadline, parentId}
-     * @param {Object} options
-     *   - direction: 'TD'|'LR' etc.
-     *   - backgroundColor: '#RRGGBB'
-     **/
-    constructor(tasks, options = {}) {
-            this.tasks   = tasks;
-            this.opts    = Object.assign({ direction: 'TD' }, options);
-            this.nodes   = [];
-            this.edges   = [];
-            this.build();
-            }
+    
+    // Clase principal del diagrama
+    class Diagram {
+          constructor(tasks) {
+                this.tasks = tasks;
+                this.nodes = [];
+                this.edges = [];
+                this.build();
+                }
 
     build() {
-            const map = new Map(this.tasks.map(t => [t.id, t]));
-            this.tasks.forEach(t => {
-              this.nodes.push(new Node(t));
-              if (t.parentId != null && map.has(t.parentId)) {
+        const map = new Map(this.tasks.map(t => [t.id, t]));
+        this.tasks.forEach(t => {
+            this.nodes.push(new Node(t));
+            if (t.parentId != null && map.has(t.parentId)) {
                 this.edges.push(new Edge(t.parentId, t.id));
                 }
               });
             }
-     toMermaid() {
-              // Init con variable de fondo (si se pasa)
-              const init = this.opts.backgroundColor
-                        ? `%%{init: {'themeVariables': {'diagramBackground': '${this.opts.backgroundColor}'}}}%%\n`
-                        : '';
-              let code = init + `graph ${this.opts.direction};\n`;
-              // Defino estilos de clase para prioridades
-              code += `  classDef low    fill:green,  stroke:#333,stroke-width:1px;\n`;
-              code += `  classDef medium fill:yellow, stroke:#333,stroke-width:1px;\n`;
-              code += `  classDef high   fill:red,    stroke:#333,stroke-width:1px;\n\n`;
-              // Agrego nodos y aristas
-              this.nodes.forEach(n => code += n.toMermaid());
-              this.edges.forEach(e => code += e.toMermaid());
-              return code;
-              }
+  toMermaid() {
+      // 1. Init con fondo marfil
+      const init = `%%{init: {'themeVariables': {'diagramBackground':'#faf6e8'}}}%%\n`;
+      // 2. Cabecera Top-Down
+      let code = init + `graph TD;\n\n`;
+      // 3. Definición de clases de prioridad
+      code += [
+          `classDef low    fill:green,  stroke:#333,stroke-width:1px;`,
+          `classDef medium fill:yellow, stroke:#333,stroke-width:1px;`,
+          `classDef high   fill:red,    stroke:#333,stroke-width:1px;`
+          ].map(l => `  ${l}\n`).join('') + `\n`;
+      // 4. Nodos y aristas
+      this.nodes.forEach(n => code += n.toMermaid());
+      this.edges.forEach(e => code += e.toMermaid());
+      return code;
       }
+  }
 
 // ── Función principal ──//
-export function generateTaskGraph(tasks, options) {
-      const diagram = new Diagram(tasks, options);
+export function generateTaskGraph(tasks) {
+      const diagram = new Diagram(tasks);
       return diagram.toMermaid();
       }  
 
