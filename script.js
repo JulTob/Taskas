@@ -264,13 +264,27 @@ function setDefaultFormValues(formEl) {
 
 // ---------- Punto de entrada de diagrama -----
 
-function showDiagram() {
+function showDiagram1() {
   const graphCode = generateTaskGraph(TaskModule.list);
   const diagramEl = document.getElementById('diagram');
   diagramEl.textContent = graphCode;
   mermaid.init(undefined, diagramEl);
-    }
- 
+  }
+
+ function showDiagram() {
+  const code = generateTaskGraph(TaskModule.list);
+  const el   = document.getElementById('diagram');
+
+  try {
+    mermaid.parse(code);          // 💡 validación rápida
+    el.textContent = code;
+    mermaid.init(undefined, el);
+  } catch (err) {
+    console.error('Mermaid ▶︎', err);
+    el.textContent = 'graph TD\nerror["❌ Diagrama no válido"]';
+    mermaid.init(undefined, el);
+  }
+}
 
 // -------- Punto de entrada --------
 (function main() {
