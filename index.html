@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <script type="module">
-      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-      window.mermaid = mermaid;
-      mermaid.initialize({ startOnLoad: false });
-      </script>
 
   <audio id="ding" src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAA..."></audio>
 
@@ -64,14 +59,24 @@
     </script> -->
 
     <style>
-      .chip      { @apply px-2 py-1 rounded-full shadow-sm; }
-      .heartbeat { animation: heartbeat 1s infinite ease-in-out; }
-      @keyframes heartbeat {
-        0%,100% { transform: scale(1); }
-        50%     { transform: scale(1.525); }
-        }
-      </style>
-
+          .chip      { @apply px-2 py-1 rounded-full shadow-sm; }
+          .heartbeat { animation: heartbeat 1s infinite ease-in-out; }
+          @keyframes heartbeat {
+                0%,100% { transform: scale(1); }
+                50%     { transform: scale(1.525); }
+                }
+          #diagram-container {
+                max-height: 500px;
+                overflow-y: auto;
+                background-color: #f9fafb;
+                }
+          </style>
+    <script type="module">
+          import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+          window.mermaid = mermaid;
+          mermaid.initialize({ startOnLoad: false });
+          </script>
+ 
   </head>
 
 <body class="min-h-screen p-6 bg-brand-50 text-brand-800 font-pica">
@@ -109,6 +114,14 @@
                   </button>
             </div>
         </header>
+
+        <!-- Diagram Panel -->
+        <section class="my-6">
+          <h2 class="text-xl font-bold mb-2">🧭 Diagrama de Tareas</h2>
+          <div id="diagram-container" class="border rounded shadow p-4 bg-white overflow-auto">
+            <pre id="diagram" class="mermaid">Cargando diagrama...</pre>
+            </div>
+          </section>
 
         <!-- Tabla y panel dinámicos -->
         <div id="task-container"> </div>
