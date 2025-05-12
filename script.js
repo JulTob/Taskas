@@ -51,6 +51,7 @@ const TaskModule = {
         getById(id) {  return this.list.find(t => t.id.toString() === id.toString()); },
         flatten() {
               const out = [];
+              const usedIds = new Set();
               function rec(parentId = null, level = 0, path = []) {
                     TaskModule.list
                         .filter(t => (t.parentId ?? null) == parentId)
@@ -58,10 +59,21 @@ const TaskModule = {
                         .forEach((t, i) => {
                               const currentPath = [...path, i];
                               out.push({ task: t, level, path: currentPath });
+                              usedIds.add(t.id);
                               rec(t.id, level + 1, currentPath);
                               });
                     }
+              // 🌳 Step 1: Build normal hierarchy
               rec();
+              // 👻 Step 2: Find & append "horfan" tasks
+              TaskModule.list.forEach(t => {
+                    const isSelfParent = t.parentId === t.id;
+                    const isMissingParent = t.parentId && !TaskModule.getById(t.parentId);
+                    const isAlreadyIncluded = usedIds.has(t.id)
+                    if ((isSelfParent || isMissingParent) && !isAlreadyIncluded) {
+                          out.push({ task: t, level: 0, path: ['orphans'] });
+                          }
+                    });
               return out;
               }
         };
