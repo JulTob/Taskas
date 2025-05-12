@@ -213,7 +213,6 @@ function renderTasks(ui) {
     if (window.generateTaskGraph && window.mermaid) {
           const graphCode = generateTaskGraph(
                   TaskModule.list,
-                  { backgroundColor: '#faf6e8', direction: 'TD' }
                   );
           const diagramEl = document.getElementById('diagram');
           diagramEl.textContent = graphCode;
