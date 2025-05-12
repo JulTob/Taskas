@@ -251,8 +251,23 @@ function setDefaultFormValues(formEl) {
       formEl.elements['parent'].value = '';
       }
 
+// ---------- Punto de entrada de diagrama -----
+import { generateTaskGraph } from './diagram.js';
 
-// -------- 9. Punto de entrada --------
+function showDiagram() {
+  const tasks = TaskModule.list;
+  const graphCode = generateTaskGraph(tasks);
+
+  const container = document.getElementById('diagram');
+  container.innerHTML = `<pre class="mermaid">${graphCode}</pre>`;
+
+  // Trigger Mermaid render (must include mermaid lib)
+  if (window.mermaid) {
+    mermaid.init(undefined, container);
+    }
+  }    
+
+// -------- Punto de entrada --------
 (function main() {
   // Inicialización de Firebase
   const fb = initFirebase(firebaseConfig);
