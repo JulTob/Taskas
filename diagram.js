@@ -45,8 +45,8 @@ class Node {
 // Clase para representar un enlace (arista)
 class Edge {
         constructor(fromId, toId) {
-              this.from = Node.sanitizeId(fromId);
-              this.to   = Node.sanitizeId(toId);
+              this.from = sanitizeId(fromId);
+              this.to   = sanitizeId(toId);
               }
         toMermaid() {
               return `   ${this.from} --> ${this.to};\n`;
@@ -97,12 +97,3 @@ export function generateTaskGraph(tasks) {
 
 
 
-// Utility: sanitize IDs (Mermaid doesn't like pure numbers)
-function sanitizeId(id) {
-  return `task_${id.toString().replace(/\W/g, '_')}`;
-}
-
-// Utility: escape quotes and limit length
-function sanitizeLabel(label) {
-  return label.replace(/"/g, '\\"').slice(0, 50);
-}
