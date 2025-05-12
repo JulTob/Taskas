@@ -373,12 +373,6 @@ function startTimer(task, ui) {
     ui.dataModule.save(TaskModule.list);
     }
 
-// util común (mm:ss) — visible para todo el archivo
-function fmt(s){
-  const m  = Math.floor(s/60).toString().padStart(2,'0');
-  const ss = (s%60).toString().padStart(2,'0');
-  return `${m}:${ss}`;
-  }
 
 
 
