@@ -76,20 +76,6 @@
           window.mermaid = mermaid;
           mermaid.initialize({ startOnLoad: false });
           </script>
- <script type="module">
-      import { generateTaskGraph } from './diagram.js';
-    
-      window.generateTaskGraph = generateTaskGraph;
-    
-      window.showDiagram = function () {
-            if (!window.generateTaskGraph || !window.mermaid) return;
-        
-            const graphCode = generateTaskGraph(window.__TASKAS_UI__?.TaskModule?.list ?? []);
-            const diagramEl = document.getElementById('diagram');
-            diagramEl.textContent = graphCode;
-            window.mermaid.init(undefined, diagramEl);
-            };
-      </script>
 
   </head>
 
@@ -230,7 +216,7 @@
             </form>
           </div>
 
- <script defer src="script.js"></script>
+<script type="module" src="script.js"></script>
 <script defer src="pomodoro.js"></script>
 
 </body>
