@@ -211,7 +211,10 @@ function renderTasks(ui) {
 
     taskContainer.appendChild(table);
     if (window.generateTaskGraph && window.mermaid) {
-          const graphCode = generateTaskGraph(TaskModule.list);
+          const graphCode = generateTaskGraph(
+                  TaskModule.list,
+                  { backgroundColor: '#faf6e8', direction: 'TD' }
+                  );
           const diagramEl = document.getElementById('diagram');
           diagramEl.textContent = graphCode;
           mermaid.init(undefined, diagramEl);
