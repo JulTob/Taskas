@@ -102,14 +102,13 @@ function openModal(task, ui) {
           tomatoBtn.onclick = () => startPomodoro(task, ui, timerBox);
           
           incBtn.onclick = () => {
-            task.timer = (task.timer ?? 0) + 1;
-            timerBox.textContent = fmt(task.timer*60);
-            };
-          
+                task.timerSec = (task.timerSec ?? 0) + 60;       
+                timerBox.textContent = fmt(task.timerSec);
+                };            
           decBtn.onclick = () => {
-            task.timer = Math.max(0,(task.timer ?? 0) - 1);
-            timerBox.textContent = fmt(task.timer*60);
-            };
+                task.timerSec = Math.max(0,(task.timerSec ?? 0) - 60); 
+                timerBox.textContent = fmt(task.timerSec);
+                };
           form.elements['editId'].value  = task.id;
           form.elements['title'].value   = task.title;
           form.elements['deadline'].value= task.deadline;
@@ -373,5 +372,13 @@ function startTimer(task, ui) {
     // no persistas timerRunning; pero **sí** puedes escribir el primer segundo
     ui.dataModule.save(TaskModule.list);
     }
+
+// util común (mm:ss) — visible para todo el archivo
+function fmt(s){
+  const m  = Math.floor(s/60).toString().padStart(2,'0');
+  const ss = (s%60).toString().padStart(2,'0');
+  return `${m}:${ss}`;
+  }
+
 
 
