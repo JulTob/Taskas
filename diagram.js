@@ -1,6 +1,37 @@
 // diagram.js
+// diagram.js – versión mínima y 100 % válida para Mermaid
+// Empieza sólo con nodos y enlaces básicos; ya iremos añadiendo comprobaciones.
 
 export function generateTaskGraph(tasks) {
+  // utilidades locales (inline por simplicidad)
+  const id    = n => `task_${String(n).replace(/\W/g, '_')}`;          // evitas nºs puros o símbolos
+  const label = s => (s || '(Sin título)').replace(/"/g, '\"').slice(0, 50);
+
+  // cabecera: sin punto y coma final ⇒ "graph TD" a pelo
+  let graph = 'graph TD\n';
+
+  // placeholder para lista vacía (así Mermaid no protesta)
+  if (!tasks.length) {
+    graph += '  vacio["(sin tareas)"]\n';
+    return graph;
+    }
+
+  // 1️⃣ declara todos los nodos primero
+  tasks.forEach(t => {
+    graph += `  ${id(t.id)}["${label(t.title)}"]\n`;
+    });
+
+  // 2️⃣ declara las aristas padre → hijo (ignoramos padres desconocidos, de momento)
+  tasks.forEach(t => {
+    if (t.parentId != null) {
+      graph += `  ${id(t.parentId)} --> ${id(t.id)}\n`;
+      }
+    });
+
+  return graph;
+  }
+
+export function generateTaskGraph2(tasks) {
   // Build a map for fast lookup
   const taskMap = new Map();
   tasks.forEach(t => taskMap.set(t.id, t));
