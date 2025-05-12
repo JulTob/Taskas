@@ -1,5 +1,9 @@
 // script.js 
 
+//--- Imports ---
+import { generateTaskGraph } from './diagram.js';
+window.generateTaskGraph = generateTaskGraph; // Expose globally for safety
+
 /* ------------------- constantes ------------------- */
 const PRIORITIES = [
     'Alta', 
@@ -206,6 +210,13 @@ function renderTasks(ui) {
         });
 
     taskContainer.appendChild(table);
+    if (window.generateTaskGraph && window.mermaid) {
+          const graphCode = generateTaskGraph(TaskModule.list);
+          const diagramEl = document.getElementById('diagram');
+          diagramEl.textContent = graphCode;
+          mermaid.init(undefined, diagramEl);
+        }
+
     updateFormOptions(ui);
     }
 
@@ -252,7 +263,6 @@ function setDefaultFormValues(formEl) {
       }
 
 // ---------- Punto de entrada de diagrama -----
-import { generateTaskGraph } from './diagram.js';
 
 function showDiagram() {
   const tasks = TaskModule.list;
