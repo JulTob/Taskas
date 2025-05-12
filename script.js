@@ -102,13 +102,14 @@ function openModal(task, ui) {
           tomatoBtn.onclick = () => startPomodoro(task, ui, timerBox);
           
           incBtn.onclick = () => {
-                task.timerSec = (task.timerSec ?? 0) + 60;       
-                timerBox.textContent = fmt(task.timerSec);
-                };            
+            task.timer = (task.timer ?? 0) + 1;
+            timerBox.textContent = fmt(task.timer*60);
+            };
+          
           decBtn.onclick = () => {
-                task.timerSec = Math.max(0,(task.timerSec ?? 0) - 60); 
-                timerBox.textContent = fmt(task.timerSec);
-                };
+            task.timer = Math.max(0,(task.timer ?? 0) - 1);
+            timerBox.textContent = fmt(task.timer*60);
+            };
           form.elements['editId'].value  = task.id;
           form.elements['title'].value   = task.title;
           form.elements['deadline'].value= task.deadline;
@@ -372,7 +373,4 @@ function startTimer(task, ui) {
     // no persistas timerRunning; pero **sí** puedes escribir el primer segundo
     ui.dataModule.save(TaskModule.list);
     }
-
-
-
 
