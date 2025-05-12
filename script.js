@@ -2,7 +2,11 @@
 
 //--- Imports ---
 import { generateTaskGraph } from './diagram.js';
-window.generateTaskGraph = generateTaskGraph; // Expose globally for safety
+window.showDiagram = () => {
+  const code = generateTaskGraph(TaskModule.list);
+  document.getElementById('diagram').textContent = code;
+  mermaid.init(undefined, '#diagram');
+    };
 
 /* ------------------- constantes ------------------- */
 const PRIORITIES = [
@@ -273,7 +277,7 @@ function showDiagram1() {
   mermaid.init(undefined, diagramEl);
   }
 
- function showDiagram() {
+ function showDiagram2() {
   const code = generateTaskGraph(TaskModule.list);
   const el   = document.getElementById('diagram');
 
