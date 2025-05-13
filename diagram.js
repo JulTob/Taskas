@@ -78,9 +78,9 @@ class Edge {
       let code = init + `graph TD;\n\n`;
       // 3. Definición de clases de prioridad
       code += [
-          `classDef low    fill:green,  stroke:#333,stroke-width:1px;`,
-          `classDef medium fill:yellow, stroke:#333,stroke-width:1px;`,
-          `classDef high   fill:red,    stroke:#333,stroke-width:1px;`
+          `classDef low    fill:Olive,  stroke:Silver,stroke-width:4px;`,
+          `classDef medium fill:Electric, stroke:Silver,stroke-width:4px;`,
+          `classDef high   fill:tomato,    stroke:Silver,stroke-width:4px;`
           ].map(l => `  ${l}\n`).join('') + `\n`;
       // 4. Nodos y aristas
       this.nodes.forEach(n => code += n.toMermaid());
