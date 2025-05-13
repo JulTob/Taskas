@@ -82,10 +82,10 @@ class Edge {
       // 3. Definición de clases de prioridad
       code += [
           `classDef low    fill:Olive,  stroke:Jade,stroke-width:4px;`,
-          `classDef medium fill:Electric, stroke:gold,stroke-width:4px;`,
+          `classDef medium fill:Yellow, stroke:gold,stroke-width:4px;`,
           `classDef high   fill:tomato,    stroke:Red,stroke-width:4px;`,
           `classDef retr   fill:#EFFF00,  stroke:Black,stroke-width:5px;`,
-          `classDef compl   fill:#EFFFFE,  stroke:Black,stroke-width:5px;`
+          `classDef compl   fill:#7DF9FF,  stroke:purple,stroke-width:5px;`
 
 
           ].map(l => `  ${l}\n`).join('') + `\n`;
