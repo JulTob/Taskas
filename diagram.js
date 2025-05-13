@@ -38,6 +38,7 @@ class Node {
           if (this.priority === 'Alta')  node += ':::high';
 
           if (this.priority === 'Retraso')  node += ':::retr';
+          if (this.priority === 'Completa')  node += ':::compl';
 
           return `  ${node};\n`;
           }    
@@ -80,10 +81,12 @@ class Edge {
       let code = init + `graph TD;\n\n`;
       // 3. Definición de clases de prioridad
       code += [
-          `classDef low    fill:Olive,  stroke:Silver,stroke-width:4px;`,
-          `classDef medium fill:Electric, stroke:Silver,stroke-width:4px;`,
-          `classDef high   fill:tomato,    stroke:Silver,stroke-width:4px;`,
-          `classDef retr   fill:#EFFF00,  stroke:Black,stroke-width:5px;`
+          `classDef low    fill:Olive,  stroke:Jade,stroke-width:4px;`,
+          `classDef medium fill:Electric, stroke:gold,stroke-width:4px;`,
+          `classDef high   fill:tomato,    stroke:Red,stroke-width:4px;`,
+          `classDef retr   fill:#EFFF00,  stroke:Black,stroke-width:5px;`,
+          `classDef compl   fill:#EFFFFE,  stroke:Black,stroke-width:5px;`
+
 
           ].map(l => `  ${l}\n`).join('') + `\n`;
       // 4. Nodos y aristas
