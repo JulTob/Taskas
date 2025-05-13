@@ -36,7 +36,9 @@ class Node {
           if (this.priority === 'Baja')  node += ':::low';
           if (this.priority === 'Media') node += ':::medium';
           if (this.priority === 'Alta')  node += ':::high';
-      
+
+          if (this.priority === 'Retraso')  node += ':::retr';
+
           return `  ${node};\n`;
           }    
   }
@@ -80,7 +82,9 @@ class Edge {
       code += [
           `classDef low    fill:Olive,  stroke:Silver,stroke-width:4px;`,
           `classDef medium fill:Electric, stroke:Silver,stroke-width:4px;`,
-          `classDef high   fill:tomato,    stroke:Silver,stroke-width:4px;`
+          `classDef high   fill:tomato,    stroke:Silver,stroke-width:4px;`,
+          `classDef retr   fill:Electric,    stroke:Black,stroke-width:5px;`
+
           ].map(l => `  ${l}\n`).join('') + `\n`;
       // 4. Nodos y aristas
       this.nodes.forEach(n => code += n.toMermaid());
