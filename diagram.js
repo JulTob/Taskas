@@ -83,7 +83,7 @@ class Edge {
           `classDef low    fill:Olive,  stroke:Silver,stroke-width:4px;`,
           `classDef medium fill:Electric, stroke:Silver,stroke-width:4px;`,
           `classDef high   fill:tomato,    stroke:Silver,stroke-width:4px;`,
-          `classDef retr   fill:Electric,    stroke:Black,stroke-width:5px;`
+          `classDef retr   fill:#EFFF00,  stroke:Black,stroke-width:5px;`
 
           ].map(l => `  ${l}\n`).join('') + `\n`;
       // 4. Nodos y aristas
