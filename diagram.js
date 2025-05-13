@@ -81,8 +81,8 @@ class Edge {
       let code = init + `graph TD;\n\n`;
       // 3. Definición de clases de prioridad
       code += [
-          `classDef low    fill:Olive,  stroke:Jade,stroke-width:4px;`,
-          `classDef medium fill:Yellow, stroke:gold,stroke-width:4px;`,
+          `classDef low    fill:lime,  stroke:Jade,stroke-width:4px;`,
+          `classDef medium fill:#FF5F1F, stroke:#FF6700,stroke-width:4px;`,
           `classDef high   fill:tomato,    stroke:Red,stroke-width:4px;`,
           `classDef retr   fill:#EFFF00,  stroke:Black,stroke-width:5px;`,
           `classDef compl   fill:#7DF9FF,  stroke:purple,stroke-width:5px;`
