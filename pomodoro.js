@@ -1,19 +1,19 @@
-// pomodoro.js  – guarda segundos y lanza aviso al completar 25'
-console.log("🍅 pomodoro SEC cargado");
+// pomodoro.js — gestiona el temporizador tipo Pomodoro
+
 
 const POMO_SEC = 25 * 60;               // 1500 s
 let active = null;                      // {task, baseSec, secRun, box, btn, int}
 
-// util formato
-const fmt = s =>
-  `${Math.floor(s/60).toString().padStart(2,'0')}:` +
-  `${(s%60).toString().padStart(2,'0')}`;
+export const formatTime = seconds =>
+  `${Math.floor(seconds/60).toString().padStart(2,'0')}:` +
+  `${(seconds%60).toString().padStart(2,'0')}`;
+
 
 // beep
 const ding = () => document.getElementById('ding')?.play();
 
 // ---------- toggle ----------
-function startPomodoro(task, ui, box){
+export function startPomodoro(task, ui, box){
   // mismo → pausa
   if (active && active.task.id === task.id) return pause(ui);
 
@@ -45,8 +45,8 @@ function tick(){
 
 function updateBox(){
   if(!active) return;
-  active.box.textContent = fmt(active.baseSec + active.secRun);
-}
+  active.box.textContent = formatTime(active.baseSec + active.secRun);
+  }
 
 function consolidate(ui){
   if(!active) return;
@@ -60,8 +60,7 @@ function pause(ui){
   consolidate(ui);
 
   active.btn.classList.remove('heartbeat');
-  active.box.textContent = fmt(active.task.timerSec);
+  active.box.textContent = formatTime(active.task.timerSec);
   active = null;
-}
+  }
 
-window.startPomodoro = startPomodoro;
