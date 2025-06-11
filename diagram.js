@@ -78,7 +78,7 @@ class Edge {
       // 1. Init con fondo marfil
       const init = `%%{init: {'themeVariables': {'diagramBackground':'#faf6e8'}}}%%\n`;
       // 2. Cabecera Top-Down
-      let code = init + `graph TD;\n\n`;
+      let code = init + `graph LR;\n\n`;
       // 3. Definición de clases de prioridad
       code += [
           `classDef low    fill:lime,  stroke:Jade,stroke-width:4px;`,
