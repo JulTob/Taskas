@@ -2,7 +2,7 @@
 
 //--- Imports ---
 import { generateTaskGraph } from './diagram.js';
-import { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged } from './firebase.js';
+import { auth, db, provider } from './firebase.js';
 window.showDiagram = () => {
   const code = generateTaskGraph(TaskModule.list);
   document.getElementById('diagram').textContent = code;
@@ -249,9 +249,9 @@ function deleteTask(id, ui) {
 // -------- Set up menu and auth --------
 function setupMenu(ui, fb) {
       ui.newTaskBtn.onclick = () => openModal(null, ui);
-      ui.loginBtn.onclick = () => signInWithPopup(fb.auth, fb.provider);
-      ui.logoutBtn.onclick = () => signOut(fb.auth);
-      }
+      ui.loginBtn.onclick = () => fb.auth.signInWithPopup(fb.provider);
+      ui.logoutBtn.onclick = () => fb.auth.signOut();
+    }
 
 // -------- Opciones dinámicas --------
 function updateFormOptions(ui) {
@@ -327,8 +327,8 @@ function showDiagram1() {
       }, { passive:false });
 
   // Manejo del estado de autenticación
-   onAuthStateChanged(fb.auth, user => {
-        if (user) {
+   fb.auth.onAuthStateChanged(user => {
+     if (user) {
             ui.dataModule = {
                 collRef: fb.db
                     .collection('users')
