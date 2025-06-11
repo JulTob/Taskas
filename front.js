@@ -158,4 +158,14 @@ function renderTasks() {
       </td>
       <td class="p-2">${task.priority}</td>
       <td class="p-2">${task.deadline || '—'}</td>
-      <td class="p-2">${task.time
+      <td class="p-2">${task.time || '—'}</td>
+      <td class="p-2">${task.duration} min</td>
+      <td class="p-2">${task.subtasks.length}</td>
+      <td class="p-2">${noteIcon}</td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  taskContainer.appendChild(table);
+}
