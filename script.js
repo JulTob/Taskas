@@ -2,6 +2,7 @@
 
 //--- Imports ---
 import { generateTaskGraph } from './diagram.js';
+import { auth, db, provider } from './firebase.js';
 window.showDiagram = () => {
   const code = generateTaskGraph(TaskModule.list);
   document.getElementById('diagram').textContent = code;
