@@ -296,7 +296,9 @@ function showDiagram1() {
 // -------- Punto de entrada --------
 (function main() {
   // Inicialización de Firebase
-  const fb = initFirebase(firebaseConfig);
+  import { auth, db, provider } from './firebase.js';
+  const fb = { auth, db, provider };
+
   // Construcción del objeto ui
   const ui = {
       newTaskBtn: document.getElementById('new-task-btn'),
