@@ -1,11 +1,9 @@
 // firebase.js
 // ————————————————
 // 1) Carga las libs (usa compat o modular, aquí compat para mantener tu versión):
-importScripts(
-  "https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js",
-  "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js",
-  "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"
-  );
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 
 
 // 2) Tu configuración (pégala exacta de la consola)
