@@ -38,10 +38,11 @@ function initFirebase(config) {
         };
     }
 */
+/* 19:13 11-6
 function initFirebase(config) {
   const app = firebase.apps.length
       ? firebase.app()             // ya existe, reutilízalo
-      : firebase.initializeApp(config);
+      : firebase.initializeApp(config); */
 
   return {
     auth: app.auth(),
