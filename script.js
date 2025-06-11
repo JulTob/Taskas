@@ -85,7 +85,7 @@ function openModal(task, ui) {
     
       if (task) {   
           // ----- EDITAR -----
-          timerBox.textContent = fmt((task.timer ?? 0)*60);
+          timerBox.textContent = formatTime((task.timer ?? 0)*60);
           timerBlock.classList.remove('hidden');
           
           tomatoBtn.onclick = () => startPomodoro(task, ui, timerBox);
