@@ -20,7 +20,11 @@ const PRIORITIES = [
 
 
 // -------- Inicialización de Firebase --------
-const firebaseConfig = {
+// Firebase se inicializa en `firebase.js` y aquí únicamente importamos
+// `auth`, `db` y `provider` ya configurados. Se elimina el código antiguo que
+// mezclaba el API "compat" y generaba referencias a variables inexistentes.
+
+/*const firebaseConfig = {
           apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
           authDomain: "taska-65c33.firebaseapp.com",
           projectId: "taska-65c33",
