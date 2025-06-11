@@ -66,4 +66,4 @@ function pause(ui, taskModule){
   }
 
 
-export { startPomodoro, fmt };
+export { startPomodoro, formatTime };
