@@ -249,8 +249,8 @@ function deleteTask(id, ui) {
 // -------- Set up menu and auth --------
 function setupMenu(ui, fb) {
       ui.newTaskBtn.onclick = () => openModal(null, ui);
-      ui.loginBtn.onclick = () => fb.auth.signInWithPopup(fb.provider);
-      ui.logoutBtn.onclick = () => fb.auth.signOut();
+      ui.loginBtn.onclick = () => signInWithPopup(fb.auth, fb.provider);
+      ui.logoutBtn.onclick = () => signOut(fb.auth);
       }
 
 // -------- Opciones dinámicas --------
@@ -302,7 +302,6 @@ function showDiagram1() {
 // -------- Punto de entrada --------
 (function main() {
   // Inicialización de Firebase
-  import { auth, db, provider } from './firebase.js';
   const fb = { auth, db, provider };
 
   // Construcción del objeto ui
@@ -328,7 +327,7 @@ function showDiagram1() {
       }, { passive:false });
 
   // Manejo del estado de autenticación
-  fb.auth.onAuthStateChanged(user => {
+   onAuthStateChanged(fb.auth, user => {
         if (user) {
             ui.dataModule = {
                 collRef: fb.db
