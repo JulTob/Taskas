@@ -20,7 +20,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 
-
+/*
 // ---------- Firebase ----------
 // (colócalo antes que el resto para que collRef exista)
 const auth     = firebase.auth();
@@ -34,8 +34,9 @@ const logoutBtn = document.getElementById('logoutBtn');
 
 loginBtn.onclick  = () => auth.signInWithPopup(provider);
 logoutBtn.onclick = () => auth.signOut();
-
-/* === estado de autenticación === */
+/*
+/* === estado de autenticación === /*/
+/*/
 auth.onAuthStateChanged(user => {
   if (!user) {
     // logout → limpia UI
@@ -60,8 +61,8 @@ auth.onAuthStateChanged(user => {
     renderTasks();
   });
 });
-
-
+/*/
+/*/
 export function initAuth(onLogin, onLogout) {
   auth.onAuthStateChanged(user => {
     if (user) {
@@ -76,4 +77,4 @@ export function initAuth(onLogin, onLogout) {
 export const auth     = firebase.auth();
 export const db       = firebase.firestore();
 export const provider = new firebase.auth.GoogleAuthProvider();
-
+/*/
