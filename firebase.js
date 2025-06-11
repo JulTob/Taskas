@@ -5,7 +5,6 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebas
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 
-
 // 2) Tu configuración (pégala exacta de la consola)
 const firebaseConfig = {
   apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
