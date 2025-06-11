@@ -1,8 +1,8 @@
 // front.js
 // —————————————————————————————————
-// Lógica de UI y gestión de tareas (importa Firebase desde back.js)
+// Lógica de UI y gestión de tareas (importa Firebase desde firebase.js)
 
-import { auth, provider, initAuth, collRef } from './back.js';
+import { auth, provider, initAuth, collRef } from './firebase.js';
 
 // — 1. Referencias al DOM —
 const loginBtn      = document.getElementById('loginBtn');
