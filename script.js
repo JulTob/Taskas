@@ -3,6 +3,8 @@
 //--- Imports ---
 import { generateTaskGraph } from './diagram.js';
 import { auth, db, provider } from './firebase.js';
+import { startPomodoro, formatTime } from './pomodoro.js';
+
 window.showDiagram = () => {
   const code = generateTaskGraph(TaskModule.list);
   document.getElementById('diagram').textContent = code;
@@ -11,21 +13,12 @@ window.showDiagram = () => {
 
 /* ------------------- constantes ------------------- */
 const PRIORITIES = [
-    'Alta', 
-    'Media', 
-    'Baja', 
-    'Retraso', 
+    'Alta',
+    'Media',
+    'Baja',
+    'Retraso',
     'Completa'
     ];
-
-
-  return {
-    auth: app.auth(),
-    db  : app.firestore(),
-    provider: new firebase.auth.GoogleAuthProvider()
-      };
-    }
-
 
 // --------  Módulo de Tareas --------
 const TaskModule = {
@@ -99,12 +92,12 @@ function openModal(task, ui) {
           
           incBtn.onclick = () => {
             task.timer = (task.timer ?? 0) + 1;
-            timerBox.textContent = fmt(task.timer*60);
+            timerBox.textContent = formatTime(task.timer * 60);
             };
           
           decBtn.onclick = () => {
             task.timer = Math.max(0,(task.timer ?? 0) - 1);
-            timerBox.textContent = fmt(task.timer*60);
+            timerBox.textContent = formatTime(task.timer * 60);
             };
           form.elements['editId'].value  = task.id;
           form.elements['title'].value   = task.title;
@@ -245,29 +238,6 @@ function setDefaultFormValues(formEl) {
       formEl.elements['parent'].value = '';
       }
 
-// ---------- Punto de entrada de diagrama -----
-
-function showDiagram1() {
-  const graphCode = generateTaskGraph(TaskModule.list);
-  const diagramEl = document.getElementById('diagram');
-  diagramEl.textContent = graphCode;
-  mermaid.init(undefined, diagramEl);
-  }
-
- function showDiagram2() {
-  const code = generateTaskGraph(TaskModule.list);
-  const el   = document.getElementById('diagram');
-
-  try {
-    mermaid.parse(code);          // 💡 validación rápida
-    el.textContent = code;
-    mermaid.init(undefined, el);
-  } catch (err) {
-    console.error('Mermaid ▶︎', err);
-    el.textContent = 'graph TD\nerror["❌ Diagrama no válido"]';
-    mermaid.init(undefined, el);
-  }
-}
 
 // -------- Punto de entrada --------
 (function main() {
@@ -396,11 +366,4 @@ function showDiagram1() {
 })();
 
 
-function startTimer(task, ui) {
-    task.timerRunning = true;
-    //activeTimer = { … };
-  
-    // no persistas timerRunning; pero **sí** puedes escribir el primer segundo
-    ui.dataModule.save(TaskModule.list);
-    }
 
