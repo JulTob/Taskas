@@ -1,24 +1,24 @@
-// pomodoro.js — gestiona el temporizador tipo Pomodoro
+// pomodoro.js  – guarda segundos y lanza aviso al completar 25'
+console.log("🍅 pomodoro SEC cargado");
 
-
-export const POMO_SEC = 25 * 60;               // 1500 s
+const POMO_SEC = 25 * 60;               // 1500 s
 let active = null;                      // {task, baseSec, secRun, box, btn, int}
 
-export const formatTime = seconds =>
-  `${Math.floor(seconds/60).toString().padStart(2,'0')}:` +
-  `${(seconds%60).toString().padStart(2,'0')}`;
-
+// util formato
+const fmt = s =>
+  `${Math.floor(s/60).toString().padStart(2,'0')}:` +
+  `${(s%60).toString().padStart(2,'0')}`;
 
 // beep
 const ding = () => document.getElementById('ding')?.play();
 
 // ---------- toggle ----------
-export function startPomodoro(task, ui, box, taskModule){
+function startPomodoro(task, ui, box){
   // mismo → pausa
-  if (active && active.task.id === task.id) return pause(ui, taskModule);
+  if (active && active.task.id === task.id) return pause(ui);
 
-  pause(ui, taskModule);               // detén otro
-  
+  pause(ui);                            // detén otro
+
   const btn = document.getElementById('tomato-btn');
   active = {
     task,
@@ -45,25 +45,23 @@ function tick(){
 
 function updateBox(){
   if(!active) return;
-  active.box.textContent = formatTime(active.baseSec + active.secRun);
-  }
-
-function consolidate(ui, taskModule){
-  if(!active) return;
-  active.task.timerSec = active.baseSec + active.secRun;     // guarda segundos exactos
-    if (taskModule) ui.dataModule.save(taskModule.list);
+  active.box.textContent = fmt(active.baseSec + active.secRun);
 }
 
-function pause(ui, taskModule){
+function consolidate(ui){
+  if(!active) return;
+  active.task.timerSec = active.baseSec + active.secRun;     // guarda segundos exactos
+  ui.dataModule.save(TaskModule.list);
+}
+
+function pause(ui){
   if(!active) return;
   clearInterval(active.int);
-  consolidate(ui, taskModule);
+  consolidate(ui);
 
-  
   active.btn.classList.remove('heartbeat');
-  active.box.textContent = formatTime(active.task.timerSec);
+  active.box.textContent = fmt(active.task.timerSec);
   active = null;
-  }
+}
 
-
-export { startPomodoro, formatTime };
+window.startPomodoro = startPomodoro;
