@@ -75,7 +75,7 @@ const TaskModule = {
                     }
               // 🌳 Step 1: Build normal hierarchy
               rec();
-              // 👻 Step 2: Find & append "horfan" tasks
+              // 👻 Step 2: Find & append "orphan" tasks
               TaskModule.list.forEach(t => {
                     const isSelfParent = t.parentId === t.id;
                     const isMissingParent = t.parentId && !TaskModule.getById(t.parentId);
