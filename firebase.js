@@ -1,10 +1,11 @@
 // firebase.js
 // ————————————————
-// 1) Firebase initialization using compat libraries
+// Firebase initialization using compat libraries
 
 import firebase from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js';
 import 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js';
 import 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
