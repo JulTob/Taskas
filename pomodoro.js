@@ -13,12 +13,12 @@ export const formatTime = seconds =>
 const ding = () => document.getElementById('ding')?.play();
 
 // ---------- toggle ----------
-export function startPomodoro(task, ui, box){
+export function startPomodoro(task, ui, box, taskModule){
   // mismo → pausa
-  if (active && active.task.id === task.id) return pause(ui);
+  if (active && active.task.id === task.id) return pause(ui, taskModule);
 
-  pause(ui);                            // detén otro
-
+  pause(ui, taskModule);               // detén otro
+  
   const btn = document.getElementById('tomato-btn');
   active = {
     task,
@@ -48,19 +48,22 @@ function updateBox(){
   active.box.textContent = formatTime(active.baseSec + active.secRun);
   }
 
-function consolidate(ui){
+function consolidate(ui, taskModule){
   if(!active) return;
   active.task.timerSec = active.baseSec + active.secRun;     // guarda segundos exactos
-  ui.dataModule.save(TaskModule.list);
+    if (taskModule) ui.dataModule.save(taskModule.list);
 }
 
-function pause(ui){
+function pause(ui, taskModule){
   if(!active) return;
   clearInterval(active.int);
-  consolidate(ui);
+  consolidate(ui, taskModule);
 
+  
   active.btn.classList.remove('heartbeat');
   active.box.textContent = formatTime(active.task.timerSec);
   active = null;
   }
 
+
+export { startPomodoro, fmt };
