@@ -19,36 +19,6 @@ const PRIORITIES = [
     ];
 
 
-// -------- Inicialización de Firebase --------
-// Firebase se inicializa en `firebase.js` y aquí únicamente importamos
-// `auth`, `db` y `provider` ya configurados. Se elimina el código antiguo que
-// mezclaba el API "compat" y generaba referencias a variables inexistentes.
-
-/*const firebaseConfig = {
-          apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
-          authDomain: "taska-65c33.firebaseapp.com",
-          projectId: "taska-65c33",
-          storageBucket: "taska-65c33.appspot.com",
-          messagingSenderId: "287205600078",
-          appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
-          measurementId: "G-RM9DCQ136H"
-          };
-/* 20:59-11-5
-function initFirebase(config) {
-    firebase.initializeApp(config);
-    return {
-        auth: firebase.auth(),
-        db: firebase.firestore(),
-        provider: new firebase.auth.GoogleAuthProvider()
-        };
-    }
-*/
-/* 19:13 11-6
-function initFirebase(config) {
-  const app = firebase.apps.length
-      ? firebase.app()             // ya existe, reutilízalo
-      : firebase.initializeApp(config); */
-
   return {
     auth: app.auth(),
     db  : app.firestore(),
