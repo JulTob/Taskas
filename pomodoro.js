@@ -1,7 +1,7 @@
 // pomodoro.js — gestiona el temporizador tipo Pomodoro
 
 
-const POMO_SEC = 25 * 60;               // 1500 s
+export const POMO_SEC = 25 * 60;               // 1500 s
 let active = null;                      // {task, baseSec, secRun, box, btn, int}
 
 export const formatTime = seconds =>
