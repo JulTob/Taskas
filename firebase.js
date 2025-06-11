@@ -24,6 +24,8 @@ const auth     = firebase.auth();
 const db       = firebase.firestore();
 const provider = new firebase.auth.GoogleAuthProvider();
 
+export { signInWithPopup, signOut, onAuthStateChanged };
+
 let collRef = null;               // /users/{uid}/tasks
 
 const loginBtn  = document.getElementById('loginBtn');
