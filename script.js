@@ -131,11 +131,14 @@ window.addEventListener('DOMContentLoaded', () => {
           }
 
   function render(){
-      const c = ui.taskContainer;
+      const container = ui.taskContainer;
       const flat = TaskModule.flatten();
-      container.innerHTML = flat.length === 0
-            ? '<p class="text-gray-500">No hay tareas.</p>'
-            : buildTable(flat);
+      container.innerHTML = '';
+      if (!flat.length) {
+            container.innerHTML = '<p class="text-gray-500">No hay tareas.</p>';
+      } else {
+            container.appendChild(buildTable(flat));
+            }      
       // refresh Mermaid
       const code = generateTaskGraph(TaskModule.list);
       const pre  = document.getElementById('diagram');
