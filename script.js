@@ -162,9 +162,12 @@ function renderTasks(ui) {
     if (window.showDiagram) window.showDiagram();
     }
 
-function editTask(id, ui) {
-    openModal(TaskModule.getById(id), ui);
+function editTask(id) {
+    const modal = document.getElementById('taskModal');
+    const task = TaskModule.getById(id);
+    modal.show(task);
     }
+
 
 // -------- Borrar tarea --------
 function deleteTask(id, ui) {
@@ -177,10 +180,10 @@ function deleteTask(id, ui) {
 
 // -------- Set up menu and auth --------
 function setupMenu(ui, fb) {
-      ui.newTaskBtn.onclick = () => openModal(null, ui);
-      ui.loginBtn.onclick = () => fb.auth.signInWithPopup(fb.provider);
-      ui.logoutBtn.onclick = () => fb.auth.signOut();
-      }
+  ui.loginBtn.onclick = () => fb.auth.signInWithPopup(fb.provider);
+  ui.logoutBtn.onclick = () => fb.auth.signOut();
+  }
+
 
 // -------- Opciones dinámicas --------
 function updateFormOptions(ui) {
