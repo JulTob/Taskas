@@ -150,13 +150,8 @@
            ></div>
   
       <!-- modal -->
-      <div id="task-modal"
-           role="dialog" aria-modal="true"
-           class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                  w-full max-w-lg bg-white p-6 border rounded-lg shadow-lg hidden
-                  z-50">
-            <h2 id="modal-title" class="text-xl font-semibold mb-4"></h2>
-    
+      <task-modal id="taskModal">
+        <span slot="title" id="modal-title"></span>    
             <form id="modal-form" class="space-y-4">
                   <input type="hidden" name="editId">
           
@@ -214,10 +209,11 @@
                       </button>
                   </div>
             </form>
-          </div>
+          </task-modal>
 
 <script type="module" src="script.js"></script>
 <script type="module" src="pomodoro.js"></script>
+<script type="module" src="/components/task-modal.js"></script>
 
 </body>
 </html>
