@@ -89,75 +89,7 @@ const TaskModule = {
               }
         };
 
-// -------- Modal --------
-function openModal(task, ui) {
-      const { modal, overlay, form } = ui;
-      modal.classList.remove('hidden');
-      overlay.classList.remove('hidden');
-      overlay.onclick = () => closeModal(ui);         
-        // clic fuera = cerrar
-    
-      // título
-      modal.querySelector('#modal-title').textContent =
-            task ? 'Editar tarea' : 'Nueva tarea';
-    
-      // Prioridades
-      const priSel = form.elements['priority'];
-      priSel.innerHTML = '';
-      PRIORITIES.forEach(p => priSel.add(new Option(p, p, false, p === 'Media')));
-    
-      // ── referencias a los controles de tiempo ──
-      const timerBlock   = form.querySelector('#timer-block');
-      const timerBox     = form.querySelector('#timer-box');
-      const tomatoBtn    = form.querySelector('#tomato-btn');
-      const incBtn       = form.querySelector('#inc-btn');
-      const decBtn       = form.querySelector('#dec-btn');
 
-
-      // lista de padres
-      updateFormOptions(ui);
-    
-      if (task) {   
-          // ----- EDITAR -----
-          timerBox.textContent = fmt((task.timer ?? 0)*60);
-          timerBlock.classList.remove('hidden');
-          
-          tomatoBtn.onclick = () => startPomodoro(task, ui, timerBox);
-          
-          incBtn.onclick = () => {
-            task.timer = (task.timer ?? 0) + 1;
-            timerBox.textContent = fmt(task.timer*60);
-            };
-          
-          decBtn.onclick = () => {
-            task.timer = Math.max(0,(task.timer ?? 0) - 1);
-            timerBox.textContent = fmt(task.timer*60);
-            };
-          form.elements['editId'].value  = task.id;
-          form.elements['title'].value   = task.title;
-          form.elements['deadline'].value= task.deadline;
-          form.elements['time'].value    = task.time;
-          form.elements['duration'].value= task.duration;
-          priSel.value                   = task.priority;
-          form.elements['notes'].value   = task.notes || '';
-          form.elements['parent'].value  = task.parentId ?? '';
-          } 
-      else {              
-          // ----- NUEVA -----
-          timerBlock.classList.add('hidden');
-          form.reset();
-          form.elements['editId'].value = '';
-          setDefaultFormValues(form);
-          }
-    
-      form.elements['title'].focus();
-      }
-
-
-function closeModal(u) {
-      u.modal.classList.add('hidden');
-      u.overlay.classList.add('hidden');
-      }
 
 // -------- Render de tareas --------
 function renderTasks(ui) {
