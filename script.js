@@ -1,7 +1,8 @@
 /* ─────────────────────────────── script.js ─────────────────────────────── */
 /* 1) Imports */
 import { generateTaskGraph } from './diagram.js';
-import { auth, db, provider, initAuth } from './firebase.js';
+import { auth, db, provider,
+         signInWithPopup, signOut, initAuth } from './firebase.js';
 import './components/task-modal.js';          // registers <task-modal>
 import { startPomodoro, fmt } from './pomodoro.js';
 
@@ -66,14 +67,15 @@ window.addEventListener('DOMContentLoaded', () => {
   // A) Guarded pop-up login
   let popupInFlight = false;
   
-  ui.loginBtn.onclick = () => {
-        if (popupInFlight) return;
-        popupInFlight = true;
-        auth.signInWithPopup(auth, provider)
+ui.loginBtn.onclick = () => {
+      if (popupInFlight) return;
+      popupInFlight = true;
+      /* modular call ⬇️ */
+      signInWithPopup(auth, provider)
           .catch(err => alert(`Login error:\n${err.message}`))
           .finally(() => popupInFlight = false);
-        };
-
+      };
+  
   // B) Sign-out click
   ui.logoutBtn.onclick = () => {
         auth.signOut().catch(err => alert(`Logout error:\n${err.message}`));
