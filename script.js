@@ -125,7 +125,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 duration: +fd.duration,
                 priority: fd.priority,
                 notes   : fd.notes.trim(),
-                parentId: fd.parent==='' ? null : +fd.parent
+                parentId: fd.parent==='' ? null : +fd.parent,
+                timer: +this.form.elements.timer?.value || 0
                 });
         
           if(!isEdit) TaskModule.add(task);
