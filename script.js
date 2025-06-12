@@ -2,6 +2,8 @@
 
 //--- Imports ---
 import { generateTaskGraph } from './diagram.js';
+import './components/task-modal.js';
+
 
 window.showDiagram = () => {
   const code = generateTaskGraph(TaskModule.list);
@@ -295,155 +297,123 @@ function showDiagram1() {
 }
 
 // -------- Punto de entrada --------
+// FINAL MAIN — with modal injection and clean structure
 (function main() {
-  // Inicialización de Firebase
   const fb = initFirebase(firebaseConfig);
-  // Construcción del objeto ui
+
+  const modal = document.getElementById('taskModal');
+  const form  = document.getElementById('modal-form');
+
   const ui = {
-      newTaskBtn: document.getElementById('new-task-btn'),
-      modal   : document.getElementById('task-modal'),
-      overlay : document.getElementById('modal-overlay'),      
-      form: document.getElementById('modal-form'),
-      taskContainer: document.getElementById('task-container'),
-      loginBtn: document.getElementById('loginBtn'),
-      logoutBtn: document.getElementById('logoutBtn'),
-      dataModule: null
-      };
-  
-  window.__TASKAS_UI__ = ui;   // NEW
+    newTaskBtn: document.getElementById('new-task-btn'),
+    modal: modal,
+    form: form,
+    taskContainer: document.getElementById('task-container'),
+    loginBtn: document.getElementById('loginBtn'),
+    logoutBtn: document.getElementById('logoutBtn'),
+    dataModule: null
+  };
 
-  // Evitar scroll accidental en el input de duración
+  window.__TASKAS_UI__ = ui;
+
+  // Prevent accidental scroll change on number input
   document.addEventListener('wheel', e => {
-      if (e.target.name === 'duration' && document.activeElement === e.target) {
-          e.preventDefault();          
-          // bloquea la rueda
-          }
-      }, { passive:false });
+    if (e.target.name === 'duration' && document.activeElement === e.target) {
+      e.preventDefault();
+    }
+  }, { passive: false });
 
-  // Manejo del estado de autenticación
+  const PRIORITIES = ['Alta','Media','Baja','Retraso','Completa'];
+
+  // ✅ Inject dependencies into modal
+  modal.priorities = PRIORITIES;
+  modal.onSave = formData => {
+    const isEdit = formData.editId !== '';
+    const task = isEdit
+      ? TaskModule.getById(+formData.editId)
+      : {
+          id: Date.now(),
+          timer: 0,
+          timerRunning: false
+        };
+
+    Object.assign(task, {
+      title: formData.title.trim(),
+      deadline: formData.deadline,
+      time: formData.time,
+      duration: +formData.duration,
+      priority: formData.priority,
+      notes: formData.notes.trim(),
+      parentId: formData.parent === '' ? null : +formData.parent
+    });
+
+    if (task.parentId === task.id) task.parentId = null;
+    function isDescendant(childId, ancestorId) {
+      let p = TaskModule.getById(childId)?.parentId;
+      while (p != null) {
+        if (p === ancestorId) return true;
+        p = TaskModule.getById(p)?.parentId ?? null;
+      }
+      return false;
+    }
+    if (task.parentId && isDescendant(task.parentId, task.id)) {
+      alert('No puedes hacer que una tarea sea hija de su propio descendiente.');
+      task.parentId = null;
+    }
+
+    if (!isEdit) TaskModule.add(task);
+    ui.dataModule.save(TaskModule.list);
+    renderTasks(ui);
+    form.reset();
+  };
+
+  ui.newTaskBtn.onclick = () => {
+    setDefaultFormValues(form);
+    modal.show();
+  };
+
   fb.auth.onAuthStateChanged(user => {
-        if (user) {
-            ui.dataModule = {
-                collRef: fb.db
-                    .collection('users')
-                    .doc(user.uid)
-                    .collection('tasks'),
-                save: tasks => { 
-                    tasks.forEach(t => {
-                          const { timerRunning, ...persist } = t;      // quita flag volátil      
-                          ui.dataModule.collRef
-                            .doc(t.id.toString())
-                            .set(persist);
-                            });
-                    },
-            subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
-            };
+    if (user) {
+      ui.dataModule = {
+        collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
+        save: tasks => {
+          tasks.forEach(t => {
+            const { timerRunning, ...persist } = t;
+            ui.dataModule.collRef.doc(t.id.toString()).set(persist);
+          });
+        },
+        subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
+      };
 
-        ui.dataModule.subscribe(snap => {
-              TaskModule.clear();
-              snap.forEach(doc => {
-                  const data = doc.data();
-                  TaskModule.add({ 
-                      id: +doc.id, 
-                      ...data,
-                      timer       : data.timer ?? 0,
-                      timerRunning: false
-                      });
-                  });
-              renderTasks(ui);
-              });
-      
-            ui.loginBtn.classList.add('hidden');
-            ui.logoutBtn.classList.remove('hidden');
-            setDefaultFormValues(ui.form);
-            } 
-        else {
-              TaskModule.clear();
-              renderTasks(ui);
-              ui.dataModule = null;
-              ui.logoutBtn.classList.add('hidden');
-              ui.loginBtn.classList.remove('hidden');
-              }
+      ui.dataModule.subscribe(snap => {
+        TaskModule.clear();
+        snap.forEach(doc => {
+          const data = doc.data();
+          TaskModule.add({
+            id: +doc.id,
+            ...data,
+            timer: data.timer ?? 0,
+            timerRunning: false
+          });
         });
+        renderTasks(ui);
+      });
+
+      ui.loginBtn.classList.add('hidden');
+      ui.logoutBtn.classList.remove('hidden');
+      setDefaultFormValues(form);
+    } else {
+      TaskModule.clear();
+      renderTasks(ui);
+      ui.dataModule = null;
+      ui.logoutBtn.classList.add('hidden');
+      ui.loginBtn.classList.remove('hidden');
+    }
+  });
 
   setupMenu(ui, fb);
 
-  ui.form.onsubmit = e => {
-    e.preventDefault();
-    const f = ui.form.elements;
-
-      /* ¿nuevo o edición? */
-    const isEdit = f['editId'].value !== '';
-    const task   = isEdit
-          ? TaskModule.getById(+f['editId'].value)    // editar: objeto existente
-          : {
-              id: Date.now() ,
-              timer    : 0,
-              timerRunning : false,
-              };                       // nuevo: TaskAs objeto 
-    /* 2· Rellenar/actualizar campos */
-    task.title     = f['title'].value.trim();
-    task.deadline  = f['deadline'].value;         // '' si no se elige
-    task.time      = f['time'].value;
-    task.duration  = +f['duration'].value;        // número
-    task.priority  = f['priority'].value;
-    task.notes     = f['notes'].value.trim();
-    task.parentId  = f['parent'].value === '' ? null : +f['parent'].value;
-
-    // Proteger contra loops de herencia
-    if (task.parentId === task.id) task.parentId = null;
-    function isDescendant(candidateId, targetId) {
-          // ¿targetId está en la cadena de padres de candidateId?
-          let p = TaskModule.getById(candidateId)?.parentId;
-          while (p != null) {
-                if (p === targetId) return true;
-                p = TaskModule.getById(p)?.parentId ?? null;
-                }
-          return false;
-          }
-    if (task.parentId && isDescendant(task.parentId, task.id)) {
-          alert('No puedes hacer que una tarea sea hija de su propio descendiente.');
-          task.parentId = null;
-          }    
-    /* 3· Añadir a la lista si es una tarea nueva */
-    if (!isEdit) TaskModule.add(task);
-    /* 4· Persistir y refrescar UI */
-    ui.dataModule.save(TaskModule.list);
-    renderTasks(ui);
-    closeModal(ui); 
-    ui.form.reset();
-    };
-
   window.addEventListener('DOMContentLoaded', () => {
-    setDefaultFormValues(ui.form);
+    setDefaultFormValues(form);
   });
 })();
-
-
-function startTimer(task, ui) {
-    task.timerRunning = true;
-    //activeTimer = { … };
-  
-    // no persistas timerRunning; pero **sí** puedes escribir el primer segundo
-    ui.dataModule.save(TaskModule.list);
-    }
-
-import './components/task-modal.js';
-
-const PRIORITIES = ['Alta','Media','Baja','Retraso','Completa'];
-const modal = document.getElementById('taskModal');
-const form = document.getElementById('modal-form');
-
-// ✅ Inject dependencies into the component
-modal.priorities = PRIORITIES;
-modal.onSave = formData => {
-  // Called when user clicks "Guardar"
-  console.log('Saving task:', formData);
-  // Add or update TaskModule, persist data, re-render
-};
-
-document.getElementById('new-task-btn')
-  .onclick = () => {
-    form.reset();
-    modal.show(); // show modal with defaults
-  };
