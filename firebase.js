@@ -1,10 +1,20 @@
 // firebase.js  (MODULAR v10)
-import { initializeApp, getApps } from 
-  'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }
-  from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
-import { getFirestore } from 
-  'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+// 1) Load Firebase (modular API)
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+  } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  onSnapshot
+  } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 
 
 // 2) Tu configuración (pégala exacta de la consola)
@@ -18,20 +28,23 @@ const firebaseConfig = {
       measurementId: "G-RM9DCQ136H"
       };
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const app      = initializeApp(firebaseConfig);
+export const auth     = getAuth(app);
+export const db       = getFirestore(app);
+export const provider = new GoogleAuthProvider();
+export {
+  signInWithPopup,
+  signOut,
+  onSnapshot,
+  collection,
+  doc,
+  setDoc
+  };
 
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
 
-
-/* helper for script.js */
-function initAuth(onLogin, onLogout){
-      onAuthStateChanged(auth, user => user ? onLogin(user) : onLogout());
+export function initAuth(onLogin, onLogout) {
+      onAuthStateChanged(auth, user => {
+            if (user) onLogin(user);
+            else      onLogout();
+            });
       }
-
-export { auth, db, provider, signInWithPopup, signOut, initAuth };
-
-
-
-
