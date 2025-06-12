@@ -81,7 +81,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
   /* Firebase login flow */
   const fb = initFirebase(firebaseConfig);
-  ui.loginBtn.onclick  = () => fb.auth.signInWithPopup(fb.provider);
+  ui.loginBtn.onclick  = () => fb.auth.signInWithPopup(fb.provider);{
+        fb.auth
+            .signInWithPopup(fb.provider)
+            .catch(err => {
+                  console.error('Firebase login error ▶', err.code, err.message);
+                  alert(`No se pudo iniciar sesión:\n${err.message}`);
+                  });
+        };
   ui.logoutBtn.onclick = () => fb.auth.signOut();
 
   fb.auth.onAuthStateChanged(user=>{
