@@ -2,6 +2,7 @@
 
 //--- Imports ---
 import { generateTaskGraph } from './diagram.js';
+
 window.showDiagram = () => {
   const code = generateTaskGraph(TaskModule.list);
   document.getElementById('diagram').textContent = code;
@@ -426,3 +427,23 @@ function startTimer(task, ui) {
     // no persistas timerRunning; pero **sí** puedes escribir el primer segundo
     ui.dataModule.save(TaskModule.list);
     }
+
+import './components/task-modal.js';
+
+const PRIORITIES = ['Alta','Media','Baja','Retraso','Completa'];
+const modal = document.getElementById('taskModal');
+const form = document.getElementById('modal-form');
+
+// ✅ Inject dependencies into the component
+modal.priorities = PRIORITIES;
+modal.onSave = formData => {
+  // Called when user clicks "Guardar"
+  console.log('Saving task:', formData);
+  // Add or update TaskModule, persist data, re-render
+};
+
+document.getElementById('new-task-btn')
+  .onclick = () => {
+    form.reset();
+    modal.show(); // show modal with defaults
+  };
