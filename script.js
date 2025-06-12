@@ -4,13 +4,71 @@
 import { generateTaskGraph } from './diagram.js';
 import './components/task-modal.js';
 
+window.addEventListener('DOMContentLoaded', () => {
+  const fb = initFirebase(firebaseConfig);
 
-window.showDiagram = () => {
-  const code = generateTaskGraph(TaskModule.list);
-  document.getElementById('diagram').textContent = code;
-  mermaid.init(undefined, '#diagram');
-    };
+  const modal = document.getElementById('taskModal');
+  const form  = document.getElementById('modal-form');
 
+  const ui = {
+    newTaskBtn: document.getElementById('new-task-btn'),
+    modal: modal,
+    form: form,
+    taskContainer: document.getElementById('task-container'),
+    loginBtn: document.getElementById('loginBtn'),
+    logoutBtn: document.getElementById('logoutBtn'),
+    dataModule: null
+  };
+
+  window.__TASKAS_UI__ = ui;
+
+  document.addEventListener('wheel', e => {
+    if (e.target.name === 'duration' && document.activeElement === e.target) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  modal.priorities = PRIORITIES;
+  modal.onSave = formData => {
+    const isEdit = formData.editId !== '';
+    const task = isEdit
+      ? TaskModule.getById(+formData.editId)
+      : {
+          id: Date.now(),r
+          timer: 0,
+          timerRunning: false
+        };
+
+    Object.assign(task, {
+      title: formData.title.trim(),
+      deadline: formData.deadline,
+      time: formData.time,
+      duration: +formData.duration,
+      priority: formData.priority,
+      notes: formData.notes.trim(),
+      parentId: formData.parent === '' ? null : +formData.parent
+    });
+
+    if (task.parentId === task.id) task.parentId = null;
+    function isDescendant(childId, ancestorId) {
+      let p = TaskModule.getById(childId)?.parentId;
+      while (p != null) {
+        if (p === ancestorId) return true;
+        p = TaskModule.getById(p)?.parentId ?? null;
+      }
+      return false;
+    }
+    if (task.parentId && isDescendant(task.parentId, task.id)) {
+      alert('No puedes hacer que una tarea sea hija de su propio descendiente.');
+      task.parentId = null;
+    }
+
+    if (!isEdit) TaskModule.add(task);
+    ui.dataModule.save(TaskModule.list);
+    renderTasks(ui);
+    form.reset();
+  };
+  
 /* ------------------- constantes ------------------- */
 const PRIORITIES = [
     'Alta', 
@@ -31,16 +89,7 @@ const firebaseConfig = {
           appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
           measurementId: "G-RM9DCQ136H"
           };
-/* 20:59-11-5
-function initFirebase(config) {
-    firebase.initializeApp(config);
-    return {
-        auth: firebase.auth(),
-        db: firebase.firestore(),
-        provider: new firebase.auth.GoogleAuthProvider()
-        };
-    }
-*/
+
 function initFirebase(config) {
   const app = firebase.apps.length
       ? firebase.app()             // ya existe, reutilízalo
@@ -249,16 +298,8 @@ function showDiagram1() {
     dataModule: null
   };
 
-  window.__TASKAS_UI__ = ui;
 
-  // Prevent accidental scroll change on number input
-  document.addEventListener('wheel', e => {
-    if (e.target.name === 'duration' && document.activeElement === e.target) {
-      e.preventDefault();
-    }
-  }, { passive: false });
 
-  const PRIORITIES = ['Alta','Media','Baja','Retraso','Completa'];
 
   // ✅ Inject dependencies into modal
   modal.priorities = PRIORITIES;
@@ -348,7 +389,4 @@ function showDiagram1() {
 
   setupMenu(ui, fb);
 
-  window.addEventListener('DOMContentLoaded', () => {
-    setDefaultFormValues(form);
-  });
-})();
+
