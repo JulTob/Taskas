@@ -4,71 +4,6 @@
 import { generateTaskGraph } from './diagram.js';
 import './components/task-modal.js';
 
-window.addEventListener('DOMContentLoaded', () => {
-  const fb = initFirebase(firebaseConfig);
-
-  const modal = document.getElementById('taskModal');
-  const form  = document.getElementById('modal-form');
-
-  const ui = {
-    newTaskBtn: document.getElementById('new-task-btn'),
-    modal: modal,
-    form: form,
-    taskContainer: document.getElementById('task-container'),
-    loginBtn: document.getElementById('loginBtn'),
-    logoutBtn: document.getElementById('logoutBtn'),
-    dataModule: null
-  };
-
-  window.__TASKAS_UI__ = ui;
-
-  document.addEventListener('wheel', e => {
-    if (e.target.name === 'duration' && document.activeElement === e.target) {
-      e.preventDefault();
-    }
-  }, { passive: false });
-
-  modal.priorities = PRIORITIES;
-  modal.onSave = formData => {
-    const isEdit = formData.editId !== '';
-    const task = isEdit
-      ? TaskModule.getById(+formData.editId)
-      : {
-          id: Date.now(),r
-          timer: 0,
-          timerRunning: false
-        };
-
-    Object.assign(task, {
-      title: formData.title.trim(),
-      deadline: formData.deadline,
-      time: formData.time,
-      duration: +formData.duration,
-      priority: formData.priority,
-      notes: formData.notes.trim(),
-      parentId: formData.parent === '' ? null : +formData.parent
-    });
-
-    if (task.parentId === task.id) task.parentId = null;
-    function isDescendant(childId, ancestorId) {
-      let p = TaskModule.getById(childId)?.parentId;
-      while (p != null) {
-        if (p === ancestorId) return true;
-        p = TaskModule.getById(p)?.parentId ?? null;
-      }
-      return false;
-    }
-    if (task.parentId && isDescendant(task.parentId, task.id)) {
-      alert('No puedes hacer que una tarea sea hija de su propio descendiente.');
-      task.parentId = null;
-    }
-
-    if (!isEdit) TaskModule.add(task);
-    ui.dataModule.save(TaskModule.list);
-    renderTasks(ui);
-    form.reset();
-  };
-  
 /* ------------------- constantes ------------------- */
 const PRIORITIES = [
     'Alta', 
@@ -123,6 +58,18 @@ const TaskModule = {
                               rec(t.id, level + 1, currentPath);
                               });
                     }
+                const walk = (parentId = null, lvl = 0) => {
+                      this.list
+                        .filter(t => (t.parentId ?? null) === parentId)
+                        .sort((a, b) => (a.deadline || '').localeCompare(b.deadline || ''))
+                        .forEach((t, i) => {
+                          out.push({ task: t, level: lvl });
+                          used.add(t.id);
+                          walk(t.id, lvl + 1);
+                        });
+                    };
+              walk();
+          
               // 🌳 Step 1: Build normal hierarchy
               rec();
               // 👻 Step 2: Find & append "horfan" tasks
@@ -135,13 +82,61 @@ const TaskModule = {
                           }
                     });
               return out;
+              this.list.forEach(t => {
+                  if (!used.has(t.id)) out.push({ task: t, level: 0 });
+                  });
+              return out;
+          
               }
         };
 
 
+function updateParentOptions(form) {
+  const sel = form.elements['parent'];
+  sel.innerHTML = '<option value="">Sin tarea padre</option>';
+  TaskModule.list.forEach(t => {
+    sel.add(new Option(t.title, t.id));
+  });
+}
+
 
 // -------- Render de tareas --------
 function renderTasks(ui) {
+  const { taskContainer } = ui;
+  taskContainer.innerHTML = '';
+  const data = TaskModule.flatten();
+  if (!data.length) {
+    taskContainer.innerHTML = '<p class="text-gray-500">No hay tareas.</p>';
+    return;
+  }
+  const table = document.createElement('table');
+  table.className = 'w-full table-auto bg-white rounded shadow';
+  table.innerHTML = `<thead class="bg-gray-200"><tr><th class="p-2">Título</th><th class="p-2">Prioridad</th><th class="p-2">Fecha</th><th class="p-2">Hora</th><th class="p-2">Duración</th><th class="p-2">Acciones</th></tr></thead><tbody class="divide-y"></tbody>`;
+  const tbody = table.querySelector('tbody');
+  data.forEach(({ task, level }) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="p-2" style="padding-left:${level * 1.5}rem">${task.title}</td><td class="p-2">${task.priority}</td><td class="p-2">${task.deadline || '—'}</td><td class="p-2">${task.time || '—'}</td><td class="p-2">${task.duration} min<br><span class="text-xs text-red-600">${task.timer ?? 0} min</span></td><td class="p-2"><button class="edit-btn text-blue-500" data-id="${task.id}">✏️</button> <button class="del-btn text-red-500" data-id="${task.id}">❌</button></td>`;
+    tbody.appendChild(tr);
+  });
+  taskContainer.appendChild(table);
+
+  // wire row actions
+  tbody.querySelectorAll('.edit-btn').forEach(btn =>
+    btn.onclick = () => ui.modal.show(TaskModule.getById(+btn.dataset.id)));
+  tbody.querySelectorAll('.del-btn').forEach(btn =>
+    btn.onclick = () => deleteTask(+btn.dataset.id, ui));
+
+  // mermaid
+  if (window.mermaid) {
+    const code = generateTaskGraph(TaskModule.list);
+    const el = document.getElementById('diagram');
+    el.textContent = code;
+    mermaid.init(undefined, el);
+  }
+
+  updateParentOptions(ui.form);
+}
+function renderTasks2(ui) {
       const { taskContainer } = ui;
       taskContainer.innerHTML = '';
       const flat = TaskModule.flatten();
@@ -225,6 +220,82 @@ function deleteTask(id, ui) {
       ui.dataModule.collRef.doc(id.toString()).delete();
       renderTasks(ui);
       }
+
+/* ---------------- boostrap ---------------- */
+window.addEventListener('DOMContentLoaded', () => {
+  const fb = initFirebase(firebaseConfig);
+  const modal = document.getElementById('taskModal');
+  const form = document.querySelector('#taskModal form');
+  const ui = {
+    newTaskBtn: document.getElementById('new-task-btn'),
+    modal,
+    form,
+    taskContainer: document.getElementById('task-container'),
+    loginBtn: document.getElementById('loginBtn'),
+    logoutBtn: document.getElementById('logoutBtn'),
+    dataModule: null
+  };
+
+  // inject into modal
+  modal.priorities = PRIORITIES;
+  modal.onSave = data => {
+    const edit = data.editId !== '';
+    const task = edit ? TaskModule.getById(+data.editId) : { id: Date.now(), timer: 0, timerRunning: false };
+    Object.assign(task, {
+      title: data.title.trim(),
+      deadline: data.deadline,
+      time: data.time,
+      duration: +data.duration,
+      priority: data.priority,
+      notes: data.notes.trim(),
+      parentId: data.parent === '' ? null : +data.parent
+    });
+    if (!edit) TaskModule.add(task);
+    ui.dataModule && ui.dataModule.save(TaskModule.list);
+    renderTasks(ui);
+  };
+
+  ui.newTaskBtn.onclick = () => {
+    form.reset();
+    updateParentOptions(form);
+    modal.show();
+  };
+
+  // auth handling
+  fb.auth.onAuthStateChanged(user => {
+    if (user) {
+      ui.dataModule = {
+        collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
+        save: tasks => tasks.forEach(t => {
+          const { timerRunning, ...persist } = t;
+          ui.dataModule.collRef.doc(t.id.toString()).set(persist);
+        }),
+        subscribe: fn => ui.dataModule.collRef.onSnapshot(fn)
+      };
+      ui.dataModule.subscribe(snap => {
+        TaskModule.clear();
+        snap.forEach(d => TaskModule.add({ id: +d.id, ...d.data(), timer: d.data().timer ?? 0 }));
+        renderTasks(ui);
+      });
+      ui.loginBtn.classList.add('hidden');
+      ui.logoutBtn.classList.remove('hidden');
+    } else {
+      TaskModule.clear();
+      renderTasks(ui);
+      ui.dataModule = null;
+      ui.logoutBtn.classList.add('hidden');
+      ui.loginBtn.classList.remove('hidden');
+    }
+  });
+
+  // auth buttons
+  ui.loginBtn.onclick = () => fb.auth.signInWithPopup(fb.provider);
+  ui.logoutBtn.onclick = () => fb.auth.signOut();
+
+  // initial render
+  renderTasks(ui);
+});
+
 
 
 // -------- Set up menu and auth --------
@@ -390,5 +461,4 @@ function showDiagram1() {
   setupMenu(ui, fb);
   setDefaultFormValues(form);
 });
-
 
