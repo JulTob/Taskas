@@ -3,6 +3,8 @@
 import { generateTaskGraph } from './diagram.js';
 import { auth, db, provider, initAuth } from './firebase.js';
 import './components/task-modal.js';          // registers <task-modal>
+import { startPomodoro, fmt } from './pomodoro.js';
+
 
 /* 2) Constants */
 const PRIORITIES = ['Alta', 'Media', 'Baja', 'Retraso', 'Completa'];
