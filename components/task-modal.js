@@ -118,12 +118,11 @@ class TaskModal extends HTMLElement {
     // reveal
     this.shadowRoot.getElementById('overlay').classList.add('show');
 
-  hide() {
+  }
+
+hide() {
       this.shadowRoot.getElementById('overlay').classList.remove('show');
       }
-  }
 
 customElements.define('task-modal', TaskModal);
     
-
-customElements.define('task-modal', TaskModal);
