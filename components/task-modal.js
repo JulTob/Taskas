@@ -43,22 +43,22 @@ class TaskModal extends HTMLElement {
 
     // save button → collect data → call host callback
     this.shadowRoot.getElementById('saveBtn').onclick = () => {
-      const data = Object.fromEntries(new FormData(this.form));
-      this.onSave(data);
-      this.hide();
-    };
+        const data = Object.fromEntries(new FormData(this.form));
+        this.onSave(data);
+        this.hide();
+        };
 
     // close button or backdrop
     this.shadowRoot.getElementById('closeBtn').onclick = () => this.hide();
     this.shadowRoot.getElementById('overlay').onclick  = e => {
-      if (e.target.id === 'overlay') this.hide();
-    };
+        if (e.target.id === 'overlay') this.hide();
+        };
 
     // Esc key
     document.addEventListener('keyup', e => {
-      if (e.key === 'Escape') this.hide();
-    });
-  }
+        if (e.key === 'Escape') this.hide();
+        });
+    }
 
   /** Opens the modal.  If a task object is supplied, pre-fills the form. */
   show(taskData = {}) {
@@ -72,7 +72,6 @@ class TaskModal extends HTMLElement {
       if (this.form.elements[k]) this.form.elements[k].value = v;
     });
     this.form.elements.editId.value = taskData.id ?? '';
-
     // reveal
     this.shadowRoot.getElementById('overlay').classList.add('show');
   }
