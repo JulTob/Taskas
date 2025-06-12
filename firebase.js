@@ -1,9 +1,11 @@
-// firebase.js
-// ————————————————
-// 1) Carga las libs (usa compat o modular, aquí compat para mantener tu versión):
-import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+// firebase.js  (MODULAR v10)
+import { initializeApp, getApps } from 
+  'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+import { getFirestore } from 
+  'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+
 
 // 2) Tu configuración (pégala exacta de la consola)
 const firebaseConfig = {
@@ -22,26 +24,13 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-export { auth, db, provider };
 
-// 3) Inicializa la app y exporta los servicios
-firebase.initializeApp(firebaseConfig);
+/* helper for script.js */
+function initAuth(onLogin, onLogout){
+      onAuthStateChanged(auth, user => user ? onLogin(user) : onLogout());
+      }
 
-export const auth     = firebase.auth();
-export const db       = firebase.firestore();
-export const provider = new firebase.auth.GoogleAuthProvider();
-
-/** Helper: high-level auth listener.
- *  @param {Function} onLogin   called with `user`
- *  @param {Function} onLogout  called with no args
- */
-
-export function initAuth(onLogin, onLogout) {
-  auth.onAuthStateChanged(user => {
-    if (user) onLogin(user);
-    else       onLogout();
-  });
-}
+export { auth, db, provider, signInWithPopup, signOut, initAuth };
 
 
 
