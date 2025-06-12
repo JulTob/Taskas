@@ -1,8 +1,19 @@
 /* ─────────────────────────────── script.js ─────────────────────────────── */
 /* 1) Imports */
 import { generateTaskGraph } from './diagram.js';
-import { auth, db, provider,
-         signInWithPopup, signOut, initAuth } from './firebase.js';
+import {
+           auth,
+           db,
+           provider,
+           initAuth,
+           signInWithPopup,
+           signOut,
+           onSnapshot,
+           collection,
+           doc,
+           setDoc
+         } from './firebase.js';
+
 import './components/task-modal.js';          // registers <task-modal>
 import { startPomodoro, fmt } from './pomodoro.js';
 
@@ -35,37 +46,42 @@ const TaskModule = {
       }
   };
 
+// Expose for other modules (e.g., pomodoro.js)
+window.TaskModule = TaskModule;
+
 /* DOM ready */
 window.addEventListener('DOMContentLoaded', () => {
-    /* DOM handles */
-    const modal = document.getElementById('taskModal');
-    const form  = modal.querySelector('form');         // form is slotted
+         /* DOM handles */
+         const modal = document.getElementById('taskModal');
+         const form  = modal.querySelector('form');         // form is slotted
   
-    const ui = {
-          newBtn       : document.getElementById('new-task-btn'),
-          taskContainer: document.getElementById('task-container'),
-          loginBtn     : document.getElementById('loginBtn'),
-          logoutBtn    : document.getElementById('logoutBtn'),
-          dataModule   : null
-          };
+         const ui = {
+                   newBtn       : document.getElementById('new-task-btn'),
+                   taskContainer: document.getElementById('task-container'),
+                   loginBtn     : document.getElementById('loginBtn'),
+                   logoutBtn    : document.getElementById('logoutBtn'),
+                   dataModule   : null
+                   };
+         
+         window.ui = ui;
+         
+         /* modal contract */
+         modal.priorities = PRIORITIES;
+         modal.onSave     = handleSave;
 
-    /* modal contract */
-    modal.priorities = PRIORITIES;
-    modal.onSave     = handleSave;
+             ui.newBtn.onclick = () => {
+                 setDefaults();
+                 fillParentSelect();
+                 modal.show();
+                 };
 
-    ui.newBtn.onclick = () => {
-        setDefaults();
-        fillParentSelect();
-        modal.show();
-        };
+/* prevent wheel scroll on duration */
+document.addEventListener('wheel', e=>{
+         if(e.target.name==='duration' && document.activeElement===e.target) e.preventDefault();
+         }, { passive: false});
 
-  /* prevent wheel scroll on duration */
-  document.addEventListener('wheel', e=>{
-      if(e.target.name==='duration' && document.activeElement===e.target) e.preventDefault();
-      }, { passive: false});
-
-  // A) Guarded pop-up login
-  let popupInFlight = false;
+// A) Guarded pop-up login
+let popupInFlight = false;
   
 ui.loginBtn.onclick = () => {
       if (popupInFlight) return;
@@ -78,7 +94,7 @@ ui.loginBtn.onclick = () => {
   
   // B) Sign-out click
   ui.logoutBtn.onclick = () => {
-        auth.signOut().catch(err => alert(`Logout error:\n${err.message}`));
+        signOut().catch(err => alert(`Logout error:\n${err.message}`));
         };
 
   // C) Global auth state hook via your firebase.js helper  
@@ -88,17 +104,17 @@ ui.loginBtn.onclick = () => {
         ui.newBtn.classList.remove('hidden');
         ui.logoutBtn.classList.remove('hidden');
         ui.dataModule = {
-              collRef: db.collection('users').doc(user.uid).collection('tasks'),
-              save: tasks => tasks.forEach(t=>{
+              collRef: collection(db, 'users', user.uid, 'tasks'),
+              save: tasks => tasks.forEach(t => {
                     const { timerRunning, ...p } = t;
-                    ui.dataModule.collRef.doc(String(t.id)).set(p);
+                    setDoc(doc(ui.dataModule.collRef, String(t.id)), p);
                     }),
-              sub: fn => ui.dataModule.collRef.onSnapshot(fn)
+              sub: fn => onSnapshot(ui.dataModule.collRef, fn)
               };
         ui.dataModule.sub(snapshot => {
               TaskModule.clear();
-              snapshot.forEach(doc =>
-                    TaskModule.add({ id: +doc.id, ...doc.data(), 
+              snapshot.forEach(d =>
+                    TaskModule.add({ id: +d.id, ...d.data(), 
                                       timerRunning: false }));
               render();
             });
@@ -150,7 +166,9 @@ ui.loginBtn.onclick = () => {
       const code = generateTaskGraph(TaskModule.list);
       const pre  = document.getElementById('diagram');
       pre.textContent = code;
-      mermaid.init(undefined, pre);
+      if (window.mermaid?.init) {
+            mermaid.init(undefined, pre);
+            }
       }
 
   function buildTable(flat) {
@@ -188,12 +206,15 @@ ui.loginBtn.onclick = () => {
             };
             tbody.appendChild(tr);
             });
-      c.appendChild(tbl);
+      container.appendChild(tbl);
   
       /* refresh mermaid diagram */
       const g = generateTaskGraph(TaskModule.list);
       const pre = document.getElementById('diagram');
-      pre.textContent=g; mermaid.init(undefined,pre);
+      pre.textContent = g;
+      if (window.mermaid?.init) {
+            mermaid.init(undefined, pre);
+            }
       return tbl;
       }
 
