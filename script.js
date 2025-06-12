@@ -7,7 +7,7 @@ import './components/task-modal.js';          // registers <task-modal>
 const PRIORITIES = ['Alta', 'Media', 'Baja', 'Retraso', 'Completa'];
 
 const firebaseConfig = {
-  apiKey            : '###-your-key-###',
+  apiKey            : 'AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE',
   authDomain        : 'taska-65c33.firebaseapp.com',
   projectId         : 'taska-65c33',
   storageBucket     : 'taska-65c33.appspot.com',
