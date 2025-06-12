@@ -49,11 +49,12 @@ function updateBox(){
 }
 
 function consolidate(ui){
-  if(!active) return;
-  active.task.timerSec = active.baseSec + active.secRun;     // guarda segundos exactos
-  ui.dataModule.save(TaskModule.list);
-  if (ui?.dataModule) ui.dataModule.save(TaskModule.list);
-}
+    if(!active) return;
+    active.task.timerSec = active.baseSec + active.secRun;     // guarda segundos exactos
+    if (ui?.dataModule && window.TaskModule) {
+          ui.dataModule.save(TaskModule.list);
+          }
+    }
 
 function pause(ui){
   if(!active) return;
