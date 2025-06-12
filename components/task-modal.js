@@ -21,8 +21,8 @@ tmpl.innerHTML = /*html*/`
       <slot name="body"></slot>
 
       <div class="text-right" style="margin-top:1rem">
-        <button id="saveBtn">💾 Guardar</button>
-        <button id="closeBtn">✖️</button>
+        <button id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">💾 Guardar</button>
+        <button id="closeBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">✖️</button>
       </div>
     </div>
   </div>
