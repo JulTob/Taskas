@@ -289,7 +289,7 @@ function showDiagram1() {
   const form  = document.getElementById('modal-form');
 
   const ui = {
-    newTaskBtn: document.getElementById('new-task-btn'),
+    : document.getElementById('new-task-btn'),
     modal: modal,
     form: form,
     taskContainer: document.getElementById('task-container'),
@@ -348,45 +348,47 @@ function showDiagram1() {
     modal.show();
   };
 
-  fb.auth.onAuthStateChanged(user => {
-    if (user) {
-      ui.dataModule = {
-        collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
-        save: tasks => {
-          tasks.forEach(t => {
-            const { timerRunning, ...persist } = t;
-            ui.dataModule.collRef.doc(t.id.toString()).set(persist);
+  fb.auth.onAuthStateChanged(user => { 
+        if (user) {
+          ui.dataModule = {
+            collRef: fb.db.collection('users').doc(user.uid).collection('tasks'),
+            save: tasks => {
+              tasks.forEach(t => {
+                const { timerRunning, ...persist } = t;
+                ui.dataModule.collRef.doc(t.id.toString()).set(persist);
+              });
+            },
+            subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
+          };
+    
+          ui.dataModule.subscribe(snap => {
+            TaskModule.clear();
+            snap.forEach(doc => {
+              const data = doc.data();
+              TaskModule.add({
+                id: +doc.id,
+                ...data,
+                timer: data.timer ?? 0,
+                timerRunning: false
+              });
+            });
+            renderTasks(ui);
           });
-        },
-        subscribe: listener => ui.dataModule.collRef.onSnapshot(listener)
-      };
-
-      ui.dataModule.subscribe(snap => {
-        TaskModule.clear();
-        snap.forEach(doc => {
-          const data = doc.data();
-          TaskModule.add({
-            id: +doc.id,
-            ...data,
-            timer: data.timer ?? 0,
-            timerRunning: false
-          });
-        });
-        renderTasks(ui);
+    
+          ui.loginBtn.classList.add('hidden');
+          ui.logoutBtn.classList.remove('hidden');
+          setDefaultFormValues(form);
+        } else {
+          TaskModule.clear();
+          renderTasks(ui);
+          ui.dataModule = null;
+          ui.logoutBtn.classList.add('hidden');
+          ui.loginBtn.classList.remove('hidden');
+        }
       });
 
-      ui.loginBtn.classList.add('hidden');
-      ui.logoutBtn.classList.remove('hidden');
-      setDefaultFormValues(form);
-    } else {
-      TaskModule.clear();
-      renderTasks(ui);
-      ui.dataModule = null;
-      ui.logoutBtn.classList.add('hidden');
-      ui.loginBtn.classList.remove('hidden');
-    }
-  });
-
   setupMenu(ui, fb);
+  setDefaultFormValues(form);
+});
 
 
