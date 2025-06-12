@@ -192,3 +192,14 @@ window.addEventListener('DOMContentLoaded', () => {
     form.elements.parent.value = '';
   }
 });
+
+function updateParentSelect() {
+  const sel = form.elements.parent;
+  sel.innerHTML = '<option value="">Sin tarea padre</option>';
+  TaskModule.list.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.title;
+    sel.appendChild(opt);
+  });
+}
