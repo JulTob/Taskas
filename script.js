@@ -81,6 +81,7 @@ window.addEventListener('DOMContentLoaded', () => {
  initAuth(user => {
         // onLogin:
         ui.loginBtn.classList.add('hidden');
+        ui.newBtn.classList.remove('hidden');
         ui.logoutBtn.classList.remove('hidden');
         ui.dataModule = {
               collRef: db.collection('users').doc(user.uid).collection('tasks'),
@@ -104,6 +105,7 @@ window.addEventListener('DOMContentLoaded', () => {
         ui.dataModule = null;
         ui.loginBtn.classList.remove('hidden');
         ui.logoutBtn.classList.add('hidden');
+        ui.newBtn.classList.add('hidden');
         });
       
         
