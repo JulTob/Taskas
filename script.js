@@ -69,7 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
   ui.loginBtn.onclick = () => {
         if (popupInFlight) return;
         popupInFlight = true;
-        auth.signInWithPopup(provider)
+        auth.signInWithPopup(auth, provider)
           .catch(err => alert(`Login error:\n${err.message}`))
           .finally(() => popupInFlight = false);
         };
