@@ -52,6 +52,7 @@ function consolidate(ui){
   if(!active) return;
   active.task.timerSec = active.baseSec + active.secRun;     // guarda segundos exactos
   ui.dataModule.save(TaskModule.list);
+  if (ui?.dataModule) ui.dataModule.save(TaskModule.list);
 }
 
 function pause(ui){
@@ -65,3 +66,5 @@ function pause(ui){
 }
 
 window.startPomodoro = startPomodoro;
+
+export { startPomodoro, fmt };
