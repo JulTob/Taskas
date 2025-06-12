@@ -41,24 +41,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
-
-  <!-- 3) Tu configuración idéntica a la de la consola -->
-  <!-- OUT: 20:56-11-5-25
-  <script>
-    const firebaseConfig = {
-          apiKey: "AIzaSyA-EY3-EISZdoThqVepYYA9rlCI30Qt8ZE",
-          authDomain: "taska-65c33.firebaseapp.com",
-          projectId: "taska-65c33",
-          storageBucket: "taska-65c33.appspot.com",
-          messagingSenderId: "287205600078",
-          appId: "1:287205600078:web:25b211ff3764cbfe304c1f",
-          measurementId: "G-RM9DCQ136H"
-          };
-    
-        firebase.initializeApp(firebaseConfig);
-    </script> -->
-
-    <style>
+  <style>
           .chip      { @apply px-2 py-1 rounded-full shadow-sm; }
           .heartbeat { animation: heartbeat 1s infinite ease-in-out; }
           @keyframes heartbeat {
@@ -128,8 +111,7 @@
         <div id="task-container"> </div>
       </div>
   
-      <!-- ─────── Selector de relaciones ─────── -->
-      <!-- selector de relaciones -->
+      <!-- Relation Picker -->
       <div id="relation-picker" class="hidden absolute bg-white p-4 shadow z-50">
           <h3 class="font-semibold mb-2">Elige raiz</h3>
           <ul id="parent-list"></ul>
@@ -151,8 +133,7 @@
   
       <!-- modal -->
       <task-modal id="taskModal">
-        <span slot="title" id="modal-title"></span>    
-            <form id="modal-form" class="space-y-4">
+            <form id="modal-form" class="space-y-4" slot="body">
                   <input type="hidden" name="editId">
           
                   <input name="title" class="w-full p-2 border rounded" required
@@ -164,22 +145,22 @@
                       </div>
           
                   <div class="flex gap-2">
-                  <input type="number" name="duration" min="5" step="5"
+                      <input type="number" name="duration" min="5" step="5"
                          class="flex-1 p-2 border rounded" placeholder="Duración (min)">
-                  <select name="priority" class="flex-1 p-2 border rounded"></select>
-                  </div>
+                      <select name="priority" class="flex-1 p-2 border rounded"></select>
+                      </div>
           
-              <textarea name="notes" rows="2"
+                  <textarea name="notes" rows="2"
                           class="w-full p-2 border rounded"
                           placeholder="Notas de la tarea"></textarea>
           
-              <select name="parent" class="w-full p-2 border rounded"></select>
-              <!-- BLOQUE POMODORO -->
-              <div id="timer-block"
-                   class="hidden flex items-center gap-3 text-sm">
+                  <select name="parent" class="w-full p-2 border rounded"></select>
+                  <!-- BLOQUE POMODORO -->
+                  <div id="timer-block"
+                       class="hidden flex items-center gap-3 text-sm">
               
-                <!-- consola -->
-                <div class="flex items-center gap-2 bg-slate-200 rounded-full px-3 py-1">
+                  <!-- consola -->
+                  <div class="flex items-center gap-2 bg-slate-200 rounded-full px-3 py-1">
               
                   <!-- tomate -->
                   <button type="button" id="tomato-btn"
@@ -193,11 +174,11 @@
               
                   <!-- flechas en columna -->
                   <div class="flex flex-col ml-1">
-                    <button type="button" id="inc-btn"
-                            class="chip bg-slate-200 leading-none">🔺</button>
-                    <button type="button" id="dec-btn"
-                            class="chip bg-slate-200 leading-none mt-1">🔻</button>
-                    </div>    
+                        <button type="button" id="inc-btn"
+                                class="chip bg-slate-200 leading-none">🔺</button>
+                        <button type="button" id="dec-btn"
+                                class="chip bg-slate-200 leading-none mt-1">🔻</button>
+                        </div>    
                   </div>
                 </div>
 
@@ -208,7 +189,7 @@
                       💾 Guardar
                       </button>
                   </div>
-            </form>
+              </form>
           </task-modal>
 
 <script type="module" src="script.js"></script>
