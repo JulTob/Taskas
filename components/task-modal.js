@@ -30,99 +30,101 @@ tmpl.innerHTML = /*html*/`
 
 class TaskModal extends HTMLElement {
   constructor() {
-    super();
-    this.attachShadow({ mode: 'open' }).append(tmpl.content.cloneNode(true));
-    // dependencies injected by host
-    this.priorities = [];            // e.g. ['Alta','Media',…]
-    this.onSave     = () => {};      // callback supplied by host
-  }
+        super();
+        this.attachShadow({ mode: 'open' }).append(tmpl.content.cloneNode(true));
+        // dependencies injected by host
+        this.priorities = [];            // e.g. ['Alta','Media',…]
+        this.onSave     = () => {};      // callback supplied by host
+        }
 
   connectedCallback() {
-    // form is in light-DOM, not shadow
-    this.form = this.querySelector('form');
-
-    // save button → collect data → call host callback
-    const shadow = this.shadowRoot;
-    const overlay = shadow.getElementById('overlay');
+        // form is in light-DOM, not shadow
+        this.form = this.querySelector('form');
     
-    shadow.getElementById('saveBtn').onclick = () => {
-        const data = Object.fromEntries(new FormData(this.form));
-        this.onSave(data);
-        this.hide();
-        };
-
-    // close button or backdrop
-    shadow.getElementById('closeBtn').onclick = () => this.hide();
-    overlay.onclick  = e => {
-        if (e.target.id === 'overlay') this.hide();
-        };
-
-    // Esc key
-    document.addEventListener('keyup', e => {
-        if (e.key === 'Escape') this.hide();
-        });
-    }
+        // save button → collect data → call host callback
+        const shadow = this.shadowRoot;
+        const overlay = shadow.getElementById('overlay');
+        
+        shadow.getElementById('saveBtn').onclick = () => {
+            const data = Object.fromEntries(new FormData(this.form));
+            this.onSave(data);
+            this.hide();
+            };
+    
+        // close button or backdrop
+        shadow.getElementById('closeBtn').onclick = () => this.hide();
+        overlay.onclick  = e => {
+            if (e.target.id === 'overlay') this.hide();
+            };
+    
+        // Esc key
+        document.addEventListener('keyup', e => {
+            if (e.key === 'Escape') this.hide();
+            });
+        }
 
     /** Format seconds as MM:SS */
   fmt(seconds) {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-    }
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+        }
   
   /** Opens the modal.  If a task object is supplied, pre-fills the form. */
   show(taskData = {}) {
-    // fill priorities
-    const sel = this.form.elements.priority;
-    sel.innerHTML = '';
-    this.priorities.forEach(p => sel.add(new Option(p, p)));
+      // fill priorities
+      const sel = this.form.elements.priority;
+      sel.innerHTML = '';
+      this.priorities.forEach(p => sel.add(new Option(p, p)));
 
-    // populate fields for edit
-    Object.entries(taskData).forEach(([k, v]) => {
-      if (this.form.elements[k]) this.form.elements[k].value = v;
-      });
-    this.form.elements.editId.value = taskData.id ?? '';
+      // populate fields for edit
+      Object.entries(taskData).forEach(([k, v]) => {
+            if (this.form.elements[k]) this.form.elements[k].value = v;
+            });
+      this.form.elements.editId.value = taskData.id ?? '';
 
-        // handle timer UI
-    const timerBlock = this.form.querySelector('#timer-block');
-    const timerBox   = this.form.querySelector('#timer-box');
-    const incBtn     = this.form.querySelector('#inc-btn');
-    const decBtn     = this.form.querySelector('#dec-btn');
-    const tomatoBtn  = this.form.querySelector('#tomato-btn');
+      // handle timer UI
+      const timerBlock = this.form.querySelector('#timer-block');
+      const timerBox   = this.form.querySelector('#timer-box');
+      const incBtn     = this.form.querySelector('#inc-btn');
+      const decBtn     = this.form.querySelector('#dec-btn');
+      const tomatoBtn  = this.form.querySelector('#tomato-btn');
 
-    if (taskData.id != null) {
-      timerBlock.classList.remove('hidden');
-      timerBox.textContent = this.fmt((taskData.timer || 0) * 60);
+      if (taskData.id != null) {
+            timerBlock.classList.remove('hidden');
+            timerBox.textContent = this.fmt((taskData.timer || 0) * 60);
+    
+            incBtn.onclick = () => {
+                taskData.timer = (taskData.timer || 0) + 1;
+                timerBox.textContent = this.fmt(taskData.timer * 60);
+                };
+    
+            decBtn.onclick = () => {
+                taskData.timer = Math.max(0, (taskData.timer || 0) - 1);
+                timerBox.textContent = this.fmt(taskData.timer * 60);
+                };
+    
+            tomatoBtn.onclick = () => {
+                    if (typeof startPomodoro === 'function') {
+                          startPomodoro(taskData, window.ui, timerBox);
+                          } 
+                    else {
+                          alert("Pomodoro function not available.");
+                          }
+                    };
+            } 
+      else {
+            timerBlock.classList.add('hidden');
+            }
 
-      incBtn.onclick = () => {
-        taskData.timer = (taskData.timer || 0) + 1;
-        timerBox.textContent = this.fmt(taskData.timer * 60);
-      };
+      // reveal
+      this.shadowRoot.getElementById('overlay').classList.add('show');
+      }
 
-      decBtn.onclick = () => {
-        taskData.timer = Math.max(0, (taskData.timer || 0) - 1);
-        timerBox.textContent = this.fmt(taskData.timer * 60);
-      };
-
-      tomatoBtn.onclick = () => {
-        if (typeof startPomodoro === 'function') {
-          startPomodoro(taskData, window.ui, timerBox);
-        } else {
-          alert("Pomodoro function not available.");
-        }
-      };
-    } else {
-      timerBlock.classList.add('hidden');
-    }
-
-    // reveal
-    this.shadowRoot.getElementById('overlay').classList.add('show');
-
-  }
-
-hide() {
+  hide() {
       this.shadowRoot.getElementById('overlay').classList.remove('show');
       }
+  }
 
 customElements.define('task-modal', TaskModal);
     
