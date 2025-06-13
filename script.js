@@ -153,23 +153,35 @@ ui.loginBtn.onclick = () => {
           form.reset();
           }
 
-  function render(){
-      const container = ui.taskContainer;
-      const flat = TaskModule.flatten();
-      container.innerHTML = '';
-      if (!flat.length) {
-            container.innerHTML = '<p class="text-gray-500">No hay tareas.</p>';
-      } else {
-            container.appendChild(buildTable(flat, container));
-            }      
-      // refresh Mermaid
-      const code = generateTaskGraph(TaskModule.list);
-      const pre  = document.getElementById('diagram');
-      pre.textContent = code;
-      if (window.mermaid?.init) {
-            mermaid.init(undefined, pre);
-            }
-      }
+           
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: false });
+           
+  async function render() {
+    const container = ui.taskContainer;
+    const flat = TaskModule.flatten();
+    container.innerHTML = '';
+
+    if (!flat.length) {
+        container.innerHTML = '<p class="text-gray-500">No hay tareas.</p>';
+        } 
+    else {
+        container.appendChild(buildTable(flat, container));
+        }
+
+    // 🎯 Replace this part:
+    const diagramCode = generateTaskGraph(TaskModule.list);
+    const pre = document.getElementById('diagram');
+    try {
+        const { svg } = await mermaid.render('taskGraph', diagramCode);
+        pre.innerHTML = svg;
+        } 
+    catch (err) {
+        console.warn('Mermaid render error:', err);
+        pre.textContent = '⚠️ Error al generar el diagrama.';
+        }
+    }
+           
 
   function buildTable(flat, container) {
         const tbl=document.createElement('table');
@@ -212,9 +224,6 @@ ui.loginBtn.onclick = () => {
       const g = generateTaskGraph(TaskModule.list);
       const pre = document.getElementById('diagram');
       pre.textContent = g;
-      if (window.mermaid?.init) {
-            mermaid.init(undefined, pre);
-            }
       return tbl;
       }
 
