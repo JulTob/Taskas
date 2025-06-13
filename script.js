@@ -160,7 +160,7 @@ ui.loginBtn.onclick = () => {
       if (!flat.length) {
             container.innerHTML = '<p class="text-gray-500">No hay tareas.</p>';
       } else {
-            container.appendChild(buildTable(flat));
+            container.appendChild(buildTable(flat, container));
             }      
       // refresh Mermaid
       const code = generateTaskGraph(TaskModule.list);
@@ -171,7 +171,7 @@ ui.loginBtn.onclick = () => {
             }
       }
 
-  function buildTable(flat) {
+  function buildTable(flat, container) {
         const tbl=document.createElement('table');
         tbl.className='w-full table-auto bg-white rounded shadow';
         tbl.innerHTML=`<thead class="bg-gray-200"><tr>
@@ -206,6 +206,7 @@ ui.loginBtn.onclick = () => {
             };
             tbody.appendChild(tr);
             });
+      container.appendChild(tbl);
   
       /* refresh mermaid diagram */
       const g = generateTaskGraph(TaskModule.list);
