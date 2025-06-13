@@ -206,7 +206,6 @@ ui.loginBtn.onclick = () => {
             };
             tbody.appendChild(tr);
             });
-      container.appendChild(tbl);
   
       /* refresh mermaid diagram */
       const g = generateTaskGraph(TaskModule.list);
