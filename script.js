@@ -217,11 +217,18 @@ ui.loginBtn.onclick = () => {
                 <button class="edit text-blue-500">✏️</button>
                 </td>`;
             tr.querySelector('.edit').onclick = ()=>{ fillParentSelect(); modal.show(task); };
-            tr.querySelector('.del').onclick  = ()=>{
-                await ui.dataModule?.remove(task.id);
-                // Firestore triggers the onSnapshot again, so no need to manually update TaskModule or render
-                };
-            tbody.appendChild(tr);
+            tr.querySelector('.del').onclick  = async ()=>{
+                    try {
+                      // borra en Firestore – devuelve una Promise
+                      await ui.dataModule?.remove(task.id);
+                      // no hace falta tocar TaskModule ni llamar a render():
+                      // onSnapshot volverá a dispararse con la lista actualizada
+                    } catch (err) {
+                      console.error('Error al borrar:', err);
+                      alert('No se pudo borrar la tarea.');
+                    }
+                  };
+          tbody.appendChild(tr);
             });
       container.appendChild(tbl);
   
