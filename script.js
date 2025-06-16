@@ -205,6 +205,9 @@ ui.loginBtn.onclick = () => {
             }[task.priority]||'';
             tr.className=bg;
             tr.innerHTML=`
+             <td class="p-2">
+                <button class="del  text-red-500">❌</button>
+                </td>
               <td class="p-2" style="padding-left:${1.5*level}rem">${task.title}</td>
               <td class="p-2">${task.priority}</td>
               <td class="p-2">${task.deadline||'—'}</td>
@@ -212,8 +215,7 @@ ui.loginBtn.onclick = () => {
               <td class="p-2">${task.duration} min</td>
               <td class="p-2">
                 <button class="edit text-blue-500">✏️</button>
-                <button class="del  text-red-500">❌</button>
-              </td>`;
+                </td>`;
             tr.querySelector('.edit').onclick = ()=>{ fillParentSelect(); modal.show(task); };
             tr.querySelector('.del').onclick  = ()=>{
                 await ui.dataModule?.remove(task.id);
