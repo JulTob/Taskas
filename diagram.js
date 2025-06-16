@@ -1,6 +1,6 @@
 // diagram.js
 
-function generateTaskGraph() {
+export function generateTaskGraph() {
   const tasks = TaskModule.list || [];
   if (!tasks.length) {
     // If no tasks, return a Gantt diagram with a placeholder title
