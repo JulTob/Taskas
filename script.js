@@ -14,7 +14,8 @@ import {
            onSnapshot,
            collection,
            doc,
-           setDoc
+           setDoc,
+           deleteDoc
          } from './firebase.js';
 
 import './components/task-modal.js';          // registers <task-modal>
@@ -112,6 +113,7 @@ ui.loginBtn.onclick = () => {
                     const { timerRunning, ...p } = t;
                     setDoc(doc(ui.dataModule.collRef, String(t.id)), p);
                     }),
+              remove: id => deleteDoc(doc(db, 'users', user.uid, 'tasks', String(id))),
               sub: fn => onSnapshot(ui.dataModule.collRef, fn)
               };
         ui.dataModule.sub(snapshot => {
@@ -213,11 +215,10 @@ ui.loginBtn.onclick = () => {
                 <button class="del  text-red-500">❌</button>
               </td>`;
             tr.querySelector('.edit').onclick = ()=>{ fillParentSelect(); modal.show(task); };
-            tr.querySelector('.del').onclick  = ()=>{ 
-              TaskModule.list = TaskModule.list.filter(t=>t.id!==task.id);
-              ui.dataModule?.save(TaskModule.list);
-              render();
-            };
+            tr.querySelector('.del').onclick  = ()=>{
+                await ui.dataModule?.remove(task.id);
+                // Firestore triggers the onSnapshot again, so no need to manually update TaskModule or render
+                };
             tbody.appendChild(tr);
             });
       container.appendChild(tbl);
