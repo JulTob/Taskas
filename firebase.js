@@ -13,7 +13,8 @@ import {
   collection,
   doc,
   setDoc,
-  onSnapshot
+  onSnapshot,
+  deleteDoc
   } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 
 
@@ -38,7 +39,8 @@ export {
   onSnapshot,
   collection,
   doc,
-  setDoc
+  setDoc,
+  deleteDoc
   };
 
 
