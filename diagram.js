@@ -1,5 +1,108 @@
 // diagram.js
 
+function generateTaskGraph() {
+  const tasks = TaskModule.list || [];
+  if (!tasks.length) {
+    // If no tasks, return a Gantt diagram with a placeholder title
+    return "gantt\n    dateFormat YYYY-MM-DD\n    title No hay tareas";
+  }
+
+  // Helper to format Date as "YYYY-MM-DD HH:mm"
+  function formatDate(date) {
+    const y = date.getFullYear();
+    const m = (date.getMonth() + 1).toString().padStart(2, "0");
+    const d = date.getDate().toString().padStart(2, "0");
+    const hh = date.getHours().toString().padStart(2, "0");
+    const mm = date.getMinutes().toString().padStart(2, "0");
+    return `${y}-${m}-${d} ${hh}:${mm}`;
+  }
+
+  // Helper to get Mermaid tag based on priority
+  function getPriorityTag(priority) {
+    switch (priority) {
+      case "Alta":
+      case "Retraso":
+        return "crit";
+      case "Media":
+        return "active";
+      case "Completa":
+        return "done";
+      default:
+        return "";
+    }
+  }
+
+  // Build the Gantt diagram string
+  let diagram = "gantt\n    dateFormat  YYYY-MM-DD HH:mm\n";
+  // Recursive function to traverse tasks
+  function addTaskLines(taskList, parentId = null) {
+    for (const task of taskList) {
+      const hasSubtasks = task.subtasks && task.subtasks.length > 0;
+      const title = task.title || task.name || "Tarea";
+      const id = task.id;
+      const tag = getPriorityTag(task.priority);
+
+      if (parentId === null && hasSubtasks) {
+        // Macro-task with subtasks: start a new section
+        diagram += `    section ${title}\n`;
+        // Compute explicit start and end for the macro-task
+        const [year, month, day] = task.deadline.split("-");
+        const [th, tm] = task.time ? task.time.split(":") : ["23", "59"];
+        // Create Date objects for deadline (end) and start (deadline minus duration)
+        const endDate = new Date(year, Number(month) - 1, day, th, tm);
+        const startDate = new Date(endDate.getTime() - (task.duration * 60000));
+        const startStr = formatDate(startDate);
+        const endStr = formatDate(endDate);
+        // Append macro-task line (with explicit times)
+        if (tag) {
+          diagram += `    ${title} : ${tag}, ${id}, ${startStr}, ${endStr}\n`;
+        } else {
+          diagram += `    ${title} : ${id}, ${startStr}, ${endStr}\n`;
+        }
+        // Recurse into subtasks, using this task's id as the parentId for dependencies
+        addTaskLines(task.subtasks, id);
+      } else if (parentId !== null) {
+        // This task is a subtask (or deeper) with a parent dependency
+        // Compute duration in days for Mermaid (to two decimal places)
+        const durationDays = task.duration / (24 * 60);
+        let durationStr;
+        if (Number.isInteger(durationDays)) {
+          durationStr = `${durationDays}d`;
+        } else {
+          durationStr = `${durationDays.toFixed(2)}d`;
+        }
+        // Append subtask line with "after parentId" constraint
+        if (tag) {
+          diagram += `    ${title} : ${tag}, ${id}, after ${parentId}, ${durationStr}\n`;
+        } else {
+          diagram += `    ${title} : ${id}, after ${parentId}, ${durationStr}\n`;
+        }
+        // If this subtask has its own subtasks, recurse deeper (still grouped under top section)
+        if (hasSubtasks) {
+          addTaskLines(task.subtasks, id);
+        }
+      } else {
+        // Top-level task with no subtasks (standalone task)
+        const [year, month, day] = task.deadline.split("-");
+        const [th, tm] = task.time ? task.time.split(":") : ["23", "59"];
+        const endDate = new Date(year, Number(month) - 1, day, th, tm);
+        const startDate = new Date(endDate.getTime() - (task.duration * 60000));
+        const startStr = formatDate(startDate);
+        const endStr = formatDate(endDate);
+        if (tag) {
+          diagram += `    ${title} : ${tag}, ${id}, ${startStr}, ${endStr}\n`;
+        } else {
+          diagram += `    ${title} : ${id}, ${startStr}, ${endStr}\n`;
+        }
+      }
+    }
+  }
+
+  // Kick off traversal from top-level tasks
+  addTaskLines(tasks);
+  return diagram;
+}
+/*
 // ── Utilidades ── //
 function sanitizeId(id) {
     return `task_${id}`.replace(/\W/g, '_');
@@ -109,4 +212,4 @@ export function generateTaskGraph(tasks) {
     const diagram = new Diagram(tasks);
     return diagram.toMermaid();
     }
-
+*/
