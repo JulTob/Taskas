@@ -40,6 +40,7 @@ export function generateTaskGraph() {
   // Recursive function to traverse tasks
   function addTaskLines(taskList, parentId = null) {
     for (const task of taskList) {
+      if (task.priority === 'Completa') continue;
       const hasSubtasks = task.subtasks && task.subtasks.length > 0;
       const title = task.title || task.name || "Tarea";
       const id = task.id;
