@@ -191,7 +191,7 @@ ui.loginBtn.onclick = () => {
         const tbl=document.createElement('table');
         tbl.className='w-full table-auto bg-white rounded shadow';
         tbl.innerHTML=`<thead class="bg-gray-200"><tr>
-                      <th class="p-2">🗑🚮</th>
+                      <th class="p-2">🚮</th>
                       <th class="p-2">Título</th><th class="p-2">Prioridad</th>
                       <th class="p-2">Fecha</th><th class="p-2">Hora</th>
                       <th class="p-2">Duración</th><th class="p-2">Acciones</th></tr></thead>
