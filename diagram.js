@@ -33,7 +33,8 @@ export function generateTaskGraph() {
   }
 
   // Build the Gantt diagram string
-  let diagram = `%%{init: {'theme': 'default', 'gantt': {'displayMode': 'compact'}}}%%\n`;
+  //let diagram = `%%{init: {'theme': 'default', 'gantt': {'displayMode': 'compact'}}}%%\n`;
+  let diagram = `%%{init: {'theme': 'default'}}%%\n`;
   diagram += "gantt\n";
   diagram += "    dateFormat  YYYY-MM-DD HH:mm\n";
   // Recursive function to traverse tasks
