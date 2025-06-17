@@ -33,13 +33,9 @@ export function generateTaskGraph() {
   }
 
   // Build the Gantt diagram string
-  let diagram = `
-  ---
-  displayMode: compact
-  ---
-  gantt
-  dateFormat  YYYY-MM-DD HH:mm
-  `;
+  let diagram = `%%{init: {'theme': 'default', 'gantt': {'displayMode': 'compact'}}}%%\n`;
+  diagram += "gantt\n";
+  diagram += "    dateFormat  YYYY-MM-DD HH:mm\n";
   // Recursive function to traverse tasks
   function addTaskLines(taskList, parentId = null) {
     for (const task of taskList) {
